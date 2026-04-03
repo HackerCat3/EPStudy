@@ -443,11 +443,13 @@
 
     let timeLeft = 1500;
     let timerId = null;
+    const MAX_TIMER_MINUTES = 180;
     function parseTimerInput(value) {
         const match = value.trim().match(/^(\d{1,3}):([0-5]\d)$/);
         if (!match) return null;
         const minutes = parseInt(match[1], 10);
         const seconds = parseInt(match[2], 10);
+        if (minutes > MAX_TIMER_MINUTES) return null;
         return (minutes * 60) + seconds;
     }
     function toggleTimer() {
@@ -456,7 +458,10 @@
         else {
             if (timerBtn.innerText === "Start Session") {
                 const parsed = parseTimerInput(document.getElementById('timer-input').value);
-                if (parsed === null) return;
+                if (parsed === null) {
+                    alert(`Please enter time as MM:SS (max ${MAX_TIMER_MINUTES}:59).`);
+                    return;
+                }
                 timeLeft = parsed;
                 updateTimerUI();
             }
