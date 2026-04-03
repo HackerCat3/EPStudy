@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPStudy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy-primary: #003D7A;
+            --navy-light: #0052A3;
+            --gold: #FFD700;
+            --bg-gradient: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            --border: rgba(255, 255, 255, 0.3);
+            --text-main: #1a2a36;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --cat-stem: #d32f2f;
+            --cat-humanities: #1976d2;
+            --cat-arts: #fbc02d;
+            --cat-personal: #455a64;
+            --canvas-red: #E04E39;
+        }
+
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body, html { 
+            margin: 0; padding: 0; 
+            background: var(--bg-gradient); 
+            background-attachment: fixed;
+            color: var(--text-main); 
+            font-family: 'Inter', sans-serif; 
+            min-height: 100vh;
+        }
+
+        header { 
+            background: rgba(0, 61, 122, 0.8); 
+            backdrop-filter: blur(10px);
+            color: white; padding: 1.2rem; 
+            text-align: center; border-bottom: 3px solid var(--gold); 
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        #particle-canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+
+        #command-center {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem; padding: 2rem; max-width: 1300px; margin: 0 auto;
+            position: relative; z-index: 10;
+        }
+
+        /* --- GLASSMORPHISM WIDGET --- */
+        .widget {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 24px; 
+            padding: 1.5rem; 
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+            display: flex; flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+        .widget:hover { transform: translateY(-5px); }
+
+        h3 {
+            margin: 0 0 1rem 0; font-size: 0.8rem; font-weight: 700;
+            color: var(--navy-primary); text-transform: uppercase;
+            letter-spacing: 0.1em; display: flex; align-items: center; gap: 10px;
+        }
+        h3::after { content: ''; flex: 1; height: 2px; background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+
+        /* --- TIMER --- */
+        #timer-input {
+            background: rgba(255, 255, 255, 0.5); border: 1px solid var(--border);
+            font-size: 3.5rem; color: var(--navy-primary); text-align: center;
+            font-weight: 800; width: 100%; outline: none; border-radius: 16px;
+            margin-bottom: 1rem; font-family: 'Inter', monospace;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.6); border: 1px solid var(--navy-primary);
+            color: var(--navy-primary); padding: 0.7rem 1rem; cursor: pointer;
+            font-weight: 600; border-radius: 12px; transition: 0.2s; font-size: 0.85rem;
+        }
+        .action-btn:hover { background: var(--navy-primary); color: white; }
+
+        .gold-btn {
+            width: 100%; margin-top: 10px; background: linear-gradient(135deg, #FFD700 0%, #FFB900 100%);
+            border: none; color: var(--navy-primary); padding: 1rem; font-weight: 800;
+            cursor: pointer; border-radius: 16px; text-transform: uppercase; 
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        /* --- TASK MATRIX & INPUT --- */
+        .task-creation-box { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; flex-shrink: 0; }
+        .task-creation-box input, .task-creation-box select { 
+            padding: 12px; background: rgba(255, 255, 255, 0.8); border: 1px solid var(--border); border-radius: 12px; outline: none; font-family: inherit; 
+        }
+        
+        #task-list { 
+            max-height: 400px; overflow-y: auto; padding-right: 5px; margin-bottom: 10px;
+        }
+        
+        #task-list::-webkit-scrollbar { width: 4px; }
+        #task-list::-webkit-scrollbar-thumb { background: var(--navy-primary); border-radius: 10px; }
+
+        .task-item { 
+            border: 1px solid var(--border); border-radius: 16px; margin-bottom: 10px; 
+            background: rgba(255, 255, 255, 0.4); overflow: hidden; border-left: 6px solid var(--navy-primary); 
+        }
+        .task-main { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .task-details { max-height: 0; padding: 0 15px; background: rgba(248, 250, 252, 0.5); overflow: hidden; transition: 0.3s; font-size: 0.75rem; }
+        .task-item.expanded .task-details { max-height: 160px; padding: 10px 15px; border-top: 1px solid var(--border); }
+
+        .notes-area {
+            width: 100%; margin-top: 8px; padding: 8px; border: 1px solid var(--border);
+            border-radius: 8px; font-family: inherit; font-size: 0.75rem; resize: none; background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* --- CANVAS INBOX --- */
+        #canvas-inbox-list { margin-top: 10px; max-height: 300px; overflow-y: auto; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px; }
+        .inbox-item { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 10px; background: rgba(255, 252, 240, 0.6); border: 1px solid rgba(255, 238, 186, 0.5); 
+            border-radius: 12px; margin-bottom: 8px; font-size: 0.8rem; 
+        }
+        .sync-btn { background: var(--canvas-red); color: white; border: none; width: 100%; padding: 1rem; font-weight: 800; border-radius: 16px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 15px rgba(224, 78, 57, 0.3); }
+
+        /* --- MILESTONES --- */
+        .badge-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 1rem; }
+        .badge {
+            aspect-ratio: 1; background: rgba(255, 255, 255, 0.3); border-radius: 16px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 0.6rem; font-weight: 800; opacity: 0.2; filter: grayscale(1);
+            border: 1px solid var(--border); transition: 0.4s;
+        }
+        .badge.unlocked { opacity: 1; filter: grayscale(0); background: rgba(255, 255, 255, 0.8); border-color: var(--gold); transform: scale(1.05); box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); }
+
+        /* --- CALENDAR OVERLAY --- */
+        #calendar-overlay {
+            position: fixed; inset: 0; background: rgba(255, 255, 255, 0.4); 
+            backdrop-filter: blur(5px); z-index: 2000;
+            display: none; flex-direction: column; animation: slideIn 0.4s ease-out;
+        }
+        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .cal-nav { padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); flex: 1; overflow-y: auto; padding: 10px; }
+        .cal-day-h { text-align: center; padding: 12px; font-weight: 700; font-size: 0.75rem; color: var(--navy-primary); }
+        .cal-cell { background: rgba(255, 255, 255, 0.3); border: 1px solid var(--border); border-radius: 12px; padding: 8px; min-height: 120px; margin: 4px; transition: 0.2s; }
+        .cal-cell.today { background: rgba(255, 255, 255, 0.8); border: 2px solid var(--gold) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
+        .cal-cell.other { opacity: 0.4; }
+        
+        .cal-task { 
+            color: white; font-size: 0.65rem; padding: 4px 6px; border-radius: 6px; 
+            margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;
+        }
+
+        /* Minimalist Mode Overrides */
+        body.minimalist {
+            background: #ffffff !important;
+            color: #000000 !important;
+        }
+
+        body.minimalist .widget {
+            background: #ffffff !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border: 2px solid #000000 !important;
+            box-shadow: none !important;
+            border-radius: 0px !important; /* Removes rounded glass look */
+        }
+
+        body.minimalist header {
+            background: #000000 !important;
+            border-bottom: 2px solid #000000 !important;
+        }
+
+        body.minimalist .gold-btn, 
+        body.minimalist .sync-btn,
+        body.minimalist .action-btn {
+            background: #ffffff !important;
+            color: #000000 !important;
+            border: 2px solid #000000 !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+            border-radius: 0px !important;
+        }
+
+        body.minimalist #timer-input {
+            background: #ffffff !important;
+            border: 2px solid #000000 !important;
+            color: #000000 !important;
+            border-radius: 0px !important;
+        }
+
+        body.minimalist .task-item {
+            border: 2px solid #000000 !important;
+            background: #ffffff !important;
+            border-radius: 0px !important;
+        }
+
+        body.minimalist h3::after {
+            background: #000000 !important;
+            box-shadow: none !important;
+        }
+
+        /* Hide the background particles in minimalist mode */
+        body.minimalist #particle-canvas {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+<header>
+    <h1 style="margin:0; font-weight:800; letter-spacing:-1px;">EPStudy</h1>
+    <p style="margin:5px 0 0; opacity:0.8; font-size:0.8rem; letter-spacing: 2px;">[MESSAGE OF THE DAY]</p>
+    <button onclick="toggleMinimalist()" class="action-btn" style="margin: 10px auto; display: block;">
+        Toggle Minimalist Mode
+    </button>
+</header>
+
+<div id="command-center">
+    <article class="widget">
+        <h3>Pomodoro Timer</h3>
+        <input type="text" id="timer-input" value="25:00">
+        <div style="display: flex; gap: 1rem;">
+            <button class="action-btn" style="flex:2;" onclick="toggleTimer()" id="timer-btn">Start Session</button>
+            <button class="action-btn" style="flex:1;" onclick="resetTimer()">Reset</button>
+        </div>
+        <button class="gold-btn" onclick="celebrate()">Finished all work!</button>
+    </article>
+
+    <article class="widget">
+        <h3>To Do List</h3>
+        <div class="task-creation-box">
+            <input type="text" id="t-title" placeholder="Assignment Name...">
+            <div style="display:flex; gap:5px;">
+                <input type="date" id="t-date" style="flex:1;">
+                <input type="time" id="t-time" style="flex:1;">
+            </div>
+            <select id="t-cat" style="width:100%;">
+                <option value="stem">STEM (Math/Science)</option>
+                <option value="humanities">Humanities (English/History)</option>
+                <option value="arts">Arts / Electives</option>
+                <option value="personal">Personal / Sports</option>
+            </select>
+            <button class="action-btn" onclick="addTask()" style="background:var(--navy-primary); color:white; border:none; border-radius: 12px;">Add to Schedule</button>
+        </div>
+        <div id="task-list"></div>
+        <button class="action-btn" style="width:100%; margin-top:auto; border-style: dashed; border-radius: 12px;" onclick="openCalendar()">📅 View Calendar</button>
+    </article>
+
+    <article class="widget">
+        <h3>Canvas Inbox</h3>
+        <button class="sync-btn" onclick="pullFromExtension()">🔄 Sync With Canvas</button>
+        <p id="sync-status" style="font-size:0.7rem; text-align:center; color:#555; margin-top:8px;">Not synced yet</p>
+        <div id="canvas-inbox-list">
+            <p style="text-align:center; font-size:0.75rem; color:#888; margin-top:20px;">Inbox empty.</p>
+        </div>
+    </article>
+
+    <article class="widget">
+        <h3>Achievements</h3>
+        <div style="display: flex; justify-content: space-around; text-align: center; margin-bottom: 1rem;">
+            <div><div id="stat-sessions" style="font-size:1.5rem; font-weight:800;">0</div><small style="letter-spacing: 1px;">SESSIONS</small></div>
+            <div><div id="stat-tasks" style="font-size:1.5rem; font-weight:800;">0</div><small style="letter-spacing: 1px;">TASKS</small></div>
+        </div>
+        <div class="badge-grid" id="badge-container">
+            <div class="badge" id="b1">⚡<br>QUICK</div>
+            <div class="badge" id="b2">🎯<br>FOCUS</div>
+            <div class="badge" id="b3">🔥<br>ELITE</div>
+            <div class="badge" id="b4">🏆<br>CHAMP</div>
+        </div>
+    </article>
+</div>
+
+<div id="calendar-overlay">
+    <div class="cal-nav">
+        <div style="display:flex; gap:10px;">
+            <button class="action-btn" onclick="changeMonth(-1)">◀</button>
+            <h2 id="cal-label" style="margin:0; min-width:180px; text-align:center; color: var(--navy-primary);">Month Year</h2>
+            <button class="action-btn" onclick="changeMonth(1)">▶</button>
+        </div>
+        <button class="action-btn" onclick="closeCalendar()" style="background:#ef4444; color:white; border:none;">Close</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+</div>
+
+<script>
+    let tasks = JSON.parse(localStorage.getItem('ep_v4_tasks_cat') || '[]');
+    let canvasInbox = [];
+    let currentViewDate = new Date();
+    let sessions = parseInt(localStorage.getItem('ep_sessions') || 0);
+
+    const catColors = {
+        stem: 'var(--cat-stem)',
+        humanities: 'var(--cat-humanities)',
+        arts: 'var(--cat-arts)',
+        personal: 'var(--cat-personal)'
+    };
+
+    function addTask() {
+        const title = document.getElementById('t-title').value;
+        const date = document.getElementById('t-date').value;
+        const time = document.getElementById('t-time').value;
+        const cat = document.getElementById('t-cat').value;
+        if(!title || !date) return;
+        tasks.push({ id: Date.now(), title, date, time: time || "All Day", cat, notes: "", done: false });
+        localStorage.setItem('ep_v4_tasks_cat', JSON.stringify(tasks));
+        document.getElementById('t-title').value = "";
+        renderAll();
+    }
+
+    function pullFromExtension() {
+        let extensionId = localStorage.getItem('canvas_extension_id');
+        if (!extensionId) {
+            extensionId = prompt("Enter Extension ID:");
+            if (extensionId) localStorage.setItem('canvas_extension_id', extensionId);
+            else return;
+        }
+        const status = document.getElementById('sync-status');
+        status.innerText = "Syncing with Ghost...";
+        if (typeof chrome !== "undefined" && chrome.runtime) {
+            chrome.runtime.sendMessage(extensionId, { action: "getCanvasData" }, (response) => {
+                if (chrome.runtime.lastError) {
+                    status.innerText = "Error: Check ID";
+                    localStorage.removeItem('canvas_extension_id');
+                    return;
+                }
+                if (response && response.tasks) {
+                    canvasInbox = response.tasks;
+                    renderInbox();
+                    status.innerText = "Synced: " + new Date().toLocaleTimeString();
+                }
+            });
+        }
+    }
+
+    function renderInbox() {
+        const inboxDiv = document.getElementById('canvas-inbox-list');
+        if (canvasInbox.length === 0) {
+            inboxDiv.innerHTML = `<p style="text-align:center; font-size:0.75rem; color:#888;">Inbox empty.</p>`;
+            return;
+        }
+        inboxDiv.innerHTML = canvasInbox.map((item, index) => `
+            <div class="inbox-item">
+                <div style="max-width: 65%;">
+                    <div style="font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</div>
+                    <div style="font-size:0.65rem; color:#666;">Due: ${item.due ? item.due.split('T')[0] : 'N/A'}</div>
+                </div>
+                <button class="action-btn" onclick="addToMatrixFromInbox(${index})" style="padding: 5px 12px; font-size: 0.7rem; border-radius: 8px;">Add</button>
+            </div>
+        `).join('');
+    }
+
+    function addToMatrixFromInbox(index) {
+        const item = canvasInbox[index];
+        tasks.push({
+            id: Date.now(),
+            title: item.title,
+            date: item.due ? item.due.split('T')[0] : document.getElementById('t-date').value,
+            time: "All Day",
+            cat: 'personal',
+            notes: `Imported from Canvas | Course: ${item.course}`,
+            done: false
+        });
+        canvasInbox.splice(index, 1);
+        localStorage.setItem('ep_v4_tasks_cat', JSON.stringify(tasks));
+        renderInbox();
+        renderAll();
+        celebrate();
+    }
+
+    function saveNotes(id, value) {
+        const task = tasks.find(t => t.id === id);
+        if(task) { task.notes = value; localStorage.setItem('ep_v4_tasks_cat', JSON.stringify(tasks)); }
+    }
+
+    function deleteTask(id) {
+        tasks = tasks.filter(t => t.id !== id);
+        localStorage.setItem('ep_v4_tasks_cat', JSON.stringify(tasks));
+        renderAll();
+    }
+
+    function renderAll() {
+        const list = document.getElementById('task-list');
+        list.innerHTML = tasks.slice().reverse().map(t => `
+            <div class="task-item" id="task-${t.id}" style="border-left-color: ${catColors[t.cat]}">
+                <div class="task-main" onclick="document.getElementById('task-${t.id}').classList.toggle('expanded')">
+                    <span style="font-weight:600; color:var(--navy-primary);">${t.title}</span>
+                    <button onclick="event.stopPropagation(); deleteTask(${t.id})" style="border:none; background:none; color:#ff4444; cursor:pointer; font-size: 1.1rem;">✕</button>
+                </div>
+                <div class="task-details">
+                    <div><strong>Due:</strong> ${t.date} | <strong>Type:</strong> ${t.cat.toUpperCase()}</div>
+                    <textarea class="notes-area" placeholder="Notes..." onkeyup="saveNotes(${t.id}, this.value)">${t.notes || ''}</textarea>
+                </div>
+            </div>
+        `).join('');
+        document.getElementById('stat-tasks').innerText = tasks.length;
+        document.getElementById('stat-sessions').innerText = sessions;
+        checkBadges();
+    }
+
+    function checkBadges() {
+        if(sessions >= 1) document.getElementById('b1').classList.add('unlocked');
+        if(sessions >= 5) document.getElementById('b2').classList.add('unlocked');
+        if(tasks.length >= 5) document.getElementById('b3').classList.add('unlocked');
+        if(sessions >= 10 && tasks.length >= 10) document.getElementById('b4').classList.add('unlocked');
+    }
+
+    function openCalendar() { document.getElementById('calendar-overlay').style.display = 'flex'; renderCalendar(); }
+    function closeCalendar() { document.getElementById('calendar-overlay').style.display = 'none'; }
+    function changeMonth(dir) { currentViewDate.setMonth(currentViewDate.getMonth() + dir); renderCalendar(); }
+
+    function renderCalendar() {
+        const grid = document.getElementById('cal-grid');
+        grid.innerHTML = "";
+        const year = currentViewDate.getFullYear();
+        const month = currentViewDate.getMonth();
+        document.getElementById('cal-label').innerText = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentViewDate);
+        ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(d => grid.innerHTML += `<div class="cal-day-h">${d}</div>`);
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const prevMonthLast = new Date(year, month, 0).getDate();
+        for(let i = firstDay-1; i >= 0; i--) grid.innerHTML += `<div class="cal-cell other">${prevMonthLast-i}</div>`;
+        for(let i = 1; i <= daysInMonth; i++) {
+            const dStr = `${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
+            const isToday = new Date().toDateString() === new Date(year, month, i).toDateString();
+            let cell = document.createElement('div');
+            cell.className = `cal-cell ${isToday ? 'today' : ''}`;
+            cell.innerHTML = `<strong style="color:var(--navy-primary)">${i}</strong>`;
+            tasks.filter(t => t.date === dStr).forEach(t => {
+                cell.innerHTML += `<div class="cal-task" style="background:${catColors[t.cat]}">${t.title}</div>`;
+            });
+            grid.appendChild(cell);
+        }
+    }
+
+    let timeLeft = 1500;
+    let timerId = null;
+    function toggleTimer() {
+        if(timerId) { clearInterval(timerId); timerId = null; document.getElementById('timer-btn').innerText = "Resume Session"; }
+        else {
+            document.getElementById('timer-btn').innerText = "Pause Session";
+            timerId = setInterval(() => {
+                if(timeLeft > 0) { timeLeft--; updateTimerUI(); }
+                else { clearInterval(timerId); sessions++; localStorage.setItem('ep_sessions', sessions); celebrate(); renderAll(); }
+            }, 1000);
+        }
+    }
+    function updateTimerUI() {
+        const m = Math.floor(timeLeft/60).toString().padStart(2,'0');
+        const s = (timeLeft%60).toString().padStart(2,'0');
+        document.getElementById('timer-input').value = `${m}:${s}`;
+    }
+    function resetTimer() { clearInterval(timerId); timerId = null; timeLeft = 1500; updateTimerUI(); }
+
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+    function celebrate() {
+        for(let i=0; i<100; i++) {
+            particles.push({ x: Math.random() * canvas.width, y: canvas.height, vx: (Math.random() - 0.5) * 10, vy: -Math.random() * 20 - 5, color: Math.random() > 0.5 ? '#FFD700' : '#003D7A' });
+        }
+    }
+    function animate() {
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        particles.forEach((p, i) => { p.y += p.vy; p.x += p.vx; p.vy += 0.4; ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, 7, 7); if(p.y > canvas.height + 10) particles.splice(i, 1); });
+        requestAnimationFrame(animate);
+    }
+
+    function toggleMinimalist() {
+    document.body.classList.toggle('minimalist');
+    
+    // Optional: Save preference to local storage
+    const isMinimal = document.body.classList.contains('minimalist');
+    localStorage.setItem('minimalist_mode', isMinimal);
+    }
+
+    // Check for saved preference on load
+    if (localStorage.getItem('minimalist_mode') === 'true') {
+        document.body.classList.add('minimalist');
+    }
+
+    document.getElementById('t-date').valueAsDate = new Date();
+    renderAll();
+    animate();
+</script>
+</body>
+</html>
