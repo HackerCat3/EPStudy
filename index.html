@@ -443,13 +443,35 @@
 
     let timeLeft = 1500;
     let timerId = null;
+    function parseTimerInput(value) {
+        const match = value.trim().match(/^(\d{1,3}):([0-5]\d)$/);
+        if (!match) return null;
+        const minutes = parseInt(match[1], 10);
+        const seconds = parseInt(match[2], 10);
+        return (minutes * 60) + seconds;
+    }
     function toggleTimer() {
-        if(timerId) { clearInterval(timerId); timerId = null; document.getElementById('timer-btn').innerText = "Resume Session"; }
+        const timerBtn = document.getElementById('timer-btn');
+        if(timerId) { clearInterval(timerId); timerId = null; timerBtn.innerText = "Resume Session"; }
         else {
-            document.getElementById('timer-btn').innerText = "Pause Session";
+            if (timerBtn.innerText === "Start Session") {
+                const parsed = parseTimerInput(document.getElementById('timer-input').value);
+                if (parsed === null) return;
+                timeLeft = parsed;
+                updateTimerUI();
+            }
+            timerBtn.innerText = "Pause Session";
             timerId = setInterval(() => {
                 if(timeLeft > 0) { timeLeft--; updateTimerUI(); }
-                else { clearInterval(timerId); sessions++; localStorage.setItem('ep_sessions', sessions); celebrate(); renderAll(); }
+                else {
+                    clearInterval(timerId);
+                    timerId = null;
+                    timerBtn.innerText = "Start Session";
+                    sessions++;
+                    localStorage.setItem('ep_sessions', sessions);
+                    celebrate();
+                    renderAll();
+                }
             }, 1000);
         }
     }
@@ -458,7 +480,13 @@
         const s = (timeLeft%60).toString().padStart(2,'0');
         document.getElementById('timer-input').value = `${m}:${s}`;
     }
-    function resetTimer() { clearInterval(timerId); timerId = null; timeLeft = 1500; updateTimerUI(); }
+    function resetTimer() {
+        clearInterval(timerId);
+        timerId = null;
+        timeLeft = 1500;
+        document.getElementById('timer-btn').innerText = "Start Session";
+        updateTimerUI();
+    }
 
     const canvas = document.getElementById('particle-canvas');
     const ctx = canvas.getContext('2d');
