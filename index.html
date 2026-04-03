@@ -459,7 +459,7 @@
             if (timerBtn.innerText === "Start Session") {
                 const parsed = parseTimerInput(document.getElementById('timer-input').value);
                 if (parsed === null) {
-                    alert(`Please enter time as MM:SS (max ${MAX_TIMER_MINUTES}:59).`);
+                    alert(`Please enter time as minutes:seconds (e.g. 25:00, max ${MAX_TIMER_MINUTES}:59).`);
                     return;
                 }
                 timeLeft = parsed;
