@@ -862,12 +862,11 @@
   async function fetchCanvasPages(initialUrl, token, useProxy, proxyTokenInQuery = false) {
     const rows = [];
     let nextUrl = initialUrl;
-
-    const getProxyUrls = (targetUrl) => [
-      `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-      `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-      `https://thingproxy.freeboard.io/fetch/${targetUrl}`
-    ];
+// Search for this in your index.html
+const getProxyUrls = (targetUrl) => [
+  // Use YOUR specific URL from the Cloudflare dashboard here:
+  `https://canvas-token.aarinikmehta.workers.dev/?url=${encodeURIComponent(targetUrl)}`
+];
 
     while (nextUrl) {
       let res = null;
