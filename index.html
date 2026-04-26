@@ -1,497 +1,1297 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EPStudy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --navy-primary: #003D7A;
-            --navy-light: #0052A3;
-            --gold: #FFD700;
-            --bg-gradient: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
-            --border: rgba(255, 255, 255, 0.3);
-            --text-main: #1a2a36;
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --cat-stem: #d32f2f;
-            --cat-humanities: #1976d2;
-            --cat-arts: #fbc02d;
-            --cat-personal: #455a64;
-            --canvas-red: #E04E39;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EPStudy Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
 
-        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        body, html { 
-            margin: 0; padding: 0; 
-            background: var(--bg-gradient); 
-            background-attachment: fixed;
-            color: var(--text-main); 
-            font-family: 'Inter', sans-serif; 
-            min-height: 100vh;
-        }
+<style>
+  :root {
+    --navy-primary: #003d7a;
+    --navy-light: #0052a3;
+    --gold: #ffd700;
+    --bg-gray: #f3f4f6;
+    --border: #dee2e6;
+    --text-main: #2d3b45;
+    --muted: #6b7280;
+    --panel: #ffffff;
+    --danger: #dc2626;
+    --canvas: #0f766e;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
 
-        header { 
-            background: rgba(0, 61, 122, 0.8); 
-            backdrop-filter: blur(10px);
-            color: white; padding: 1.2rem; 
-            text-align: center; border-bottom: 3px solid var(--gold); 
-            position: sticky; top: 0; z-index: 100;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        }
+  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+  html, body { margin: 0; min-height: 100%; background: var(--bg-gray); color: var(--text-main); font-family: "Inter", sans-serif; }
+  button, input, label, select { font: inherit; }
 
-        #particle-canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+  #fxCanvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.4; transition: opacity 0.2s ease; }
+  .shell { position: relative; z-index: 10; max-width: 1300px; margin: 0 auto; padding: 2rem; }
+  
+  /* Layout & Header */
+  .topbar { background: var(--navy-primary); color: #ffffff; border-bottom: 5px solid var(--gold); padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; border-radius: 0; display: block; }
+  .brand { display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .brand-badge { width: 44px; height: 44px; border-radius: 10px; display: grid; place-items: center; font-weight: 800; border: 2px solid rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.12); color: #ffffff; }
+  .eyebrow { margin: 0; letter-spacing: 0.14em; text-transform: uppercase; font-size: 0.72rem; color: var(--muted); }
+  .topbar .eyebrow { color: rgba(255, 255, 255, 0.85); }
+  h1 { margin: 0; font-size: clamp(1.7rem, 3.2vw, 2.4rem); line-height: 1; letter-spacing: -1px; font-weight: 800; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+  
+  /* Grid & Panels */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-bottom: 1rem;}
+  .col-12, .col-8, .col-4 { grid-column: auto; }
+  .hero { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); margin-bottom: 1.5rem; }
+  
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 1.5rem; }
+  .panel h2 { margin: 0 0 1rem; font-size: 0.8rem; font-weight: 700; color: var(--navy-primary); text-transform: uppercase; letter-spacing: 0.1em; display: flex; align-items: center; gap: 10px; }
+  .panel h2::after { content: ""; flex: 1; height: 2px; background: var(--gold); }
+  
+  .hero-main { background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%); }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+  .stat-chip { border-radius: 12px; border: 1px solid var(--border); background: #ffffff; padding: 10px; }
+  .stat-chip strong { display: block; margin-top: 2px; color: var(--navy-primary); font-weight: 800; font-size: 1.02rem; }
+  
+  /* Typography & Utilities */
+  .helper-text { color: var(--muted); margin: 0; line-height: 1.5; }
+  .mini-text { color: var(--muted); font-size: 0.75rem; margin: 0; }
+  .empty { color: var(--muted); margin: 0; font-style: italic; font-size: 0.9rem; }
+  .alert { margin-top: 10px; min-height: 18px; color: var(--muted); font-size: 0.8rem; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .stack { display: grid; gap: 8px; }
 
-        #command-center {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 1.5rem; padding: 2rem; max-width: 1300px; margin: 0 auto;
-            position: relative; z-index: 10;
-        }
+  /* Buttons */
+  .button, .icon-button { background: #ffffff; border: 2px solid var(--navy-primary); color: var(--navy-primary); padding: 0.62rem 0.95rem; cursor: pointer; font-weight: 600; border-radius: 8px; transition: 0.2s; }
+  .button:hover, .icon-button:hover { background: var(--navy-primary); color: #ffffff; }
+  .button.primary { background: var(--navy-primary); color: #ffffff; }
+  .button.primary:hover { background: var(--navy-light); border-color: var(--navy-light); }
+  .button.success { background: linear-gradient(to bottom, var(--gold) 0%, #ffcc00 100%); border: none; color: var(--navy-primary); font-weight: 800; text-transform: uppercase; box-shadow: 0 4px 0 #ccac00; }
+  .button.success:hover { background: linear-gradient(to bottom, #ffe460 0%, #ffd700 100%); color: var(--navy-primary); transform: translateY(1px); box-shadow: 0 3px 0 #ccac00;}
+  .button.danger { border-color: var(--danger); color: var(--danger); }
+  .button.danger:hover { background: var(--danger); color: #ffffff; }
+  .icon-button { width: 32px; height: 32px; padding: 0; display: grid; place-items: center; border-radius: 6px; font-size: 0.72rem; }
 
-        /* --- GLASSMORPHISM WIDGET --- */
-        .widget {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            border-radius: 24px; 
-            padding: 1.5rem; 
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-            display: flex; flex-direction: column;
-            transition: transform 0.3s ease;
-        }
-        .widget:hover { transform: translateY(-5px); }
+  /* Forms & Inputs */
+  .field, .date-field, .number-field, .password-field { width: 100%; border: 1px solid var(--border); border-radius: 8px; outline: none; background: #ffffff; color: var(--text-main); padding: 10px; }
+  .field::placeholder, .password-field::placeholder { color: #94a3b8; }
+  .task-form { display: grid; gap: 8px; grid-template-columns: 1.3fr 0.95fr 0.75fr 0.9fr 0.8fr auto; margin-bottom: 0.9rem; }
+  .tight-form { display: grid; gap: 8px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .canvas-form { display: grid; gap: 8px; }
+  .schedule-form { display: grid; gap: 8px; grid-template-columns: 1fr 0.8fr 0.8fr auto; margin-bottom: 0.75rem; }
+  
+  /* Status & Progress */
+  .status-chip { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 12px; font-size: 0.72rem; letter-spacing: 0.08em; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+  .status-chip.class { background: rgba(0, 61, 122, 0.15); color: var(--navy-primary); }
+  .status-chip.free { background: rgba(255, 215, 0, 0.25); color: #7a6200; }
+  .progress-track { margin: 10px 0 6px; height: 8px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--navy-primary), var(--gold)); transition: width 0.2s ease; }
+  .timer { background: #f1f5f9; border: 2px solid var(--border); font-size: clamp(2.3rem, 5.8vw, 3.8rem); color: var(--navy-primary); text-align: center; font-weight: 800; border-radius: 12px; padding: 6px; margin-bottom: 10px; font-family: "Inter", monospace; }
 
-        h3 {
-            margin: 0 0 1rem 0; font-size: 0.8rem; font-weight: 700;
-            color: var(--navy-primary); text-transform: uppercase;
-            letter-spacing: 0.1em; display: flex; align-items: center; gap: 10px;
-        }
-        h3::after { content: ''; flex: 1; height: 2px; background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+  /* Tasks & Lists */
+  .task-list, .schedule-list { display: grid; gap: 8px; }
+  .task-item { border: 1px solid var(--border); border-left: 5px solid var(--navy-primary); border-radius: 10px; padding: 10px; background: #ffffff; display: flex; gap: 10px; align-items: center; }
+  .task-item.selected { border-left-width: 8px; border-left-color: var(--gold); background: #fffdf3; }
+  .task-item.completed { opacity: 0.72; }
+  .task-main { flex: 1; min-width: 0; }
+  .task-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .task-item.completed .task-title { text-decoration: line-through; color: #6b7280; }
+  .task-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-top: 2px; color: var(--muted); font-size: 0.75rem; }
+  .pill { border-radius: 999px; padding: 2px 8px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: #eef2f7; color: var(--text-main); }
+  .pill.overdue { background: #fee2e2; color: #991b1b; }
+  .pill.canvas { background: #ccfbf1; color: var(--canvas); }
+  .pill.teamsnap { background: #dbeafe; color: #1d4ed8; }
+  .task-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  
+  /* Rows & Grid items */
+  .schedule-item, .course-row, .grade-row, .skin-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: #ffffff; }
+  .course-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; border: 1px solid rgba(0, 0, 0, 0.2); }
+  
+  /* Achievements */
+  .achievement-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .achievement { border-radius: 10px; border: 2px solid transparent; background: #f1f5f9; opacity: 0.28; filter: grayscale(1); padding: 10px; min-height: 78px; transition: 0.3s; }
+  .achievement.unlocked { opacity: 1; filter: grayscale(0); background: #ffffff; border-color: var(--gold); transform: translateY(-1px); }
+  .achievement strong { display: block; margin-bottom: 4px; }
 
-        /* --- TIMER --- */
-        #timer-input {
-            background: rgba(255, 255, 255, 0.5); border: 1px solid var(--border);
-            font-size: 3.5rem; color: var(--navy-primary); text-align: center;
-            font-weight: 800; width: 100%; outline: none; border-radius: 16px;
-            margin-bottom: 1rem; font-family: 'Inter', monospace;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
+  /* Calendar View */
+  .calendar-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; border-left: 1px solid var(--border); border-top: 1px solid var(--border); }
+  .day-header { background: #f8fafc; text-align: center; padding: 10px; font-weight: 700; font-size: 0.72rem; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .day-cell { min-height: 112px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 7px; background: #ffffff; display: grid; align-content: start; gap: 5px; }
+  .day-cell.other-month { background: #fcfcfc; color: #b1b8bf; }
+  .day-cell.today { background: #fffdf0; box-shadow: inset 0 0 0 2px var(--gold); }
+  .day-number { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 0.8rem; font-weight: 700; }
+  .day-cell.today .day-number { background: var(--navy-primary); color: #ffffff; }
+  .calendar-task { color: #ffffff; font-size: 0.64rem; padding: 3px 6px; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; background: var(--navy-primary); }
+  .calendar-task.canvas { background: var(--canvas); }
+  .canvas-window-note { font-size: 0.74rem; color: var(--muted); margin-top: 8px; }
 
-        .action-btn {
-            background: rgba(255, 255, 255, 0.6); border: 1px solid var(--navy-primary);
-            color: var(--navy-primary); padding: 0.7rem 1rem; cursor: pointer;
-            font-weight: 600; border-radius: 12px; transition: 0.2s; font-size: 0.85rem;
-        }
-        .action-btn:hover { background: var(--navy-primary); color: white; }
+  /* Modals */
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.62); z-index: 60; display: none; padding: 16px; overflow-y: auto;}
+  .modal-backdrop.open { display: grid; place-items: center; }
+  .modal-card { width: min(760px, 100%); background: #ffffff; border-radius: 14px; border: 1px solid var(--border); padding: 1.5rem; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); }
+  .modal-card ol { margin: 0; padding-left: 20px; line-height: 1.5; }
+  
+  /* Canvas Table (in Modal) */
+  .canvas-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--border); font-size: 0.9rem;}
+  .canvas-table th { background: #f1f5f9; padding: 10px; text-align: left; border-bottom: 2px solid var(--border); color: var(--navy-primary);}
+  .canvas-table td { padding: 10px; border-bottom: 1px solid var(--border); }
 
-        .gold-btn {
-            width: 100%; margin-top: 10px; background: linear-gradient(135deg, #FFD700 0%, #FFB900 100%);
-            border: none; color: var(--navy-primary); padding: 1rem; font-weight: 800;
-            cursor: pointer; border-radius: 16px; text-transform: uppercase; 
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-        }
+  /* Skins */
+  .skin-select { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; margin-bottom: 8px; }
+  body.skin-hack { --navy-primary: #0f3d2b; --navy-light: #166534; --gold: #22c55e; --bg-gray: #040b06; --panel: #0c1a12; --text-main: #86efac; --muted: #4ade80; --border: #14532d; --shadow: 0 0 22px rgba(34, 197, 94, 0.2); }
+  body.skin-rainbow .topbar { background: linear-gradient(90deg, #ef4444, #f59e0b, #22c55e, #06b6d4, #6366f1); }
+  body.skin-sparkle { background-image: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.9), transparent 30%), radial-gradient(circle at 80% 35%, rgba(255, 215, 0, 0.45), transparent 25%), radial-gradient(circle at 50% 80%, rgba(56, 189, 248, 0.25), transparent 30%); }
+  body.skin-beach { --bg-gray: #fff7e6; --panel: #fffef9; --navy-primary: #0f766e; --navy-light: #0ea5a4; --gold: #f59e0b; background-image: linear-gradient(180deg, #c7f9ff 0%, #fff7e6 35%, #fde68a 100%); }
+  body.skin-coding { --bg-gray: #0b1020; --panel: #111827; --text-main: #d1d5db; --muted: #93c5fd; --border: #1f2937; --navy-primary: #60a5fa; --gold: #34d399; }
+  body.skin-midnight { --bg-gray: #0b1120; --panel: #131a2a; --text-main: #e5e7eb; --border: #24314f; --navy-primary: #93c5fd; --gold: #fbbf24; }
+  body.skin-upload { background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; }
 
-        /* --- TASK MATRIX & INPUT --- */
-        .task-creation-box { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; flex-shrink: 0; }
-        .task-creation-box input, .task-creation-box select { 
-            padding: 12px; background: rgba(255, 255, 255, 0.8); border: 1px solid var(--border); border-radius: 12px; outline: none; font-family: inherit; 
-        }
-        
-        #task-list { 
-            max-height: 400px; overflow-y: auto; padding-right: 5px; margin-bottom: 10px;
-        }
-        
-        #task-list::-webkit-scrollbar { width: 4px; }
-        #task-list::-webkit-scrollbar-thumb { background: var(--navy-primary); border-radius: 10px; }
+  /* Minimalist Mode */
+  body.minimalist { background: #ffffff; }
+  body.minimalist #fxCanvas { opacity: 0; }
+  body.minimalist .hero { display: none; }
+  body.minimalist .grid .panel { display: none; }
+  body.minimalist .grid .panel:nth-child(1), body.minimalist .grid .panel:nth-child(2), body.minimalist .grid .panel:nth-child(3) { display: block; }
+  body.minimalist .topbar { border-bottom-width: 3px; padding: 0.9rem 1rem; margin-bottom: 0.8rem; }
+  body.minimalist .shell { max-width: 980px; padding-top: 1rem; }
 
-        .task-item { 
-            border: 1px solid var(--border); border-radius: 16px; margin-bottom: 10px; 
-            background: rgba(255, 255, 255, 0.4); overflow: hidden; border-left: 6px solid var(--navy-primary); 
-        }
-        .task-main { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .task-details { max-height: 0; padding: 0 15px; background: rgba(248, 250, 252, 0.5); overflow: hidden; transition: 0.3s; font-size: 0.75rem; }
-        .task-item.expanded .task-details { max-height: 160px; padding: 10px 15px; border-top: 1px solid var(--border); }
-
-        .notes-area {
-            width: 100%; margin-top: 8px; padding: 8px; border: 1px solid var(--border);
-            border-radius: 8px; font-family: inherit; font-size: 0.75rem; resize: none; background: rgba(255, 255, 255, 0.5);
-        }
-
-        /* --- CANVAS INBOX --- */
-        #canvas-inbox-list { margin-top: 10px; max-height: 300px; overflow-y: auto; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px; }
-        .inbox-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 10px; background: rgba(255, 252, 240, 0.6); border: 1px solid rgba(255, 238, 186, 0.5); 
-            border-radius: 12px; margin-bottom: 8px; font-size: 0.8rem; 
-        }
-        .sync-btn { background: var(--canvas-red); color: white; border: none; width: 100%; padding: 1rem; font-weight: 800; border-radius: 16px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 15px rgba(224, 78, 57, 0.3); }
-
-        /* --- MILESTONES --- */
-        .badge-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 1rem; }
-        .badge {
-            aspect-ratio: 1; background: rgba(255, 255, 255, 0.3); border-radius: 16px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 0.6rem; font-weight: 800; opacity: 0.2; filter: grayscale(1);
-            border: 1px solid var(--border); transition: 0.4s;
-        }
-        .badge.unlocked { opacity: 1; filter: grayscale(0); background: rgba(255, 255, 255, 0.8); border-color: var(--gold); transform: scale(1.05); box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); }
-
-        /* --- CALENDAR OVERLAY --- */
-        #calendar-overlay {
-            position: fixed; inset: 0; background: rgba(255, 255, 255, 0.4); 
-            backdrop-filter: blur(5px); z-index: 2000;
-            display: none; flex-direction: column; animation: slideIn 0.4s ease-out;
-        }
-        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
-        .cal-nav { padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); flex: 1; overflow-y: auto; padding: 10px; }
-        .cal-day-h { text-align: center; padding: 12px; font-weight: 700; font-size: 0.75rem; color: var(--navy-primary); }
-        .cal-cell { background: rgba(255, 255, 255, 0.3); border: 1px solid var(--border); border-radius: 12px; padding: 8px; min-height: 120px; margin: 4px; transition: 0.2s; }
-        .cal-cell.today { background: rgba(255, 255, 255, 0.8); border: 2px solid var(--gold) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
-        .cal-cell.other { opacity: 0.4; }
-        
-        .cal-task { 
-            color: white; font-size: 0.65rem; padding: 4px 6px; border-radius: 6px; 
-            margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;
-        }
-
-        /* Minimalist Mode Overrides */
-        body.minimalist {
-            background: #ffffff !important;
-            color: #000000 !important;
-        }
-
-        body.minimalist .widget {
-            background: #ffffff !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            border: 2px solid #000000 !important;
-            box-shadow: none !important;
-            border-radius: 0px !important; /* Removes rounded glass look */
-        }
-
-        body.minimalist header {
-            background: #000000 !important;
-            border-bottom: 2px solid #000000 !important;
-        }
-
-        body.minimalist .gold-btn, 
-        body.minimalist .sync-btn,
-        body.minimalist .action-btn {
-            background: #ffffff !important;
-            color: #000000 !important;
-            border: 2px solid #000000 !important;
-            box-shadow: none !important;
-            text-shadow: none !important;
-            border-radius: 0px !important;
-        }
-
-        body.minimalist #timer-input {
-            background: #ffffff !important;
-            border: 2px solid #000000 !important;
-            color: #000000 !important;
-            border-radius: 0px !important;
-        }
-
-        body.minimalist .task-item {
-            border: 2px solid #000000 !important;
-            background: #ffffff !important;
-            border-radius: 0px !important;
-        }
-
-        body.minimalist h3::after {
-            background: #000000 !important;
-            box-shadow: none !important;
-        }
-
-        /* Hide the background particles in minimalist mode */
-        body.minimalist #particle-canvas {
-            display: none;
-        }
-    </style>
+  /* Responsive Adjustments */
+  @media (max-width: 760px) {
+    .shell { padding: 12px; }
+    .topbar { padding: 1rem; }
+    .hero-stats, .achievement-grid, .task-form, .schedule-form, .tight-form, .skin-select { grid-template-columns: 1fr; }
+    .calendar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); border-left: none; border-top: none; gap: 8px; }
+    .day-header { display: none; }
+    .day-cell { border: 1px solid var(--border); border-radius: 10px; min-height: 95px; }
+  }
+</style>
 </head>
+
 <body>
+<canvas id="fxCanvas"></canvas>
 
-<canvas id="particle-canvas"></canvas>
+<div class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-badge">EP</div>
+      <div>
+        <p class="eyebrow">Student Productivity Dashboard</p>
+        <h1>EPStudy</h1>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="minimalToggle" class="button" type="button">Minimalist Mode: Off</button>
+      <button id="clearDoneBtn" class="button" type="button">Clear Completed</button>
+      <button id="tutorialBtn" class="button" type="button">Tutorial</button>
+      <button id="openCalendarWindowBtn" class="button" type="button">Open Canvas Calendar</button>
+      <button id="resetAllBtn" class="button danger" type="button">Reset</button>
+    </div>
+  </header>
 
-<header>
-    <h1 style="margin:0; font-weight:800; letter-spacing:-1px;">EPStudy</h1>
-    <p style="margin:5px 0 0; opacity:0.8; font-size:0.8rem; letter-spacing: 2px;">[MESSAGE OF THE DAY]</p>
-    <button onclick="toggleMinimalist()" class="action-btn" style="margin: 10px auto; display: block;">
-        Toggle Minimalist Mode
-    </button>
-</header>
-
-<div id="command-center">
-    <article class="widget">
-        <h3>Pomodoro Timer</h3>
-        <input type="text" id="timer-input" value="25:00">
-        <div style="display: flex; gap: 1rem;">
-            <button class="action-btn" style="flex:2;" onclick="toggleTimer()" id="timer-btn">Start Session</button>
-            <button class="action-btn" style="flex:1;" onclick="resetTimer()">Reset</button>
+  <section class="hero">
+    <article class="panel hero-main">
+      <p class="eyebrow">Mission Brief</p>
+      <p class="helper-text">Stay schedule-aware, prioritize overdue work first, and turn free blocks into real progress.</p>
+      <div class="hero-stats">
+        <div class="stat-chip">
+          <span class="mini-text">Sessions</span>
+          <strong id="heroSessions">0</strong>
         </div>
-        <button class="gold-btn" onclick="celebrate()">Finished all work!</button>
+        <div class="stat-chip">
+          <span class="mini-text">Focus Minutes</span>
+          <strong id="heroMinutes">0</strong>
+        </div>
+        <div class="stat-chip">
+          <span class="mini-text">Streak</span>
+          <strong id="heroStreak">0 days</strong>
+        </div>
+      </div>
     </article>
 
-    <article class="widget">
-        <h3>To Do List</h3>
-        <div class="task-creation-box">
-            <input type="text" id="t-title" placeholder="Assignment Name...">
-            <div style="display:flex; gap:5px;">
-                <input type="date" id="t-date" style="flex:1;">
-                <input type="time" id="t-time" style="flex:1;">
-            </div>
-            <select id="t-cat" style="width:100%;">
-                <option value="stem">STEM (Math/Science)</option>
-                <option value="humanities">Humanities (English/History)</option>
-                <option value="arts">Arts / Electives</option>
-                <option value="personal">Personal / Sports</option>
-            </select>
-            <button class="action-btn" onclick="addTask()" style="background:var(--navy-primary); color:white; border:none; border-radius: 12px;">Add to Schedule</button>
-        </div>
-        <div id="task-list"></div>
-        <button class="action-btn" style="width:100%; margin-top:auto; border-style: dashed; border-radius: 12px;" onclick="openCalendar()">📅 View Calendar</button>
+    <aside class="panel">
+      <h2>Schedule Awareness</h2>
+      <div id="scheduleChip" class="status-chip free">Free Block</div>
+      <p id="schedulePrimary" class="helper-text">Checking schedule...</p>
+      <p id="scheduleSecondary" class="mini-text"></p>
+      <div class="progress-track">
+        <div id="scheduleProgress" class="progress-fill"></div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="grid">
+    <article class="panel col-8">
+      <h2>Intelligent Task Manager</h2>
+      <form id="taskForm" class="task-form">
+        <input id="taskTitle" class="field" type="text" placeholder="Task title" required />
+        <select id="taskCourse" class="field"></select>
+        <input id="taskMinutes" class="number-field" type="number" min="1" max="360" value="25" placeholder="Minutes" required />
+        <input id="taskDueDate" class="date-field" type="date" required />
+        <input id="taskDueTime" class="field" type="time" value="23:59" required />
+        <button class="button primary" type="submit">Add Task</button>
+      </form>
+      <div id="taskList" class="task-list"></div>
     </article>
 
-    <article class="widget">
-        <h3>Canvas Inbox</h3>
-        <button class="sync-btn" onclick="pullFromExtension()">🔄 Sync With Canvas</button>
-        <p id="sync-status" style="font-size:0.7rem; text-align:center; color:#555; margin-top:8px;">Not synced yet</p>
-        <div id="canvas-inbox-list">
-            <p style="text-align:center; font-size:0.75rem; color:#888; margin-top:20px;">Inbox empty.</p>
-        </div>
+    <article class="panel col-4">
+      <h2>Do This Now</h2>
+      <p id="smartMessage" class="helper-text">Analyzing your queue...</p>
+      <p id="smartTaskMeta" class="mini-text" style="margin-top: 4px; font-weight: 600;"></p>
+      <div class="row" style="margin-top:10px;">
+        <button id="useSmartTaskBtn" class="button" type="button">Focus Smart Task</button>
+      </div>
     </article>
 
-    <article class="widget">
-        <h3>Achievements</h3>
-        <div style="display: flex; justify-content: space-around; text-align: center; margin-bottom: 1rem;">
-            <div><div id="stat-sessions" style="font-size:1.5rem; font-weight:800;">0</div><small style="letter-spacing: 1px;">SESSIONS</small></div>
-            <div><div id="stat-tasks" style="font-size:1.5rem; font-weight:800;">0</div><small style="letter-spacing: 1px;">TASKS</small></div>
-        </div>
-        <div class="badge-grid" id="badge-container">
-            <div class="badge" id="b1">⚡<br>QUICK</div>
-            <div class="badge" id="b2">🎯<br>FOCUS</div>
-            <div class="badge" id="b3">🔥<br>ELITE</div>
-            <div class="badge" id="b4">🏆<br>CHAMP</div>
-        </div>
+    <article class="panel col-4">
+      <h2>Focus Center</h2>
+      <div id="timerDisplay" class="timer">25:00</div>
+      <label class="mini-text" for="timerInput">Session Minutes</label>
+      <input id="timerInput" class="number-field" type="number" min="1" max="180" value="25" />
+      <div class="progress-track">
+        <div id="timerProgress" class="progress-fill"></div>
+      </div>
+      <p id="timerHint" class="mini-text">Ready to begin.</p>
+      <div class="row" style="margin-top:8px;">
+        <button id="startPauseBtn" class="button primary" type="button">Start</button>
+        <button id="resetBtn" class="button" type="button">Reset</button>
+        <button id="finishBtn" class="button success" type="button">Finished Work!</button>
+      </div>
     </article>
+
+    <article class="panel col-4">
+      <h2>Achievements</h2>
+      <div id="achievementGrid" class="achievement-grid"></div>
+      <p id="achievementSummary" class="alert"></p>
+    </article>
+
+    <article class="panel col-4">
+      <h2>Canvas Sync</h2>
+      <div class="canvas-form">
+        <input id="canvasDomain" class="field" type="text" placeholder="school.instructure.com" />
+        <input id="canvasToken" class="password-field" type="password" placeholder="Canvas API token" />
+        <div class="row" style="align-items: center; margin-bottom: 4px;">
+          <input type="checkbox" id="canvasUseProxy" checked />
+          <label for="canvasUseProxy" class="mini-text" title="Required to bypass browser blocks, but routes requests through web proxies">Use multi-web proxy bypass (Fixes network blocks)</label>
+        </div>
+        <button id="canvasSyncBtn" class="button primary" type="button">Sync Canvas Todo</button>
+      </div>
+      <p id="canvasMessage" class="alert">Enter domain + token to securely import Canvas tasks.</p>
+    </article>
+
+    <article class="panel col-4">
+      <h2>Schedule Set</h2>
+      <form id="scheduleSetForm" class="schedule-form">
+        <select id="scheduleDay" class="field">
+          <option value="1">Monday</option>
+          <option value="2">Tuesday</option>
+          <option value="3">Wednesday</option>
+          <option value="4">Thursday</option>
+          <option value="5">Friday</option>
+          <option value="6">Saturday</option>
+          <option value="0">Sunday</option>
+        </select>
+        <input id="scheduleStart" class="field" type="time" value="16:00" required />
+        <input id="scheduleEnd" class="field" type="time" value="18:00" required />
+        <button class="button primary" type="submit">Set</button>
+      </form>
+      <div class="row" style="margin-bottom:8px;">
+        <button id="weekdayCopyBtn" class="button" type="button">Copy To Mon-Fri</button>
+      </div>
+      <div id="scheduleSetList" class="schedule-list"></div>
+      <p id="scheduleSetMessage" class="mini-text">Define when you are free to work each day.</p>
+    </article>
+
+    <article class="panel col-4">
+      <h2>Course Section</h2>
+      <form id="courseForm" class="tight-form">
+        <input id="courseName" class="field" type="text" placeholder="Course name" required />
+        <input id="courseCode" class="field" type="text" placeholder="Code" />
+        <input id="courseColor" class="field" type="color" value="#2563eb" />
+        <button class="button primary" type="submit">Add</button>
+      </form>
+      <div id="courseList" class="stack"></div>
+    </article>
+
+    <article class="panel col-4">
+      <h2>Grades Section</h2>
+      <form id="gradeForm" class="tight-form">
+        <select id="gradeCourse" class="field"></select>
+        <input id="gradeName" class="field" type="text" placeholder="Assignment" required />
+        <input id="gradeScore" class="number-field" type="number" min="0" max="100" placeholder="Score" required />
+        <button class="button primary" type="submit">Save</button>
+      </form>
+      <div id="gradeList" class="stack"></div>
+    </article>
+
+    <article class="panel col-4">
+      <h2>TeamSnap Sync</h2>
+      <div class="canvas-form">
+        <input id="teamSnapTeamId" class="field" type="text" placeholder="TeamSnap Team ID" />
+        <input id="teamSnapToken" class="password-field" type="password" placeholder="TeamSnap API token" />
+        <div class="row" style="align-items: center; margin-bottom: 4px;">
+          <input type="checkbox" id="teamSnapUseProxy" checked />
+          <label for="teamSnapUseProxy" class="mini-text">Use web proxy (fixes connection issues)</label>
+        </div>
+        <button id="teamSnapSyncBtn" class="button primary" type="button">Sync TeamSnap</button>
+      </div>
+      <p id="teamSnapMessage" class="alert">Imports practices/games as tasks when available.</p>
+    </article>
+
+    <article class="panel col-8">
+      <h2>Skins & Feature Unlocks</h2>
+      <div class="skin-select">
+        <select id="skinSelect" class="field"></select>
+        <button id="applySkinBtn" class="button primary" type="button">Apply Skin</button>
+        <button id="uploadSkinBtn" class="button" type="button">Upload Custom</button>
+      </div>
+      <input id="uploadSkinInput" type="file" accept="image/png, image/jpeg, image/webp" style="display:none;" />
+      <div class="row" style="margin-bottom:8px;">
+        <label class="mini-text"><input id="confettiEnabled" type="checkbox" checked /> Confetti enabled</label>
+      </div>
+      <div id="skinList" class="stack"></div>
+    </article>
+
+    <article class="panel col-8">
+      <h2>Calendar View</h2>
+      <div class="calendar-top">
+        <div class="row">
+          <button id="calendarPrevBtn" class="button" type="button">Previous</button>
+          <button id="calendarTodayBtn" class="button" type="button">Today</button>
+          <button id="calendarNextBtn" class="button" type="button">Next</button>
+        </div>
+        <strong id="calendarLabel"></strong>
+      </div>
+      <div id="calendarGrid" class="calendar-grid"></div>
+    </article>
+  </section>
 </div>
 
-<div id="calendar-overlay">
-    <div class="cal-nav">
-        <div style="display:flex; gap:10px;">
-            <button class="action-btn" onclick="changeMonth(-1)">◀</button>
-            <h2 id="cal-label" style="margin:0; min-width:180px; text-align:center; color: var(--navy-primary);">Month Year</h2>
-            <button class="action-btn" onclick="changeMonth(1)">▶</button>
-        </div>
-        <button class="action-btn" onclick="closeCalendar()" style="background:#ef4444; color:white; border:none;">Close</button>
+<div id="tutorialModal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal-card">
+    <h2 style="margin-top:0;">Welcome To EPStudy (Secure Edition)</h2>
+    <ol>
+      <li>Set free-time windows in <b>Schedule Set</b> so Smart Task can fit work to your day.</li>
+      <li>Create <b>Courses</b> and colors, then add assignments with specific time lengths.</li>
+      <li>Use the <b>Smart Task</b> and <b>Focus Center</b> to auto-pick what to do next based on your availability.</li>
+      <li>Sync your Canvas using your API token (use the web proxy option if your browser blocks it).</li>
+      <li>Upload your own images safely for custom <b>Skins</b> without crashing the app.</li>
+    </ol>
+    <div class="row" style="margin-top:1rem;">
+      <button id="tutorialCloseBtn" class="button primary" type="button">Got It</button>
     </div>
-    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+</div>
+
+<div id="canvasModal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal-card" style="width: 1100px; max-height: 90vh; display: flex; flex-direction: column;">
+    <h2 id="canvasModalTitle" style="margin-top:0;">Canvas Style Calendar</h2>
+    <div style="overflow-y: auto; flex: 1; margin-bottom: 1rem;">
+      <table class="canvas-table">
+        <thead>
+          <tr><th>Due Date</th><th>Course</th><th>Assignment</th></tr>
+        </thead>
+        <tbody id="canvasModalBody"></tbody>
+      </table>
+    </div>
+    <div class="row">
+      <button id="canvasModalCloseBtn" class="button primary" type="button">Close Calendar</button>
+    </div>
+  </div>
 </div>
 
 <script>
-    let tasks = JSON.parse(localStorage.getItem('ep_v4_tasks_cat') || '[]');
-    let canvasInbox = [];
-    let currentViewDate = new Date();
-    let sessions = parseInt(localStorage.getItem('ep_sessions') || 0);
+  // STATE MANAGEMENT
+  const STORAGE_KEY = "epstudy_secure_v5";
 
-    const catColors = {
-        stem: 'var(--cat-stem)',
-        humanities: 'var(--cat-humanities)',
-        arts: 'var(--cat-arts)',
-        personal: 'var(--cat-personal)'
+  const SCHOOL_SCHEDULE = [
+    { id: "P1", label: "Period 1", start: "08:30", end: "09:40" },
+    { id: "P2", label: "Period 2", start: "09:55", end: "11:05" },
+    { id: "LUNCH_BAND", label: "Lunch/Band", start: "12:25", end: "13:35" },
+    { id: "P4", label: "Period 4", start: "13:50", end: "15:00" }
+  ];
+
+  const ACHIEVEMENTS = [
+    { id: "first_task", title: "Launch Pad", detail: "Add your first task", test: (state) => state.tasks.length >= 1 },
+    { id: "task_starter", title: "Task Finisher", detail: "Complete 3 tasks", test: (state) => state.tasks.filter((t) => t.completed).length >= 3 },
+    { id: "session_runner", title: "Focus Runner", detail: "Finish 5 sessions", test: (state) => state.sessionsCompleted >= 5 },
+    { id: "focus_120", title: "Century Club", detail: "Log 120 focus minutes", test: (state) => state.focusMinutes >= 120 },
+    { id: "streak_3", title: "On a Roll", detail: "Reach a 3-day streak", test: (state) => state.streakDays >= 3 },
+    { id: "canvas_link", title: "Canvas Link", detail: "Import Canvas work once", test: (state) => state.canvasImports >= 1 }
+  ];
+
+  const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const LONG_DAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+  const DEFAULT_COURSES = [
+    { id: "course-math", name: "Math", code: "MATH", color: "#2563eb" },
+    { id: "course-english", name: "English", code: "ENG", color: "#ef4444" },
+    { id: "course-science", name: "Science", code: "SCI", color: "#10b981" },
+    { id: "course-history", name: "History", code: "HIST", color: "#f59e0b" }
+  ];
+
+  const SKIN_LIBRARY = [
+    { id: "default", label: "Default", detail: "Classic EPStudy look", unlock: () => true, className: "" },
+    { id: "confetti", label: "Confetti Mode", detail: "Burst effects tuned up", unlock: (s) => s.sessionsCompleted >= 1, className: "" },
+    { id: "coding", label: "Coding Sector", detail: "Code-blue workspace", unlock: (s) => s.focusMinutes >= 90, className: "skin-coding" },
+    { id: "hack", label: "Hack Mode", detail: "Green terminal glow", unlock: (s) => s.sessionsCompleted >= 8, className: "skin-hack" },
+    { id: "rainbow", label: "Rainbow Mode", detail: "Spectrum topbar", unlock: (s) => s.streakDays >= 2, className: "skin-rainbow" },
+    { id: "sparkle", label: "Sparkle Mode", detail: "Starry background", unlock: (s) => s.focusMinutes >= 150, className: "skin-sparkle" },
+    { id: "beach", label: "Beach Mode", detail: "Warm coast palette", unlock: (s) => s.tasks.filter((t) => t.completed).length >= 6, className: "skin-beach" },
+    { id: "midnight", label: "Midnight Mode", detail: "Night dashboard", unlock: (s) => s.canvasImports >= 1, className: "skin-midnight" },
+    { id: "upload", label: "Upload Mode", detail: "Theme from your image", unlock: (s) => s.sessionsCompleted >= 3, className: "skin-upload" }
+  ];
+
+  const MOCK_CANVAS_ITEMS = [
+    { title: "MOCK: History Essay - 120 mins", due_at: new Date(Date.now() + 2 * 86400000).toISOString() },
+    { title: "MOCK: Physics Worksheet - 35 mins", due_at: new Date(Date.now() + 86400000).toISOString() }
+  ];
+
+  const MOCK_TEAMSNAP_ITEMS = [
+    { title: "MOCK: Soccer Practice", start_at: new Date(Date.now() + 36 * 3600000).toISOString(), minutes: 90 },
+    { title: "MOCK: Game Review", start_at: new Date(Date.now() + 72 * 3600000).toISOString(), minutes: 45 }
+  ];
+
+  const state = loadState();
+
+  let timerDurationSeconds = Math.max(1, Number(state.timerMinutes || 25)) * 60;
+  let timerRemainingSeconds = timerDurationSeconds;
+  let timerInterval = null;
+  let lastAutoFilledTaskId = null;
+
+  const fxCanvas = document.getElementById("fxCanvas");
+  const fxCtx = fxCanvas.getContext("2d");
+  let confetti = [];
+  let fxAnimationRunning = false;
+
+  function defaultState() {
+    const now = new Date();
+    return {
+      tasks: [], courses: [...DEFAULT_COURSES], grades: [], selectedTaskId: null,
+      sessionsCompleted: 0, focusMinutes: 0, streakDays: 0, lastSessionDate: null,
+      canvasImports: 0, teamsnapImports: 0, minimalist: false, tutorialSeen: false,
+      selectedSkin: "default", customSkinImage: "", confettiEnabled: true,
+      calendarYear: now.getFullYear(), calendarMonth: now.getMonth(), timerMinutes: 25,
+      availabilityByDay: { "0": [], "1": [{ start: "16:00", end: "18:00" }], "2": [{ start: "16:00", end: "18:00" }], "3": [{ start: "16:00", end: "18:00" }], "4": [{ start: "16:00", end: "18:00" }], "5": [{ start: "16:00", end: "18:00" }], "6": [] }
+    };
+  }
+
+  function loadState() {
+    const base = defaultState();
+    try {
+      const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+      if (!parsed || typeof parsed !== "object") return base;
+
+      const merged = { ...base, ...parsed };
+      merged.tasks = Array.isArray(merged.tasks) ? merged.tasks : [];
+      merged.courses = Array.isArray(merged.courses) && merged.courses.length > 0 ? merged.courses : [...DEFAULT_COURSES];
+      merged.grades = Array.isArray(merged.grades) ? merged.grades : [];
+      merged.availabilityByDay = typeof merged.availabilityByDay === "object" && merged.availabilityByDay ? merged.availabilityByDay : base.availabilityByDay;
+
+      merged.courses = merged.courses.map((c, i) => ({
+        id: c?.id ? String(c.id) : `course-${i}-${Math.random().toString(16).slice(2, 6)}`,
+        name: c?.name ? String(c.name) : `Course ${i + 1}`,
+        code: c?.code ? String(c.code) : "",
+        color: /^#[0-9a-f]{6}$/i.test(c?.color || "") ? String(c.color) : "#2563eb"
+      }));
+
+      merged.tasks = merged.tasks.map((t) => {
+        const fallbackCourse = merged.courses[0]?.id || "";
+        const dueRaw = t?.dueDate ? new Date(t.dueDate) : null;
+        const dueDate = dueRaw && !Number.isNaN(dueRaw.getTime()) ? dueRaw.toISOString() : new Date(Date.now() + 86400000).toISOString();
+        return {
+          ...t,
+          id: t?.id ? String(t.id) : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          title: t?.title ? String(t.title) : "Untitled task",
+          courseId: t.courseId || fallbackCourse,
+          estimatedMinutes: Math.max(1, Number(t.estimatedMinutes) || 25),
+          dueDate,
+          completed: Boolean(t?.completed)
+        };
+      });
+
+      for (let day = 0; day <= 6; day += 1) {
+        const dk = String(day);
+        const rawWindows = Array.isArray(merged.availabilityByDay[dk]) ? merged.availabilityByDay[dk] : [];
+        merged.availabilityByDay[dk] = rawWindows
+          .filter(w => w && typeof w === "object" && isValidTime(w.start) && isValidTime(w.end) && toMinutes(w.end) > toMinutes(w.start))
+          .map(w => ({ start: w.start, end: w.end }))
+          .sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
+      }
+
+      merged.tasks.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+      if (merged.selectedTaskId && !merged.tasks.some(t => t.id === merged.selectedTaskId)) merged.selectedTaskId = null;
+      return merged;
+    } catch { return base; }
+  }
+
+  function saveState() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } 
+    catch (e) { console.error("Failed to save state. Storage might be full.", e); }
+  }
+
+  function isValidTime(value) { return /^([01]\d|2[0-3]):([0-5]\d)$/.test(String(value || "")); }
+  function safeIsoFromDateTime(dateValue, timeValue) {
+    if (!dateValue || !isValidTime(timeValue)) return null;
+    const parsed = new Date(`${dateValue}T${timeValue}:00`);
+    return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+  }
+  function toMinutes(value) {
+    if (!isValidTime(value)) return -1;
+    const [h, m] = value.split(":").map(Number);
+    return h * 60 + m;
+  }
+  function nowMinutes(date = new Date()) { return date.getHours() * 60 + date.getMinutes(); }
+  function toTimeLabel(value) {
+    const [h, m] = value.split(":").map(Number);
+    const d = new Date(); d.setHours(h || 0, m || 0, 0, 0);
+    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  }
+  function getDayWindows(dayIndex) { return (state.availabilityByDay[String(dayIndex)] || []).slice(); }
+  
+  function getAvailabilityStatus(date = new Date()) {
+    const day = date.getDay();
+    const now = nowMinutes(date);
+    const windows = getDayWindows(day);
+    const active = windows.find(w => now >= toMinutes(w.start) && now < toMinutes(w.end));
+    
+    if (active) return { isFreeNow: true, currentWindow: active, availableMinutes: Math.max(0, toMinutes(active.end) - now), nextWindow: null };
+    const nextWindow = windows.find(w => now < toMinutes(w.start)) || null;
+    return { isFreeNow: false, currentWindow: null, availableMinutes: nextWindow ? Math.max(0, toMinutes(nextWindow.end) - toMinutes(nextWindow.start)) : 0, nextWindow };
+  }
+
+  function getScheduleStatus(date = new Date()) {
+    const now = nowMinutes(date);
+    const currentBlock = SCHOOL_SCHEDULE.find(b => now >= toMinutes(b.start) && now < toMinutes(b.end));
+    if (currentBlock) {
+      const s = toMinutes(currentBlock.start), e = toMinutes(currentBlock.end);
+      return { inClass: true, currentBlock, minutesLeft: Math.max(0, e - now), progress: Math.min(100, Math.max(0, ((now - s) / (e - s)) * 100)) };
+    }
+    const nextBlock = SCHOOL_SCHEDULE.find(b => now < toMinutes(b.start));
+    return { inClass: false, nextBlock, freeMinutes: nextBlock ? Math.max(0, toMinutes(nextBlock.start) - now) : 0, progress: 100 };
+  }
+
+  function normalizeDueDate(isoString) {
+    const d = new Date(isoString);
+    return Number.isNaN(d.getTime()) ? "No due date" : d.toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  }
+
+  function localDateKey(isoString) {
+      if (!isoString) return "";
+      const d = new Date(isoString);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  }
+
+  function isOverdue(task, ref = new Date()) { return new Date(task.dueDate).getTime() < ref.getTime(); }
+
+  function openTasksSorted(ref = new Date()) {
+    return state.tasks.filter(t => !t.completed).sort((a, b) => {
+      const aO = isOverdue(a, ref), bO = isOverdue(b, ref);
+      if (aO !== bO) return aO ? -1 : 1;
+      const dueDelta = new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      if (dueDelta !== 0) return dueDelta;
+      return a.estimatedMinutes - b.estimatedMinutes;
+    });
+  }
+
+  function pickSmartTask(ref = new Date()) {
+    const classStatus = getScheduleStatus(ref);
+    if (classStatus.inClass) return { message: `You are currently in ${classStatus.currentBlock.label}. Focus class work for now.`, task: null };
+    
+    const pending = openTasksSorted(ref);
+    if (pending.length === 0) return { message: "No pending tasks right now. Add one to get started.", task: null };
+
+    const avail = getAvailabilityStatus(ref);
+    const availMins = avail.availableMinutes;
+
+    const scored = pending.map(t => {
+      const hrsUntilDue = (new Date(t.dueDate).getTime() - ref.getTime()) / 3600000;
+      const urgency = Math.max(0, 120 - hrsUntilDue);
+      const overdue = isOverdue(t, ref) ? 240 : 0;
+      const fit = availMins > 0 
+        ? (t.estimatedMinutes <= availMins ? 90 - Math.max(0, availMins - t.estimatedMinutes) * 0.4 : -Math.max(0, t.estimatedMinutes - availMins) * 2.2) 
+        : 60 - t.estimatedMinutes * 0.45;
+      return { task: t, score: overdue + urgency + fit };
+    });
+
+    scored.sort((a, b) => b.score - a.score);
+    const chosen = scored[0].task;
+
+    let msg = "Smart priority uses due date plus time length.";
+    if (avail.isFreeNow) msg = `Free now for ${availMins} min, so matching task length is boosted.`;
+    else if (avail.nextWindow) msg = `Next free block is ${toTimeLabel(avail.nextWindow.start)}-${toTimeLabel(avail.nextWindow.end)}.`;
+    if (isOverdue(chosen, ref)) msg = `Overdue is still top priority. ${msg}`;
+
+    return { message: msg, task: chosen };
+  }
+
+  function escapeHtml(str) { return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])); }
+  function getCourseById(id) { return state.courses.find(c => c.id === id) || null; }
+
+  function renderHeaderStats() {
+    document.getElementById("heroSessions").textContent = String(state.sessionsCompleted);
+    document.getElementById("heroMinutes").textContent = String(state.focusMinutes);
+    document.getElementById("heroStreak").textContent = `${state.streakDays} day${state.streakDays === 1 ? "" : "s"}`;
+    document.getElementById("clearDoneBtn").textContent = `Clear Completed (${state.tasks.filter(t => t.completed).length})`;
+  }
+
+  function renderScheduleCard() {
+    const status = getScheduleStatus(), avail = getAvailabilityStatus();
+    const chip = document.getElementById("scheduleChip"), prim = document.getElementById("schedulePrimary"), sec = document.getElementById("scheduleSecondary"), prog = document.getElementById("scheduleProgress");
+    
+    if (status.inClass) {
+      chip.className = "status-chip class"; chip.textContent = "In Class";
+      prim.textContent = `${status.currentBlock.label} ends in ${status.minutesLeft} min`;
+      sec.textContent = `Current time: ${new Date().toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'})}`;
+      prog.style.width = `${status.progress}%`;
+      return;
+    }
+    chip.className = "status-chip free"; chip.textContent = "Free Block";
+    if (avail.isFreeNow && avail.currentWindow) {
+      prim.textContent = `You are in your study window: ${toTimeLabel(avail.currentWindow.start)}-${toTimeLabel(avail.currentWindow.end)}.`;
+      sec.textContent = `${avail.availableMinutes} min left.`;
+    } else if (avail.nextWindow) {
+      prim.textContent = `Next planned free block: ${toTimeLabel(avail.nextWindow.start)}-${toTimeLabel(avail.nextWindow.end)}.`;
+      sec.textContent = "You can change this in Schedule Set.";
+    } else if (status.nextBlock) {
+      prim.textContent = `${status.freeMinutes} min until ${status.nextBlock.label}`;
+      sec.textContent = `Next class starts at ${status.nextBlock.start}`;
+    } else {
+      prim.textContent = "School schedule complete.";
+      sec.textContent = "No free window set today.";
+    }
+    prog.style.width = "100%";
+  }
+
+  function renderTaskList() {
+    const container = document.getElementById("taskList");
+    if (!state.tasks.length) return container.innerHTML = "<p class='empty'>No tasks yet. Add your first task above.</p>";
+    
+    const sorted = [...state.tasks].sort((a, b) => a.completed !== b.completed ? (a.completed ? 1 : -1) : new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+    container.innerHTML = sorted.map(t => {
+      const sel = t.id === state.selectedTaskId, od = !t.completed && isOverdue(t);
+      const c = getCourseById(t.courseId);
+      const cPill = c ? `<span class='pill' style='background:${c.color}22;color:${c.color};'>${escapeHtml(c.code || c.name)}</span>` : "";
+      const sPill = t.source === "canvas" ? "<span class='pill canvas'>Canvas</span>" : (t.source === "teamsnap" ? "<span class='pill teamsnap'>TeamSnap</span>" : "");
+      
+      return `<div class="task-item ${sel ? "selected" : ""} ${t.completed ? "completed" : ""}">
+        <div class="task-main">
+          <div class="task-title">${escapeHtml(t.title)}</div>
+          <div class="task-meta"><span>${t.estimatedMinutes} min</span><span>${normalizeDueDate(t.dueDate)}</span>${cPill}${od ? "<span class='pill overdue'>Overdue</span>" : ""}${sPill}</div>
+        </div>
+        <div class="task-actions">
+          <button class="icon-button" data-action="select" data-id="${t.id}" title="Select">S</button>
+          <button class="icon-button" data-action="edit" data-id="${t.id}" title="Edit">E</button>
+          <button class="icon-button" data-action="toggle" data-id="${t.id}" title="Toggle">${t.completed ? "U" : "D"}</button>
+          <button class="icon-button" data-action="delete" data-id="${t.id}" title="Delete">X</button>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  function renderSmartCard() {
+    const smart = pickSmartTask(), msg = document.getElementById("smartMessage"), meta = document.getElementById("smartTaskMeta");
+    msg.textContent = smart.message;
+    if (!smart.task) { meta.textContent = ""; return maybeAutofillTimer(null); }
+    meta.textContent = `${smart.task.title} | ${smart.task.estimatedMinutes} min | due ${normalizeDueDate(smart.task.dueDate)}`;
+    maybeAutofillTimer(state.tasks.find(t => t.id === state.selectedTaskId) || smart.task);
+  }
+
+  function maybeAutofillTimer(task) {
+    if (!task || timerInterval || task.id === lastAutoFilledTaskId) return;
+    setTimerFromMinutes(task.estimatedMinutes, true);
+    lastAutoFilledTaskId = task.id;
+  }
+
+  function updateTimerUi() {
+    const total = Math.max(1, timerDurationSeconds);
+    const pct = Math.min(100, Math.max(0, ((total - timerRemainingSeconds) / total) * 100));
+    document.getElementById("timerDisplay").textContent = `${String(Math.floor(timerRemainingSeconds / 60)).padStart(2, "0")}:${String(timerRemainingSeconds % 60).padStart(2, "0")}`;
+    document.getElementById("timerProgress").style.width = `${pct}%`;
+  }
+
+  function setTimerFromMinutes(mins, silent = false) {
+    const m = Math.max(1, Number(mins) || 25);
+    state.timerMinutes = m; timerDurationSeconds = m * 60; timerRemainingSeconds = timerDurationSeconds;
+    document.getElementById("timerInput").value = String(m);
+    updateTimerUi();
+    if (!silent) document.getElementById("timerHint").textContent = `Timer set to ${m} minutes.`;
+    saveState();
+  }
+
+  function toggleTimer() {
+    const btn = document.getElementById("startPauseBtn");
+    if (timerInterval) {
+      clearInterval(timerInterval); timerInterval = null; btn.textContent = "Resume";
+      document.getElementById("timerHint").textContent = "Timer paused.";
+    } else {
+      if (timerRemainingSeconds <= 0) timerRemainingSeconds = timerDurationSeconds;
+      timerInterval = window.setInterval(() => {
+        timerRemainingSeconds--; updateTimerUi();
+        if (timerRemainingSeconds <= 0) { timerRemainingSeconds = 0; updateTimerUi(); completeSession(); }
+      }, 1000);
+      btn.textContent = "Pause"; document.getElementById("timerHint").textContent = "Focus session running.";
+    }
+  }
+
+  function completeSession(overrideMins = null) {
+    clearInterval(timerInterval); timerInterval = null;
+    state.sessionsCompleted++;
+    state.focusMinutes += (overrideMins === null ? Math.max(1, Math.round(timerDurationSeconds / 60)) : Math.max(1, Number(overrideMins)));
+    
+    const today = new Date().toISOString().slice(0, 10);
+    if (state.lastSessionDate && state.lastSessionDate !== today) {
+      const diff = Math.round((new Date(today) - new Date(state.lastSessionDate)) / 86400000);
+      state.streakDays = diff === 1 ? state.streakDays + 1 : 1;
+    } else if (!state.lastSessionDate) state.streakDays = 1;
+    state.lastSessionDate = today;
+
+    // Mark task done
+    let doneTask = state.tasks.find(t => t.id === state.selectedTaskId && !t.completed);
+    if (!doneTask) {
+      const smart = pickSmartTask().task;
+      if (smart) doneTask = state.tasks.find(t => t.id === smart.id && !t.completed);
+    }
+    if (doneTask) doneTask.completed = true;
+
+    emitConfetti(100);
+    document.getElementById("timerHint").textContent = doneTask ? `Done! Marked "${doneTask.title}" complete.` : "Session done. Great progress.";
+    setTimerFromMinutes(state.timerMinutes, true);
+    document.getElementById("startPauseBtn").textContent = "Start";
+    saveState(); renderAll();
+  }
+
+  function renderCalendar() {
+    const grid = document.getElementById("calendarGrid"), y = state.calendarYear, m = state.calendarMonth;
+    document.getElementById("calendarLabel").textContent = new Date(y, m, 1).toLocaleDateString([], { month: "long", year: "numeric" });
+    
+    const offset = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate(), prevDays = new Date(y, m, 0).getDate();
+    
+    const map = state.tasks.reduce((acc, t) => {
+      const k = localDateKey(t.dueDate);
+      if (k) { acc[k] = acc[k] || []; acc[k].push(t); }
+      return acc;
+    }, {});
+
+    let html = DAY_LABELS.map(d => `<div class="day-header">${d}</div>`).join("");
+    for (let i = offset - 1; i >= 0; i--) html += `<div class="day-cell other-month"><span class="day-number">${prevDays - i}</span></div>`;
+    
+    const todayK = localDateKey(new Date().toISOString());
+    for (let d = 1; d <= days; d++) {
+      const k = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      const tks = map[k] || [];
+      const thtml = tks.slice(0, 2).map(t => {
+        const c = getCourseById(t.courseId);
+        return `<div class="calendar-task ${t.source==="canvas"?"canvas":""}" ${c ? `style="background:${c.color};"` : ""}>${escapeHtml(t.title)}</div>`;
+      }).join("");
+      html += `<div class="day-cell ${k === todayK ? "today" : ""}"><span class="day-number">${d}</span>${thtml}${tks.length > 2 ? `<div class="mini-text">+${tks.length - 2} more</div>` : ""}</div>`;
+    }
+    
+    const tail = (offset + days) % 7 === 0 ? 0 : 7 - ((offset + days) % 7);
+    for (let i = 1; i <= tail; i++) html += `<div class="day-cell other-month"><span class="day-number">${i}</span></div>`;
+    grid.innerHTML = html;
+  }
+
+  function openCanvasModal() {
+    const tbody = document.getElementById("canvasModalBody");
+    const openTasks = state.tasks.filter(t => !t.completed).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    
+    tbody.innerHTML = openTasks.length ? openTasks.map(t => {
+      const c = getCourseById(t.courseId);
+      const cName = c ? `${c.name}${c.code ? ` (${c.code})` : ""}` : "Course";
+      const color = c ? c.color : "#003d7a";
+      return `<tr><td>${normalizeDueDate(t.dueDate)}</td><td><span class="course-dot" style="background:${color}; border-color:transparent;"></span>${escapeHtml(cName)}</td><td>${escapeHtml(t.title)}</td></tr>`;
+    }).join("") : `<tr><td colspan="3" style="text-align:center; color:#64748b;">No active assignments.</td></tr>`;
+    
+    document.getElementById("canvasModalTitle").textContent = `Canvas Style Calendar - ${new Date(state.calendarYear, state.calendarMonth, 1).toLocaleDateString([], {month: "long", year: "numeric"})}`;
+    document.getElementById("canvasModal").classList.add("open");
+  }
+
+  // --- SECURE MULTI-PROXY SYNC API --- //
+  
+  function parseLinkHeader(linkHeader) {
+    if (!linkHeader) return null;
+    const parts = String(linkHeader).split(",");
+    for (const part of parts) {
+      const section = part.trim();
+      if (section.includes('rel="next"')) {
+        const match = section.match(/<([^>]+)>/);
+        if (match && match[1]) return match[1];
+      }
+    }
+    return null;
+  }
+
+  function withAccessToken(url, token) {
+    try {
+      const u = new URL(url);
+      if (!u.searchParams.get("access_token")) u.searchParams.set("access_token", token);
+      return u.toString();
+    } catch {
+      const sep = String(url).includes("?") ? "&" : "?";
+      return `${url}${sep}access_token=${encodeURIComponent(token)}`;
+    }
+  }
+
+  function colorFromString(input) {
+    const text = String(input || "canvas");
+    let hash = 0;
+    for (let i = 0; i < text.length; i += 1) hash = (hash * 31 + text.charCodeAt(i)) | 0;
+    const hue = Math.abs(hash) % 360;
+    return `hsl(${hue}, 70%, 48%)`;
+  }
+
+  function ensureCanvasCourse(canvasCourse, courseIdRaw) {
+    const cid = String(courseIdRaw || canvasCourse?.id || "unknown");
+    const canvasName = String(canvasCourse?.name || canvasCourse?.course_code || `Canvas ${cid}`).trim();
+    const canvasCode = String(canvasCourse?.course_code || "").trim();
+
+    const existing = state.courses.find((c) =>
+      c.id === `canvas-course-${cid}` ||
+      (canvasCode && String(c.code || "").toLowerCase() === canvasCode.toLowerCase()) ||
+      String(c.name || "").toLowerCase() === canvasName.toLowerCase()
+    );
+    if (existing) return existing.id;
+
+    const newCourse = { id: `canvas-course-${cid}`, name: canvasName, code: canvasCode || `C${cid}`, color: colorFromString(`${canvasName}-${cid}`) };
+    state.courses.push(newCourse);
+    return newCourse.id;
+  }
+
+  // A highly resilient multi-proxy fetcher
+  async function fetchCanvasPages(initialUrl, token, useProxy, proxyTokenInQuery = false) {
+    const rows = [];
+    let nextUrl = initialUrl;
+
+    const getProxyUrls = (targetUrl) => [
+      `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+      `https://thingproxy.freeboard.io/fetch/${targetUrl}`
+    ];
+
+    while (nextUrl) {
+      let res = null;
+      const requestUrl = (useProxy && proxyTokenInQuery) ? withAccessToken(nextUrl, token) : nextUrl;
+
+      if (!useProxy) {
+        // Direct
+        res = await fetch(requestUrl, { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) {
+            if (res.status === 401) throw new Error("Invalid Token (401)");
+            if (res.status === 403) throw new Error("Token Forbidden (403)");
+            if (res.status === 404) throw new Error("Invalid Domain (404)");
+            throw new Error(`Direct fetch blocked (Status ${res.status})`);
+        }
+      } else {
+        // Multi-proxy fallbacks
+        let proxySuccess = false;
+        const urlsToTry = getProxyUrls(requestUrl);
+        const headers = proxyTokenInQuery ? {} : { Authorization: `Bearer ${token}` };
+
+        for (const pUrl of urlsToTry) {
+          try {
+            res = await fetch(pUrl, { headers });
+            if (res.ok) {
+              proxySuccess = true;
+              break;
+            }
+          } catch (e) { /* ignore and try next proxy */ }
+        }
+        
+        if (!proxySuccess || !res) throw new Error("All web proxies blocked by firewall.");
+      }
+
+      const json = await res.json();
+      if (Array.isArray(json)) rows.push(...json);
+
+      const link = res.headers.get("Link");
+      nextUrl = parseLinkHeader(link);
+
+      // Web proxies frequently strip pagination link headers.
+      if (useProxy && !link) nextUrl = null;
+    }
+
+    return rows;
+  }
+
+  function importCanvasAssignments(assignments, canvasCoursesById) {
+    const fallbackCourseId = state.courses[0]?.id || "";
+    const windowStart = new Date();
+    windowStart.setMonth(windowStart.getMonth() - 1);
+    const imported = [];
+
+    for (const item of assignments) {
+      const dueRaw = item?.due_at || item?.lock_at || item?.unlock_at;
+      if (!dueRaw) continue;
+
+      const dueDate = new Date(dueRaw);
+      if (Number.isNaN(dueDate.getTime())) continue;
+      if (dueDate.getTime() < windowStart.getTime()) continue;
+
+      const title = String(item?.name || item?.title || "Canvas Assignment").trim();
+      const courseIdRaw = String(item?.course_id || "");
+      const canvasCourse = canvasCoursesById.get(courseIdRaw) || null;
+      const courseId = canvasCourse ? ensureCanvasCourse(canvasCourse, courseIdRaw) : fallbackCourseId;
+      const estimatedMinutes = Math.max(10, Math.min(180, Number(item?.points_possible) ? Math.round(Number(item.points_possible) * 1.5) : 30));
+
+      imported.push({
+        id: `canvas-${item.course_id || "x"}-${item.id}`,
+        title, estimatedMinutes, dueDate: dueDate.toISOString(), source: "canvas", courseId, completed: false,
+        externalKey: `canvas:${item.course_id || "x"}:${item.id}`
+      });
+    }
+
+    let added = 0, updated = 0;
+    const existingByKey = new Map();
+
+    state.tasks.forEach((t, idx) => existingByKey.set(t.externalKey || `${t.source || "manual"}:${t.id}`, { task: t, index: idx }));
+
+    for (const incoming of imported) {
+      const found = existingByKey.get(incoming.externalKey);
+      if (!found) {
+        state.tasks.push(incoming); added++;
+      } else {
+        state.tasks[found.index] = { ...found.task, title: incoming.title, dueDate: incoming.dueDate, estimatedMinutes: incoming.estimatedMinutes, source: "canvas", courseId: incoming.courseId, externalKey: incoming.externalKey, completed: Boolean(found.task.completed) };
+        updated++;
+      }
+    }
+
+    state.tasks.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+    state.canvasImports += added;
+    saveState(); renderAll();
+    return { added, updated, importedInWindow: imported.length };
+  }
+  
+  async function syncCanvas() {
+    const domain = document.getElementById("canvasDomain").value.trim();
+    const token = document.getElementById("canvasToken").value.trim();
+    const useProxy = document.getElementById("canvasUseProxy").checked;
+    const msg = document.getElementById("canvasMessage");
+    
+    if (!domain || !token) return msg.textContent = "Domain and token required.";
+    msg.textContent = "Syncing Canvas assignments... (Trying to bypass firewall)";
+
+    const cleanUrl = domain.startsWith("http") ? domain.replace(/\/$/, "") : `https://${domain.replace(/\/$/, "")}`;
+
+    const runSync = async (proxyEnabled, proxyTokenInQuery = false) => {
+      const courseUrl = `${cleanUrl}/api/v1/courses?enrollment_state=active&per_page=100`;
+      const courses = await fetchCanvasPages(courseUrl, token, proxyEnabled, proxyTokenInQuery);
+
+      // If fetch worked, remove any mock placeholders.
+      state.tasks = state.tasks.filter(t => !String(t.title || "").includes("MOCK:"));
+
+      const validCourses = courses.filter(c => c && c.id && !c.access_restricted_by_date);
+      const canvasCoursesById = new Map(validCourses.map(c => [String(c.id), c]));
+
+      let assignments = [];
+      for (const c of validCourses) {
+        const assignUrl = `${cleanUrl}/api/v1/courses/${encodeURIComponent(c.id)}/assignments?per_page=100&order_by=due_at`;
+        const rows = await fetchCanvasPages(assignUrl, token, proxyEnabled, proxyTokenInQuery);
+        assignments = assignments.concat(rows.map(r => ({ ...r, course_id: r.course_id || c.id })));
+      }
+      return importCanvasAssignments(assignments.filter(a => !a?.has_submitted_submissions), canvasCoursesById);
     };
 
-    function addTask() {
-        const title = document.getElementById('t-title').value;
-        const date = document.getElementById('t-date').value;
-        const time = document.getElementById('t-time').value;
-        const cat = document.getElementById('t-cat').value;
-        if(!title || !date) return;
-        tasks.push({ id: Date.now(), title, date, time: time || "All Day", cat, notes: "", done: false });
-        localStorage.setItem('ep_v4_tasks_cat', JSON.stringify(tasks));
-        document.getElementById('t-title').value = "";
-        renderAll();
-    }
-
-    function pullFromExtension() {
-        let extensionId = localStorage.getItem('canvas_extension_id');
-        if (!extensionId) {
-            extensionId = prompt("Enter Extension ID:");
-            if (extensionId) localStorage.setItem('canvas_extension_id', extensionId);
-            else return;
-        }
-        const status = document.getElementById('sync-status');
-        status.innerText = "Syncing with Ghost...";
-        if (typeof chrome !== "undefined" && chrome.runtime) {
-            chrome.runtime.sendMessage(extensionId, { action: "getCanvasData" }, (response) => {
-                if (chrome.runtime.lastError) {
-                    status.innerText = "Error: Check ID";
-                    localStorage.removeItem('canvas_extension_id');
-                    return;
-                }
-                if (response && response.tasks) {
-                    canvasInbox = response.tasks;
-                    renderInbox();
-                    status.innerText = "Synced: " + new Date().toLocaleTimeString();
-                }
-            });
-        }
-    }
-
-    function renderInbox() {
-        const inboxDiv = document.getElementById('canvas-inbox-list');
-        if (canvasInbox.length === 0) {
-            inboxDiv.innerHTML = `<p style="text-align:center; font-size:0.75rem; color:#888;">Inbox empty.</p>`;
+    try {
+      const result = await runSync(useProxy);
+      msg.textContent = `Canvas synced! +${result.added} new, ${result.updated} updated.`;
+    } catch (err) {
+      if (!useProxy) {
+        // Fallback to Proxy if Direct was unchecked but failed
+        try {
+          document.getElementById("canvasUseProxy").checked = true;
+          const result = await runSync(true);
+          msg.textContent = `Canvas synced via proxy: +${result.added} new, ${result.updated} updated.`;
+          return;
+        } catch (proxyErr) {
+          // Last ditch effort: Proxy + Query String token
+          try {
+            const result = await runSync(true, true);
+            msg.textContent = `Canvas synced via proxy fallback: +${result.added} new, ${result.updated} updated.`;
             return;
+          } catch (proxyQueryErr) {}
         }
-        inboxDiv.innerHTML = canvasInbox.map((item, index) => `
-            <div class="inbox-item">
-                <div style="max-width: 65%;">
-                    <div style="font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</div>
-                    <div style="font-size:0.65rem; color:#666;">Due: ${item.due ? item.due.split('T')[0] : 'N/A'}</div>
-                </div>
-                <button class="action-btn" onclick="addToMatrixFromInbox(${index})" style="padding: 5px 12px; font-size: 0.7rem; border-radius: 8px;">Add</button>
-            </div>
-        `).join('');
-    }
+      } else {
+        // Fallback to Query String token if standard proxy failed
+        try {
+          const result = await runSync(true, true);
+          msg.textContent = `Canvas synced via proxy fallback: +${result.added} new, ${result.updated} updated.`;
+          return;
+        } catch (proxyQueryErr) {}
+      }
 
-    function addToMatrixFromInbox(index) {
-        const item = canvasInbox[index];
-        tasks.push({
-            id: Date.now(),
-            title: item.title,
-            date: item.due ? item.due.split('T')[0] : document.getElementById('t-date').value,
-            time: "All Day",
-            cat: 'personal',
-            notes: `Imported from Canvas | Course: ${item.course}`,
-            done: false
-        });
-        canvasInbox.splice(index, 1);
-        localStorage.setItem('ep_v4_tasks_cat', JSON.stringify(tasks));
-        renderInbox();
-        renderAll();
-        celebrate();
+      // If we reach here, absolutely everything failed.
+      processImportedTasks(MOCK_CANVAS_ITEMS.map(i => ({ title: i.title, dueDate: i.due_at, source: "canvas" })));
+      msg.textContent = `Error: ${err.message}. (Loaded mock data instead). Check your Canvas token!`;
     }
+  }
 
-    function saveNotes(id, value) {
-        const task = tasks.find(t => t.id === id);
-        if(task) { task.notes = value; localStorage.setItem('ep_v4_tasks_cat', JSON.stringify(tasks)); }
-    }
-
-    function deleteTask(id) {
-        tasks = tasks.filter(t => t.id !== id);
-        localStorage.setItem('ep_v4_tasks_cat', JSON.stringify(tasks));
-        renderAll();
-    }
-
-    function renderAll() {
-        const list = document.getElementById('task-list');
-        list.innerHTML = tasks.slice().reverse().map(t => `
-            <div class="task-item" id="task-${t.id}" style="border-left-color: ${catColors[t.cat]}">
-                <div class="task-main" onclick="document.getElementById('task-${t.id}').classList.toggle('expanded')">
-                    <span style="font-weight:600; color:var(--navy-primary);">${t.title}</span>
-                    <button onclick="event.stopPropagation(); deleteTask(${t.id})" style="border:none; background:none; color:#ff4444; cursor:pointer; font-size: 1.1rem;">✕</button>
-                </div>
-                <div class="task-details">
-                    <div><strong>Due:</strong> ${t.date} | <strong>Type:</strong> ${t.cat.toUpperCase()}</div>
-                    <textarea class="notes-area" placeholder="Notes..." onkeyup="saveNotes(${t.id}, this.value)">${t.notes || ''}</textarea>
-                </div>
-            </div>
-        `).join('');
-        document.getElementById('stat-tasks').innerText = tasks.length;
-        document.getElementById('stat-sessions').innerText = sessions;
-        checkBadges();
-    }
-
-    function checkBadges() {
-        if(sessions >= 1) document.getElementById('b1').classList.add('unlocked');
-        if(sessions >= 5) document.getElementById('b2').classList.add('unlocked');
-        if(tasks.length >= 5) document.getElementById('b3').classList.add('unlocked');
-        if(sessions >= 10 && tasks.length >= 10) document.getElementById('b4').classList.add('unlocked');
-    }
-
-    function openCalendar() { document.getElementById('calendar-overlay').style.display = 'flex'; renderCalendar(); }
-    function closeCalendar() { document.getElementById('calendar-overlay').style.display = 'none'; }
-    function changeMonth(dir) { currentViewDate.setMonth(currentViewDate.getMonth() + dir); renderCalendar(); }
-
-    function renderCalendar() {
-        const grid = document.getElementById('cal-grid');
-        grid.innerHTML = "";
-        const year = currentViewDate.getFullYear();
-        const month = currentViewDate.getMonth();
-        document.getElementById('cal-label').innerText = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentViewDate);
-        ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(d => grid.innerHTML += `<div class="cal-day-h">${d}</div>`);
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const prevMonthLast = new Date(year, month, 0).getDate();
-        for(let i = firstDay-1; i >= 0; i--) grid.innerHTML += `<div class="cal-cell other">${prevMonthLast-i}</div>`;
-        for(let i = 1; i <= daysInMonth; i++) {
-            const dStr = `${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
-            const isToday = new Date().toDateString() === new Date(year, month, i).toDateString();
-            let cell = document.createElement('div');
-            cell.className = `cal-cell ${isToday ? 'today' : ''}`;
-            cell.innerHTML = `<strong style="color:var(--navy-primary)">${i}</strong>`;
-            tasks.filter(t => t.date === dStr).forEach(t => {
-                cell.innerHTML += `<div class="cal-task" style="background:${catColors[t.cat]}">${t.title}</div>`;
-            });
-            grid.appendChild(cell);
-        }
-    }
-
-    let timeLeft = 1500;
-    let timerId = null;
-    function toggleTimer() {
-        if(timerId) { clearInterval(timerId); timerId = null; document.getElementById('timer-btn').innerText = "Resume Session"; }
-        else {
-            document.getElementById('timer-btn').innerText = "Pause Session";
-            timerId = setInterval(() => {
-                if(timeLeft > 0) { timeLeft--; updateTimerUI(); }
-                else { clearInterval(timerId); sessions++; localStorage.setItem('ep_sessions', sessions); celebrate(); renderAll(); }
-            }, 1000);
-        }
-    }
-    function updateTimerUI() {
-        const m = Math.floor(timeLeft/60).toString().padStart(2,'0');
-        const s = (timeLeft%60).toString().padStart(2,'0');
-        document.getElementById('timer-input').value = `${m}:${s}`;
-    }
-    function resetTimer() { clearInterval(timerId); timerId = null; timeLeft = 1500; updateTimerUI(); }
-
-    const canvas = document.getElementById('particle-canvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resize); resize();
-    function celebrate() {
-        for(let i=0; i<100; i++) {
-            particles.push({ x: Math.random() * canvas.width, y: canvas.height, vx: (Math.random() - 0.5) * 10, vy: -Math.random() * 20 - 5, color: Math.random() > 0.5 ? '#FFD700' : '#003D7A' });
-        }
-    }
-    function animate() {
-        ctx.clearRect(0,0,canvas.width, canvas.height);
-        particles.forEach((p, i) => { p.y += p.vy; p.x += p.vx; p.vy += 0.4; ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, 7, 7); if(p.y > canvas.height + 10) particles.splice(i, 1); });
-        requestAnimationFrame(animate);
-    }
-
-    function toggleMinimalist() {
-    document.body.classList.toggle('minimalist');
+  document.getElementById("teamSnapSyncBtn").addEventListener("click", async () => {
+    const id = document.getElementById("teamSnapTeamId").value.trim();
+    const tkn = document.getElementById("teamSnapToken").value.trim();
+    const useProxy = document.getElementById("teamSnapUseProxy").checked;
+    const msg = document.getElementById("teamSnapMessage");
     
-    // Optional: Save preference to local storage
-    const isMinimal = document.body.classList.contains('minimalist');
-    localStorage.setItem('minimalist_mode', isMinimal);
-    }
+    if(!id || !tkn) return msg.textContent = "Team ID and token required.";
+    msg.textContent = "Syncing TeamSnap... (Trying to bypass firewall)";
 
-    // Check for saved preference on load
-    if (localStorage.getItem('minimalist_mode') === 'true') {
-        document.body.classList.add('minimalist');
-    }
+    let endpoint = `https://api.teamsnap.com/v3/teams/${encodeURIComponent(id)}/events`;
+    
+    const getProxyUrls = (targetUrl) => [
+      `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+      `https://thingproxy.freeboard.io/fetch/${targetUrl}`
+    ];
 
-    document.getElementById('t-date').valueAsDate = new Date();
-    renderAll();
-    animate();
+    try {
+      let res;
+      if (!useProxy) {
+         res = await fetch(endpoint, { headers: { Authorization: `Bearer ${tkn}` } });
+         if (!res.ok) throw new Error("Direct fetch blocked (CORS)");
+      } else {
+         let proxySuccess = false;
+         for (const pUrl of getProxyUrls(endpoint)) {
+           try {
+             res = await fetch(pUrl, { headers: { Authorization: `Bearer ${tkn}` } });
+             if (res.ok) { proxySuccess = true; break; }
+           } catch(e) {}
+         }
+         if (!proxySuccess) throw new Error("All proxies blocked by firewall");
+      }
+
+      const json = await res.json();
+
+      // If fetch worked, remove any mock placeholders.
+      state.tasks = state.tasks.filter(t => !String(t.title || "").includes("MOCK:"));
+
+      const items = Array.isArray(json.collection?.items) ? json.collection.items : [];
+      processImportedTasks(items.map(i => ({ title: `TeamSnap: ${i.title || i.name || 'Event'}`, dueDate: i.start_at || i.startDate || new Date().toISOString(), source: "teamsnap" })));
+      msg.textContent = "Successfully imported TeamSnap items.";
+    } catch (err) {
+      console.warn("TeamSnap Fetch Failed", err);
+      processImportedTasks(MOCK_TEAMSNAP_ITEMS.map(i => ({ title:`TeamSnap: ${i.title}`, dueDate: i.start_at, source: "teamsnap" })));
+      msg.textContent = `Error: ${err.message}. Loaded mock data.`;
+    }
+  });
+
+  // --- END API CONNECTIONS --- //
+
+  function processImportedTasks(rawList) {
+    const imported = [];
+    rawList.forEach(t => {
+      const match = t.title.match(/(\d+)\s*(m|min|mins|minute|minutes)/i);
+      const mins = match ? Number(match[1]) : 30;
+      
+      const lower = t.title.toLowerCase();
+      const cMatch = state.courses.find(c => lower.includes(c.name.toLowerCase()) || (c.code && lower.includes(c.code.toLowerCase())));
+      const cId = cMatch ? cMatch.id : state.courses[0]?.id;
+
+      if (mins < 60) imported.push({ id: `c-${Date.now()}-${Math.random().toString(16).slice(2)}`, title: t.title, estimatedMinutes: mins, dueDate: t.dueDate, source: t.source, courseId: cId, completed: false });
+      else {
+        const chunks = Math.ceil(mins / 25);
+        for(let i=0; i<chunks; i++) imported.push({ id: `c-${Date.now()}-${Math.random().toString(16).slice(2)}`, title: `${t.title} (${i+1}/${chunks})`, estimatedMinutes: (i===chunks-1 ? mins-(25*(chunks-1)) : 25), dueDate: t.dueDate, source: t.source, courseId: cId, completed: false });
+      }
+    });
+
+    const fPrints = new Set(state.tasks.map(t => `${t.title}|${t.dueDate}`));
+    const deduped = imported.filter(t => { const k = `${t.title}|${t.dueDate}`; if(fPrints.has(k)) return false; fPrints.add(k); return true; });
+    
+    state.tasks = [...deduped, ...state.tasks];
+    if (rawList.length && rawList[0].source === "canvas") state.canvasImports += deduped.length; else state.teamsnapImports += deduped.length;
+    saveState(); renderAll();
+  }
+
+  // OTHER UI RENDERERS
+  function applySkin() {
+    SKIN_LIBRARY.forEach(s => s.className && document.body.classList.remove(s.className));
+    const curr = SKIN_LIBRARY.find(s => s.id === state.selectedSkin) || SKIN_LIBRARY[0];
+    if (curr.className) document.body.classList.add(curr.className);
+    document.body.style.backgroundImage = (state.selectedSkin === "upload" && state.customSkinImage) ? `url(${state.customSkinImage})` : "";
+  }
+
+  function renderAll() {
+    document.body.classList.toggle("minimalist", Boolean(state.minimalist));
+    document.getElementById("minimalToggle").textContent = `Minimalist Mode: ${state.minimalist ? "On" : "Off"}`;
+    
+    // Skins
+    const skinS = document.getElementById("skinSelect"), skinL = document.getElementById("skinList"), unl = new Set(SKIN_LIBRARY.filter(s=>s.unlock(state)).map(s=>s.id));
+    skinS.innerHTML = SKIN_LIBRARY.map(s => `<option value="${s.id}">${s.label}${unl.has(s.id)?"":" (locked)"}</option>`).join("");
+    skinS.value = state.selectedSkin;
+    skinL.innerHTML = SKIN_LIBRARY.map(s => `<div class="skin-row"><span>${s.label} - ${s.detail}</span><span class="pill ${unl.has(s.id)?"":"overdue"}">${unl.has(s.id)?"Unlocked":"Locked"}</span></div>`).join("");
+    document.getElementById("confettiEnabled").checked = Boolean(state.confettiEnabled);
+    applySkin();
+
+    // Courses & Grades
+    const coHtml = state.courses.map(c => `<option value="${c.id}">${escapeHtml(c.name)}${c.code?` (${escapeHtml(c.code)})`:""}</option>`).join("");
+    document.getElementById("taskCourse").innerHTML = coHtml; document.getElementById("gradeCourse").innerHTML = coHtml;
+    
+    document.getElementById("courseList").innerHTML = state.courses.length ? state.courses.map(c => `<div class="course-row"><span><span class="course-dot" style="background:${c.color};"></span>${escapeHtml(c.name)} ${c.code?`(${escapeHtml(c.code)})`:""}</span><button class="icon-button" data-action="delete-course" data-id="${c.id}">X</button></div>`).join("") : "<p class='empty'>No courses.</p>";
+    
+    const gradesHtml = state.courses.map(c => {
+      const e = state.grades.filter(g => g.courseId === c.id);
+      if(!e.length) return null;
+      return `<div class="grade-row"><span><span class="course-dot" style="background:${c.color};"></span>${escapeHtml(c.name)} avg: <strong>${Math.round(e.reduce((s,i)=>s+i.score,0)/e.length)}%</strong></span><span class="mini-text">${e.length} grades</span></div>`;
+    }).filter(Boolean).join("");
+    document.getElementById("gradeList").innerHTML = gradesHtml || "<p class='empty'>No grades.</p>";
+
+    // Schedules
+    const d = Number(document.getElementById("scheduleDay").value);
+    const ws = getDayWindows(d);
+    document.getElementById("scheduleSetList").innerHTML = ws.length ? ws.map((w,i) => `<div class="schedule-item"><span>${LONG_DAY_LABELS[d]}: ${toTimeLabel(w.start)}-${toTimeLabel(w.end)}</span><button class="icon-button" data-action="delete-window" data-day="${d}" data-index="${i}">X</button></div>`).join("") : "<p class='empty'>No free windows set for this day.</p>";
+
+    // Achievements
+    document.getElementById("achievementGrid").innerHTML = ACHIEVEMENTS.map(a => `<div class="achievement ${a.test(state)?"unlocked":""}"><strong>${a.title}</strong><p class="mini-text">${a.detail}</p></div>`).join("");
+    document.getElementById("achievementSummary").textContent = `${ACHIEVEMENTS.filter(a=>a.test(state)).length}/${ACHIEVEMENTS.length} unlocked.`;
+
+    renderHeaderStats(); renderScheduleCard(); renderTaskList(); renderSmartCard(); renderCalendar(); updateTimerUi();
+  }
+
+  // EVENT LISTENERS
+  function registerEvents() {
+    document.getElementById("taskForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const t = document.getElementById("taskTitle").value.trim(), m = Number(document.getElementById("taskMinutes").value || 25), d = document.getElementById("taskDueDate").value, time = document.getElementById("taskDueTime").value || "23:59";
+      if (!t || !d || !m) return;
+      const iso = safeIsoFromDateTime(d, time); if (!iso) return alert("Invalid date.");
+      state.tasks.unshift({ id: `${Date.now()}-${Math.random().toString(16)}`, title: t, estimatedMinutes: m, dueDate: iso, source: "manual", courseId: document.getElementById("taskCourse").value, completed: false });
+      state.selectedTaskId = state.tasks[0].id;
+      saveState();
+      e.target.reset();
+      document.getElementById("taskMinutes").value = "25";
+      document.getElementById("taskDueTime").value = "23:59";
+      document.getElementById("taskDueDate").value = new Date().toISOString().slice(0, 10);
+      renderAll();
+    });
+
+    document.getElementById("taskList").addEventListener("click", e => {
+      const btn = e.target.closest("button"); if (!btn) return;
+      const act = btn.dataset.action, id = btn.dataset.id;
+      if (act === "select") state.selectedTaskId = id;
+      if (act === "delete") { state.tasks = state.tasks.filter(t => t.id !== id); if(state.selectedTaskId===id) state.selectedTaskId=null; }
+      if (act === "toggle") { const t=state.tasks.find(x=>x.id===id); if(t) { t.completed=!t.completed; if(t.completed) emitConfetti(28); } }
+      if (act === "edit") {
+         const t=state.tasks.find(x=>x.id===id); if(!t) return;
+         const nm = prompt("Minutes", t.estimatedMinutes); if(!nm || isNaN(nm)) return;
+         t.estimatedMinutes = Math.max(1, Number(nm));
+      }
+      saveState(); renderAll();
+    });
+
+    document.getElementById("scheduleSetForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const d = Number(document.getElementById("scheduleDay").value), s = document.getElementById("scheduleStart").value, en = document.getElementById("scheduleEnd").value;
+      if(toMinutes(en) <= toMinutes(s)) return alert("End must be after start.");
+      state.availabilityByDay[d].push({start:s, end:en}); state.availabilityByDay[d].sort((a,b)=>toMinutes(a.start)-toMinutes(b.start));
+      saveState(); renderAll();
+    });
+
+    document.getElementById("scheduleSetList").addEventListener("click", e => {
+      const btn = e.target.closest("button"); if(!btn) return;
+      state.availabilityByDay[btn.dataset.day].splice(btn.dataset.index, 1); saveState(); renderAll();
+    });
+    
+    document.getElementById("weekdayCopyBtn").addEventListener("click", () => {
+      const s = document.getElementById("scheduleStart").value, en = document.getElementById("scheduleEnd").value;
+      if(!s || !en || toMinutes(en)<=toMinutes(s)) return;
+      for(let i=1;i<=5;i++) state.availabilityByDay[i] = [{start:s, end:en}]; saveState(); renderAll();
+    });
+
+    document.getElementById("scheduleDay").addEventListener("change", renderAll);
+    
+    document.getElementById("courseForm").addEventListener("submit", e => {
+      e.preventDefault();
+      state.courses.push({ id:`c-${Date.now()}`, name: document.getElementById("courseName").value, code: document.getElementById("courseCode").value, color: document.getElementById("courseColor").value });
+      saveState(); e.target.reset(); renderAll();
+    });
+
+    document.getElementById("courseList").addEventListener("click", e => {
+      const btn = e.target.closest("button"); if(!btn || state.courses.length<=1) return;
+      state.courses = state.courses.filter(c => c.id !== btn.dataset.id);
+      const fb = state.courses[0].id; state.tasks.forEach(t => { if(t.courseId===btn.dataset.id) t.courseId = fb; });
+      saveState(); renderAll();
+    });
+
+    document.getElementById("gradeForm").addEventListener("submit", e => {
+      e.preventDefault();
+      state.grades.unshift({ id:`g-${Date.now()}`, courseId: document.getElementById("gradeCourse").value, name: document.getElementById("gradeName").value, score: Number(document.getElementById("gradeScore").value) });
+      saveState(); e.target.reset(); renderAll();
+    });
+
+    // Image Resizer Fix
+    document.getElementById("uploadSkinBtn").addEventListener("click", () => document.getElementById("uploadSkinInput").click());
+    document.getElementById("uploadSkinInput").addEventListener("change", e => {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (re) => {
+        const img = new Image();
+        img.onload = () => {
+          const cvs = document.createElement("canvas"), ctx = cvs.getContext("2d");
+          let w = img.width, h = img.height, MAX = 1600;
+          if (w > h && w > MAX) { h *= MAX/w; w = MAX; } else if (h > MAX) { w *= MAX/h; h = MAX; }
+          cvs.width = w; cvs.height = h; ctx.drawImage(img, 0, 0, w, h);
+          state.customSkinImage = cvs.toDataURL("image/jpeg", 0.6); // heavily compress to avoid localstorage quota error
+          state.selectedSkin = "upload"; saveState(); renderAll();
+        };
+        img.src = re.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById("applySkinBtn").addEventListener("click", () => {
+      const v = document.getElementById("skinSelect").value;
+      if (!SKIN_LIBRARY.find(s=>s.id===v).unlock(state)) return alert("Skin locked!");
+      state.selectedSkin = v; saveState(); renderAll();
+    });
+
+    document.getElementById("confettiEnabled").addEventListener("change", e => { state.confettiEnabled = e.target.checked; saveState(); });
+    
+    document.getElementById("startPauseBtn").addEventListener("click", toggleTimer);
+    document.getElementById("resetBtn").addEventListener("click", () => { clearInterval(timerInterval); timerInterval=null; setTimerFromMinutes(state.timerMinutes, true); document.getElementById("startPauseBtn").textContent="Start"; });
+    document.getElementById("finishBtn").addEventListener("click", () => completeSession());
+    document.getElementById("timerInput").addEventListener("change", e => setTimerFromMinutes(e.target.value));
+    
+    document.getElementById("useSmartTaskBtn").addEventListener("click", () => { const s = pickSmartTask(); if(s.task) { state.selectedTaskId = s.task.id; saveState(); renderAll(); } });
+    document.getElementById("clearDoneBtn").addEventListener("click", () => { state.tasks = state.tasks.filter(t=>!t.completed); saveState(); renderAll(); });
+    document.getElementById("minimalToggle").addEventListener("click", () => { state.minimalist = !state.minimalist; saveState(); renderAll(); });
+    document.getElementById("resetAllBtn").addEventListener("click", () => { if(prompt("Type RESET to delete all data")==="RESET") { localStorage.removeItem(STORAGE_KEY); location.reload(); } });
+    
+    document.getElementById("calendarPrevBtn").addEventListener("click", () => { state.calendarMonth--; if(state.calendarMonth<0){state.calendarMonth=11; state.calendarYear--;} saveState(); renderCalendar(); });
+    document.getElementById("calendarNextBtn").addEventListener("click", () => { state.calendarMonth++; if(state.calendarMonth>11){state.calendarMonth=0; state.calendarYear++;} saveState(); renderCalendar(); });
+    document.getElementById("calendarTodayBtn").addEventListener("click", () => { const d=new Date(); state.calendarYear=d.getFullYear(); state.calendarMonth=d.getMonth(); saveState(); renderCalendar(); });
+    
+    document.getElementById("canvasSyncBtn").addEventListener("click", syncCanvas);
+
+    // Modals
+    document.getElementById("tutorialBtn").addEventListener("click", () => document.getElementById("tutorialModal").classList.add("open"));
+    document.getElementById("tutorialCloseBtn").addEventListener("click", () => { state.tutorialSeen=true; saveState(); document.getElementById("tutorialModal").classList.remove("open"); });
+    document.getElementById("openCalendarWindowBtn").addEventListener("click", openCanvasModal);
+    document.getElementById("canvasModalCloseBtn").addEventListener("click", () => document.getElementById("canvasModal").classList.remove("open"));
+  }
+
+  // SYSTEM START
+  function resizeFxCanvas() { fxCanvas.width = window.innerWidth; fxCanvas.height = window.innerHeight; }
+  window.addEventListener("resize", resizeFxCanvas);
+  
+  function emitConfetti(count) {
+    if (!state.confettiEnabled) return;
+    for (let i = 0; i < count; i++) confetti.push({ x: window.innerWidth * (0.2 + Math.random() * 0.6), y: window.innerHeight * 0.3, vx: (Math.random() - 0.5) * 8, vy: -Math.random() * 7 - 2, life: 90, size: Math.random() * 4 + 2, hue: Math.random() * 120 + 150 });
+    if (!fxAnimationRunning) { fxAnimationRunning = true; requestAnimationFrame(animateFx); }
+  }
+  function animateFx() {
+    fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+    confetti = confetti.filter(p => p.life > 0);
+    confetti.forEach(p => { p.vy += 0.11; p.x += p.vx; p.y += p.vy; p.life--; fxCtx.fillStyle = `hsla(${p.hue}, 95%, 70%, ${p.life/90})`; fxCtx.fillRect(p.x, p.y, p.size, p.size * 1.6); });
+    if (confetti.length) requestAnimationFrame(animateFx); else fxAnimationRunning = false;
+  }
+
+  registerEvents();
+  resizeFxCanvas();
+  if(!state.tutorialSeen) document.getElementById("tutorialModal").classList.add("open");
+  if(!document.getElementById("taskDueDate").value) document.getElementById("taskDueDate").value = new Date().toISOString().slice(0, 10);
+  renderAll();
+  
+  window.setInterval(() => { renderScheduleCard(); renderSmartCard(); }, 30000);
 </script>
+
 </body>
 </html>
