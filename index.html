@@ -131,6 +131,57 @@
   .modal-backdrop.open { display: grid; place-items: center; }
   .modal-card { width: min(760px, 100%); background: #ffffff; border-radius: 14px; border: 1px solid var(--border); padding: 1.5rem; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); }
   .modal-card ol { margin: 0; padding-left: 20px; line-height: 1.5; }
+
+  .help-link-btn {
+    width: 100%;
+    margin-top: 8px;
+    border-style: dashed;
+  }
+  .token-guide {
+    max-height: min(78vh, 820px);
+    overflow-y: auto;
+  }
+  .token-guide h3 {
+    margin: 0 0 10px;
+    color: var(--navy-primary);
+    font-size: 1rem;
+  }
+  .token-guide .guide-note {
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .shot-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .shot-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #f8fafc;
+    padding: 10px;
+  }
+  .shot-placeholder {
+    height: 120px;
+    border-radius: 8px;
+    border: 1px dashed #94a3b8;
+    background: linear-gradient(135deg, #eef2f7, #f8fafc);
+    display: grid;
+    place-items: center;
+    color: #64748b;
+    font-size: 0.75rem;
+    text-align: center;
+    padding: 8px;
+  }
+  .shot-caption {
+    margin: 8px 0 0;
+    font-size: 0.78rem;
+    color: #475569;
+    line-height: 1.4;
+  }
   
   /* Canvas Table (in Modal) */
   .canvas-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--border); font-size: 0.9rem;}
@@ -164,6 +215,7 @@
     .calendar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); border-left: none; border-top: none; gap: 8px; }
     .day-header { display: none; }
     .day-cell { border: 1px solid var(--border); border-radius: 10px; min-height: 95px; }
+    .shot-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -275,6 +327,7 @@
           <label for="canvasUseProxy" class="mini-text" title="Required to bypass browser blocks, but routes requests through web proxies">Use multi-web proxy bypass (Fixes network blocks)</label>
         </div>
         <button id="canvasSyncBtn" class="button primary" type="button">Sync Canvas Todo</button>
+        <button id="canvasTokenGuideBtn" class="button help-link-btn" type="button">How To Get Canvas Token</button>
       </div>
       <p id="canvasMessage" class="alert">Enter domain + token to securely import Canvas tasks.</p>
     </article>
@@ -379,6 +432,57 @@
     </ol>
     <div class="row" style="margin-top:1rem;">
       <button id="tutorialCloseBtn" class="button primary" type="button">Got It</button>
+    </div>
+  </div>
+</div>
+
+<div id="canvasTokenModal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal-card token-guide">
+    <h2 style="margin-top:0;">Canvas Token Setup Guide</h2>
+    <p class="guide-note">Follow these exact steps in Canvas, then paste the token into Canvas Sync. Keep this token private and never share it.</p>
+
+    <h3>Step-by-step</h3>
+    <ol>
+      <li>In Canvas, click your profile avatar/initials in the left nav.</li>
+      <li>Click Settings from the account menu.</li>
+      <li>Scroll to Approved Integrations and click + New Access Token.</li>
+      <li>Set Purpose to EPStudy and choose an expiration date/time.</li>
+      <li>Click Generate Token.</li>
+      <li>Copy the token immediately from Access Token Details.</li>
+      <li>In EPStudy, enter domain as eastsideprep.instructure.com and paste token into Canvas API token.</li>
+      <li>Keep Use multi-web proxy bypass checked, then click Sync Canvas Todo.</li>
+    </ol>
+
+    <h3 style="margin-top:16px;">Screenshot Walkthrough</h3>
+    <div class="shot-grid">
+      <div class="shot-card">
+        <div class="shot-placeholder">Screenshot slot 1<br>Profile avatar in Canvas left nav</div>
+        <p class="shot-caption">1. Click your profile avatar (top-left area in Canvas navigation).</p>
+      </div>
+      <div class="shot-card">
+        <div class="shot-placeholder">Screenshot slot 2<br>Settings in account menu</div>
+        <p class="shot-caption">2. Select Settings from the account drawer.</p>
+      </div>
+      <div class="shot-card">
+        <div class="shot-placeholder">Screenshot slot 3<br>Approved Integrations + New Access Token</div>
+        <p class="shot-caption">3. Scroll to Approved Integrations and click + New Access Token.</p>
+      </div>
+      <div class="shot-card">
+        <div class="shot-placeholder">Screenshot slot 4<br>New Access Token dialog</div>
+        <p class="shot-caption">4. Fill Purpose/Expiration and click Generate Token.</p>
+      </div>
+      <div class="shot-card">
+        <div class="shot-placeholder">Screenshot slot 5<br>Access Token Details</div>
+        <p class="shot-caption">5. Copy the token from Access Token Details before closing.</p>
+      </div>
+      <div class="shot-card">
+        <div class="shot-placeholder">Screenshot slot 6<br>EPStudy Canvas Sync panel</div>
+        <p class="shot-caption">6. Paste token into EPStudy Canvas Sync and run sync.</p>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:1rem;">
+      <button id="canvasTokenCloseBtn" class="button primary" type="button">Close</button>
     </div>
   </div>
 </div>
@@ -862,11 +966,12 @@
   async function fetchCanvasPages(initialUrl, token, useProxy, proxyTokenInQuery = false) {
     const rows = [];
     let nextUrl = initialUrl;
-// Search for this in your index.html
-const getProxyUrls = (targetUrl) => [
-  // Use YOUR specific URL from the Cloudflare dashboard here:
-  `https://canvas-token.aarinikmehta.workers.dev/?url=${encodeURIComponent(targetUrl)}`
-];
+
+    const getProxyUrls = (targetUrl) => [
+      `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+      `https://thingproxy.freeboard.io/fetch/${targetUrl}`
+    ];
 
     while (nextUrl) {
       let res = null;
@@ -1263,6 +1368,8 @@ const getProxyUrls = (targetUrl) => [
     // Modals
     document.getElementById("tutorialBtn").addEventListener("click", () => document.getElementById("tutorialModal").classList.add("open"));
     document.getElementById("tutorialCloseBtn").addEventListener("click", () => { state.tutorialSeen=true; saveState(); document.getElementById("tutorialModal").classList.remove("open"); });
+    document.getElementById("canvasTokenGuideBtn").addEventListener("click", () => document.getElementById("canvasTokenModal").classList.add("open"));
+    document.getElementById("canvasTokenCloseBtn").addEventListener("click", () => document.getElementById("canvasTokenModal").classList.remove("open"));
     document.getElementById("openCalendarWindowBtn").addEventListener("click", openCanvasModal);
     document.getElementById("canvasModalCloseBtn").addEventListener("click", () => document.getElementById("canvasModal").classList.remove("open"));
   }
