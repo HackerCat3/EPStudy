@@ -3,218 +3,233 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>EPStudy Dashboard</title>
+<title>EPStudy Workspace</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
 <style>
   :root {
-    --navy-primary: #003d7a;
-    --navy-light: #0052a3;
-    --gold: #ffd700;
-    --bg-gray: #f3f4f6;
-    --border: #dee2e6;
-    --text-main: #2d3b45;
-    --muted: #6b7280;
+    /* Eastside Preparatory School Colors */
+    --navy-primary: #002B5C; /* EPS Navy */
+    --navy-light: #004488;   /* EPS Light Navy */
+    --navy-bg: #001530;
+    --gold: #FFC72C;         /* EPS Gold */
+    --gold-hover: #EAA812;
+    --bg-gray: #f4f7f9;      
+    --border: #e2e8f0;       
+    --text-main: #334155;    
+    --text-dark: #002B5C;    /* Navy Text */
+    --muted: #64748b;        
     --panel: #ffffff;
-    --danger: #dc2626;
-    --canvas: #0f766e;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --danger: #ef4444;       
+    --canvas: #e11d48;       /* Canvas Red */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --radius-md: 12px;
+    --radius-lg: 20px;
   }
 
   * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-  html, body { margin: 0; min-height: 100%; background: var(--bg-gray); color: var(--text-main); font-family: "Inter", sans-serif; }
+  html, body { margin: 0; min-height: 100%; background: var(--bg-gray); color: var(--text-main); font-family: "Inter", sans-serif; line-height: 1.5; }
   button, input, label, select { font: inherit; }
 
   #fxCanvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.4; transition: opacity 0.2s ease; }
-  .shell { position: relative; z-index: 10; max-width: 1300px; margin: 0 auto; padding: 2rem; }
   
-  /* Layout & Header */
-  .topbar { background: var(--navy-primary); color: #ffffff; border-bottom: 5px solid var(--gold); padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; border-radius: 0; display: block; }
-  .brand { display: flex; align-items: center; justify-content: center; gap: 12px; }
-  .brand-badge { width: 44px; height: 44px; border-radius: 10px; display: grid; place-items: center; font-weight: 800; border: 2px solid rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.12); color: #ffffff; }
-  .eyebrow { margin: 0; letter-spacing: 0.14em; text-transform: uppercase; font-size: 0.72rem; color: var(--muted); }
-  .topbar .eyebrow { color: rgba(255, 255, 255, 0.85); }
-  h1 { margin: 0; font-size: clamp(1.7rem, 3.2vw, 2.4rem); line-height: 1; letter-spacing: -1px; font-weight: 800; }
-  .actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+  .shell { position: relative; z-index: 10; max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; }
+  
+  /* Modern Header */
+  .topbar { background: var(--panel); border: 1px solid var(--border); box-shadow: var(--shadow-sm); border-radius: var(--radius-lg); padding: 1.25rem 2rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 1rem; }
+  .brand-badge { width: 48px; height: 48px; border-radius: var(--radius-md); display: grid; place-items: center; font-weight: 800; font-size: 1.1rem; background: var(--navy-primary); color: #ffffff; box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2); }
+  .eyebrow { margin: 0; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.75rem; font-weight: 600; color: var(--muted); }
+  h1 { margin: 0; font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.02em; font-weight: 800; color: var(--text-dark); }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  
+  /* Section Dividers */
+  .section-title { font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border); display: flex; justify-content: space-between; align-items: flex-end;}
   
   /* Grid & Panels */
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-bottom: 1rem;}
-  .col-12, .col-8, .col-4 { grid-column: auto; }
-  .hero { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); margin-bottom: 1.5rem; }
+  .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;}
+  .col-12 { grid-column: span 12; }
+  .col-8 { grid-column: span 8; }
+  .col-6 { grid-column: span 6; }
+  .col-4 { grid-column: span 4; }
+  .col-3 { grid-column: span 3; }
   
-  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 1.5rem; }
-  .panel h2 { margin: 0 0 1rem; font-size: 0.8rem; font-weight: 700; color: var(--navy-primary); text-transform: uppercase; letter-spacing: 0.1em; display: flex; align-items: center; gap: 10px; }
-  .panel h2::after { content: ""; flex: 1; height: 2px; background: var(--gold); }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 1.75rem; transition: box-shadow 0.3s ease; }
+  .panel:hover { box-shadow: var(--shadow-md); }
+  .panel h2 { margin: 0 0 1.25rem; font-size: 0.95rem; font-weight: 700; color: var(--text-dark); display: flex; align-items: center; gap: 10px; }
+  .panel.hero-panel { background: var(--navy-primary); color: white; border: none; }
+  .panel.hero-panel h2, .panel.hero-panel .helper-text { color: #e2e8f0; }
+  .panel.hero-panel .eyebrow { color: var(--gold); }
+  .panel.hero-panel strong { color: white; }
   
-  .hero-main { background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%); }
-  .hero-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
-  .stat-chip { border-radius: 12px; border: 1px solid var(--border); background: #ffffff; padding: 10px; }
-  .stat-chip strong { display: block; margin-top: 2px; color: var(--navy-primary); font-weight: 800; font-size: 1.02rem; }
+  /* EPS Specialization & Quotes */
+  .quote-panel { background: linear-gradient(135deg, var(--navy-primary), var(--navy-light)); color: white; border: none; display: flex; flex-direction: column; justify-content: center; text-align: center; }
+  .quote-panel .quote-text { font-size: 1.1rem; font-style: italic; font-weight: 500; margin-bottom: 0.5rem; line-height: 1.4; color: #f8fafc; }
+  .quote-panel .quote-author { font-size: 0.85rem; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Professional Schedule Timeline */
+  .schedule-timeline { margin-top: 1.25rem; display: flex; flex-direction: column; gap: 8px; }
+  .timeline-item { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; padding: 8px 12px; border-radius: var(--radius-md); background: #f8fafc; border: 1px solid var(--border); transition: 0.2s; }
+  .timeline-item.active { background: var(--navy-primary); color: white; border-color: var(--navy-primary); transform: scale(1.02); box-shadow: var(--shadow-sm); }
+  .timeline-item.active .timeline-time { color: var(--gold); }
+  .timeline-item.past { opacity: 0.5; background: transparent; border-color: transparent; }
+  .timeline-time { font-weight: 700; color: var(--muted); min-width: 75px; }
+  .timeline-name { font-weight: 600; flex: 1; }
+
+  /* Logo SVG */
+  .eagle-icon { width: 28px; height: 28px; fill: var(--gold); }
+
+  /* Stats Grid */
+  .hero-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+  .stat-chip { border-radius: var(--radius-md); background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.1); padding: 1rem; backdrop-filter: blur(10px); }
+  .stat-chip strong { display: block; margin-top: 4px; font-weight: 800; font-size: 1.5rem; letter-spacing: -0.02em;}
   
   /* Typography & Utilities */
-  .helper-text { color: var(--muted); margin: 0; line-height: 1.5; }
-  .mini-text { color: var(--muted); font-size: 0.75rem; margin: 0; }
-  .empty { color: var(--muted); margin: 0; font-style: italic; font-size: 0.9rem; }
-  .alert { margin-top: 10px; min-height: 18px; color: var(--muted); font-size: 0.8rem; }
-  .row { display: flex; gap: 8px; flex-wrap: wrap; }
-  .stack { display: grid; gap: 8px; }
+  .helper-text { color: var(--muted); margin: 0; line-height: 1.5; font-size: 0.95rem;}
+  .mini-text { color: var(--muted); font-size: 0.8rem; margin: 0; font-weight: 500;}
+  .empty { color: var(--muted); margin: 0; font-style: italic; font-size: 0.95rem; text-align: center; padding: 2rem 0; background: #f8fafc; border-radius: var(--radius-md); border: 1px dashed var(--border);}
+  .alert { margin-top: 12px; min-height: 18px; color: var(--muted); font-size: 0.85rem; background: #f1f5f9; padding: 10px; border-radius: var(--radius-md);}
+  .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .stack { display: grid; gap: 10px; }
 
   /* Buttons */
-  .button, .icon-button { background: #ffffff; border: 2px solid var(--navy-primary); color: var(--navy-primary); padding: 0.62rem 0.95rem; cursor: pointer; font-weight: 600; border-radius: 8px; transition: 0.2s; }
-  .button:hover, .icon-button:hover { background: var(--navy-primary); color: #ffffff; }
-  .button.primary { background: var(--navy-primary); color: #ffffff; }
-  .button.primary:hover { background: var(--navy-light); border-color: var(--navy-light); }
-  .button.success { background: linear-gradient(to bottom, var(--gold) 0%, #ffcc00 100%); border: none; color: var(--navy-primary); font-weight: 800; text-transform: uppercase; box-shadow: 0 4px 0 #ccac00; }
-  .button.success:hover { background: linear-gradient(to bottom, #ffe460 0%, #ffd700 100%); color: var(--navy-primary); transform: translateY(1px); box-shadow: 0 3px 0 #ccac00;}
-  .button.danger { border-color: var(--danger); color: var(--danger); }
-  .button.danger:hover { background: var(--danger); color: #ffffff; }
-  .icon-button { width: 32px; height: 32px; padding: 0; display: grid; place-items: center; border-radius: 6px; font-size: 0.72rem; }
+  .button, .icon-button { background: #ffffff; border: 1px solid var(--border); color: var(--text-dark); padding: 0.6rem 1.2rem; cursor: pointer; font-weight: 600; border-radius: var(--radius-md); transition: all 0.2s ease; font-size: 0.9rem; box-shadow: var(--shadow-sm);}
+  .button:hover { background: #f1f5f9; border-color: #cbd5e1; }
+  .button.primary { background: var(--navy-primary); color: #ffffff; border-color: var(--navy-primary); }
+  .button.primary:hover { background: var(--navy-light); border-color: var(--navy-light); transform: translateY(-1px); box-shadow: var(--shadow-md);}
+  .button.success { background: var(--gold); border: none; color: var(--navy-primary); font-weight: 800; }
+  .button.success:hover { background: var(--gold-hover); transform: translateY(-1px); box-shadow: var(--shadow-md);}
+  .button.danger { color: var(--danger); border-color: #fca5a5; background: #fef2f2;}
+  .button.danger:hover { background: var(--danger); color: #ffffff; border-color: var(--danger);}
+  .icon-button { width: 36px; height: 36px; padding: 0; display: grid; place-items: center; }
 
   /* Forms & Inputs */
-  .field, .date-field, .number-field, .password-field { width: 100%; border: 1px solid var(--border); border-radius: 8px; outline: none; background: #ffffff; color: var(--text-main); padding: 10px; }
+  .field, .date-field, .number-field, .password-field { width: 100%; border: 1px solid var(--border); border-radius: var(--radius-md); outline: none; background: #ffffff; color: var(--text-main); padding: 0.7rem 1rem; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s;}
+  .field:focus, .date-field:focus, .number-field:focus, .password-field:focus { border-color: var(--navy-primary); box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1); }
   .field::placeholder, .password-field::placeholder { color: #94a3b8; }
-  .task-form { display: grid; gap: 8px; grid-template-columns: 1.3fr 0.95fr 0.75fr 0.9fr 0.8fr auto; margin-bottom: 0.9rem; }
-  .tight-form { display: grid; gap: 8px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .canvas-form { display: grid; gap: 8px; }
-  .schedule-form { display: grid; gap: 8px; grid-template-columns: 1fr 0.8fr 0.8fr auto; margin-bottom: 0.75rem; }
+  
+  .task-form { display: grid; gap: 10px; grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; margin-bottom: 1.5rem; background: #f8fafc; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);}
+  .tight-form { display: grid; gap: 10px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .canvas-form { display: grid; gap: 10px; }
+  .schedule-form { display: grid; gap: 10px; grid-template-columns: 1fr 1fr 1fr auto; margin-bottom: 1rem; }
   
   /* Status & Progress */
-  .status-chip { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 12px; font-size: 0.72rem; letter-spacing: 0.08em; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
-  .status-chip.class { background: rgba(0, 61, 122, 0.15); color: var(--navy-primary); }
-  .status-chip.free { background: rgba(255, 215, 0, 0.25); color: #7a6200; }
-  .progress-track { margin: 10px 0 6px; height: 8px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
-  .progress-fill { height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--navy-primary), var(--gold)); transition: width 0.2s ease; }
-  .timer { background: #f1f5f9; border: 2px solid var(--border); font-size: clamp(2.3rem, 5.8vw, 3.8rem); color: var(--navy-primary); text-align: center; font-weight: 800; border-radius: 12px; padding: 6px; margin-bottom: 10px; font-family: "Inter", monospace; }
+  .status-chip { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 14px; font-size: 0.75rem; letter-spacing: 0.05em; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; }
+  .status-chip.class { background: rgba(15, 23, 42, 0.1); color: var(--navy-primary); }
+  .status-chip.free { background: rgba(251, 191, 36, 0.2); color: #b45309; }
+  .progress-track { margin: 12px 0 8px; height: 10px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--navy-primary), var(--gold)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  
+  /* Enhanced Timer */
+  .timer-container { text-align: center; padding: 2rem 0; }
+  .timer { font-size: clamp(3.5rem, 6vw, 5rem); color: var(--text-dark); font-weight: 800; font-family: "Inter", monospace; line-height: 1; margin-bottom: 1rem; letter-spacing: -0.05em; }
+  .timer-controls { display: flex; justify-content: center; gap: 10px; margin-top: 1.5rem; }
 
   /* Tasks & Lists */
-  .task-list, .schedule-list { display: grid; gap: 8px; }
-  .task-item { border: 1px solid var(--border); border-left: 5px solid var(--navy-primary); border-radius: 10px; padding: 10px; background: #ffffff; display: flex; gap: 10px; align-items: center; }
-  .task-item.selected { border-left-width: 8px; border-left-color: var(--gold); background: #fffdf3; }
-  .task-item.completed { opacity: 0.72; }
+  .task-list, .schedule-list { display: grid; gap: 10px; }
+  .task-item { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; background: #ffffff; display: flex; gap: 12px; align-items: center; transition: all 0.2s ease; box-shadow: var(--shadow-sm);}
+  .task-item:hover { border-color: #cbd5e1; transform: translateX(2px); }
+  .task-item.selected { border-left: 6px solid var(--gold); background: #fffbeb; border-color: #fde68a;}
+  .task-item.completed { opacity: 0.6; background: #f8fafc; }
   .task-main { flex: 1; min-width: 0; }
-  .task-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .task-item.completed .task-title { text-decoration: line-through; color: #6b7280; }
-  .task-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-top: 2px; color: var(--muted); font-size: 0.75rem; }
-  .pill { border-radius: 999px; padding: 2px 8px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: #eef2f7; color: var(--text-main); }
-  .pill.overdue { background: #fee2e2; color: #991b1b; }
-  .pill.canvas { background: #ccfbf1; color: var(--canvas); }
-  .pill.teamsnap { background: #dbeafe; color: #1d4ed8; }
-  .task-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .task-title { font-weight: 600; font-size: 1.05rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-dark);}
+  .task-item.completed .task-title { text-decoration: line-through; color: var(--muted); }
+  .task-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  
+  .pill { border-radius: 999px; padding: 4px 10px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: #f1f5f9; color: var(--muted); border: 1px solid var(--border);}
+  .pill.overdue { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+  .pill.canvas { background: #ffe4e6; color: var(--canvas); border-color: #fecdd3;}
+  .pill.teamsnap { background: #eff6ff; color: #2563eb; border-color: #dbeafe;}
+  .task-actions { display: flex; gap: 6px; }
   
   /* Rows & Grid items */
-  .schedule-item, .course-row, .grade-row, .skin-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: #ffffff; }
-  .course-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; border: 1px solid rgba(0, 0, 0, 0.2); }
+  .schedule-item, .course-row, .grade-row, .skin-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 14px; background: #ffffff; }
+  .course-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; margin-right: 10px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); vertical-align: middle;}
   
   /* Achievements */
-  .achievement-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-  .achievement { border-radius: 10px; border: 2px solid transparent; background: #f1f5f9; opacity: 0.28; filter: grayscale(1); padding: 10px; min-height: 78px; transition: 0.3s; }
-  .achievement.unlocked { opacity: 1; filter: grayscale(0); background: #ffffff; border-color: var(--gold); transform: translateY(-1px); }
-  .achievement strong { display: block; margin-bottom: 4px; }
+  .achievement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+  .achievement { border-radius: var(--radius-md); border: 2px solid #e2e8f0; background: #f8fafc; opacity: 0.4; filter: grayscale(1); padding: 1rem; text-align: center; transition: 0.3s; display: flex; flex-direction: column; justify-content: center;}
+  .achievement.unlocked { opacity: 1; filter: grayscale(0); background: #ffffff; border-color: var(--gold); transform: translateY(-2px); box-shadow: var(--shadow-sm);}
+  .achievement strong { display: block; margin-bottom: 6px; color: var(--navy-primary); font-size: 0.95rem;}
 
   /* Calendar View */
-  .calendar-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
-  .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; border-left: 1px solid var(--border); border-top: 1px solid var(--border); }
-  .day-header { background: #f8fafc; text-align: center; padding: 10px; font-weight: 700; font-size: 0.72rem; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-  .day-cell { min-height: 112px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 7px; background: #ffffff; display: grid; align-content: start; gap: 5px; }
-  .day-cell.other-month { background: #fcfcfc; color: #b1b8bf; }
-  .day-cell.today { background: #fffdf0; box-shadow: inset 0 0 0 2px var(--gold); }
-  .day-number { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 0.8rem; font-weight: 700; }
-  .day-cell.today .day-number { background: var(--navy-primary); color: #ffffff; }
-  .calendar-task { color: #ffffff; font-size: 0.64rem; padding: 3px 6px; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; background: var(--navy-primary); }
+  .calendar-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 1rem; }
+  #calendarLabel { font-size: 1.25rem; font-weight: 800; }
+  .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden;}
+  .day-header { background: #f8fafc; text-align: center; padding: 12px; font-weight: 700; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .day-cell { min-height: 120px; padding: 8px; background: #ffffff; display: grid; align-content: start; gap: 6px; transition: background 0.2s;}
+  .day-cell:hover { background: #f8fafc; }
+  .day-cell.other-month { background: #f1f5f9; }
+  .day-cell.today { background: #fffbeb; }
+  .day-number { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 0.85rem; font-weight: 700; color: var(--muted); margin-bottom: 4px;}
+  .day-cell.today .day-number { background: var(--gold); color: var(--navy-primary); }
+  .calendar-task { color: #ffffff; font-size: 0.7rem; padding: 4px 8px; border-radius: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; background: var(--navy-primary); box-shadow: var(--shadow-sm);}
   .calendar-task.canvas { background: var(--canvas); }
-  .canvas-window-note { font-size: 0.74rem; color: var(--muted); margin-top: 8px; }
 
   /* Modals */
-  .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.62); z-index: 60; display: none; padding: 16px; overflow-y: auto;}
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); z-index: 60; display: none; padding: 20px; overflow-y: auto; backdrop-filter: blur(4px);}
   .modal-backdrop.open { display: grid; place-items: center; }
-  .modal-card { width: min(760px, 100%); background: #ffffff; border-radius: 14px; border: 1px solid var(--border); padding: 1.5rem; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); }
-  .modal-card ol { margin: 0; padding-left: 20px; line-height: 1.5; }
-
-  .help-link-btn {
-    width: 100%;
-    margin-top: 8px;
-    border-style: dashed;
-  }
-  .token-guide {
-    max-height: min(78vh, 820px);
-    overflow-y: auto;
-  }
-  .token-guide h3 {
-    margin: 0 0 10px;
-    color: var(--navy-primary);
-    font-size: 1rem;
-  }
-  .token-guide .guide-note {
-    margin: 0 0 12px;
-    color: var(--muted);
-    font-size: 0.9rem;
-    line-height: 1.5;
-  }
-  .shot-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    margin-top: 12px;
-  }
-  .shot-card {
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: #f8fafc;
-    padding: 10px;
-  }
-  .shot-placeholder {
-    height: 120px;
-    border-radius: 8px;
-    border: 1px dashed #94a3b8;
-    background: linear-gradient(135deg, #eef2f7, #f8fafc);
-    display: grid;
-    place-items: center;
-    color: #64748b;
-    font-size: 0.75rem;
-    text-align: center;
-    padding: 8px;
-  }
-  .shot-caption {
-    margin: 8px 0 0;
-    font-size: 0.78rem;
-    color: #475569;
-    line-height: 1.4;
-  }
+  .modal-card { width: min(800px, 100%); background: #ffffff; border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 2.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+  .modal-card h2 { font-size: 1.5rem; font-weight: 800; color: var(--text-dark); margin-top: 0; margin-bottom: 1.5rem;}
+  .modal-card ol { margin: 0 0 2rem; padding-left: 1.5rem; line-height: 1.6; color: var(--text-main); font-size: 1.05rem;}
+  .modal-card li { margin-bottom: 0.75rem; }
   
-  /* Canvas Table (in Modal) */
-  .canvas-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--border); font-size: 0.9rem;}
-  .canvas-table th { background: #f1f5f9; padding: 10px; text-align: left; border-bottom: 2px solid var(--border); color: var(--navy-primary);}
-  .canvas-table td { padding: 10px; border-bottom: 1px solid var(--border); }
+  .help-link-btn { width: 100%; margin-top: 8px; border-style: dashed; }
+  .token-guide { max-height: min(78vh, 820px); overflow-y: auto; }
+  .token-guide h3 { margin: 0 0 10px; color: var(--navy-primary); font-size: 1rem; }
+  .token-guide .guide-note { margin: 0 0 12px; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+  .shot-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+  .shot-card { border: 1px solid var(--border); border-radius: 10px; background: #f8fafc; padding: 10px; }
+  .shot-placeholder { height: 120px; border-radius: 8px; border: 1px dashed #94a3b8; background: linear-gradient(135deg, #eef2f7, #f8fafc); display: grid; place-items: center; color: #64748b; font-size: 0.75rem; text-align: center; padding: 8px; }
+  .shot-caption { margin: 8px 0 0; font-size: 0.78rem; color: #475569; line-height: 1.4; }
+  
+  .canvas-table { width: 100%; border-collapse: separate; border-spacing: 0; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; font-size: 0.95rem;}
+  .canvas-table th { background: #f8fafc; padding: 12px 16px; text-align: left; font-weight: 700; color: var(--navy-primary); border-bottom: 1px solid var(--border);}
+  .canvas-table td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; }
+  .canvas-table tr:last-child td { border-bottom: none; }
 
-  /* Skins */
-  .skin-select { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; margin-bottom: 8px; }
-  body.skin-hack { --navy-primary: #0f3d2b; --navy-light: #166534; --gold: #22c55e; --bg-gray: #040b06; --panel: #0c1a12; --text-main: #86efac; --muted: #4ade80; --border: #14532d; --shadow: 0 0 22px rgba(34, 197, 94, 0.2); }
-  body.skin-rainbow .topbar { background: linear-gradient(90deg, #ef4444, #f59e0b, #22c55e, #06b6d4, #6366f1); }
+  /* Settings Layout Adjustments */
+  .settings-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1.5rem; }
+
+  /* Footer */
+  .site-footer { text-align: center; padding-top: 1.5rem; padding-bottom: 0.5rem; margin-top: 2rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.85rem; }
+
+  /* Skins Customization (Kept intact) */
+  body.skin-hack { --navy-primary: #0f3d2b; --navy-light: #166534; --gold: #22c55e; --bg-gray: #040b06; --panel: #0c1a12; --text-main: #86efac; --text-dark: #bbf7d0; --muted: #4ade80; --border: #14532d; --shadow-sm: 0 0 10px rgba(34, 197, 94, 0.1); }
+  body.skin-rainbow .topbar { background: linear-gradient(90deg, #ef4444, #f59e0b, #22c55e, #06b6d4, #6366f1); border-color: transparent;}
   body.skin-sparkle { background-image: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.9), transparent 30%), radial-gradient(circle at 80% 35%, rgba(255, 215, 0, 0.45), transparent 25%), radial-gradient(circle at 50% 80%, rgba(56, 189, 248, 0.25), transparent 30%); }
   body.skin-beach { --bg-gray: #fff7e6; --panel: #fffef9; --navy-primary: #0f766e; --navy-light: #0ea5a4; --gold: #f59e0b; background-image: linear-gradient(180deg, #c7f9ff 0%, #fff7e6 35%, #fde68a 100%); }
-  body.skin-coding { --bg-gray: #0b1020; --panel: #111827; --text-main: #d1d5db; --muted: #93c5fd; --border: #1f2937; --navy-primary: #60a5fa; --gold: #34d399; }
-  body.skin-midnight { --bg-gray: #0b1120; --panel: #131a2a; --text-main: #e5e7eb; --border: #24314f; --navy-primary: #93c5fd; --gold: #fbbf24; }
+  body.skin-coding { --bg-gray: #0b1020; --panel: #111827; --text-main: #d1d5db; --text-dark: #f3f4f6; --muted: #93c5fd; --border: #1f2937; --navy-primary: #60a5fa; --gold: #34d399; }
+  body.skin-midnight { --bg-gray: #0b1120; --panel: #131a2a; --text-main: #e5e7eb; --text-dark: #ffffff; --border: #24314f; --navy-primary: #93c5fd; --gold: #fbbf24; }
   body.skin-upload { background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; }
 
   /* Minimalist Mode */
   body.minimalist { background: #ffffff; }
   body.minimalist #fxCanvas { opacity: 0; }
   body.minimalist .hero { display: none; }
-  body.minimalist .grid .panel { display: none; }
-  body.minimalist .grid .panel:nth-child(1), body.minimalist .grid .panel:nth-child(2), body.minimalist .grid .panel:nth-child(3) { display: block; }
-  body.minimalist .topbar { border-bottom-width: 3px; padding: 0.9rem 1rem; margin-bottom: 0.8rem; }
-  body.minimalist .shell { max-width: 980px; padding-top: 1rem; }
+  body.minimalist .settings-grid { display: none; }
+  body.minimalist .section-title { display: none; }
 
   /* Responsive Adjustments */
+  @media (max-width: 1200px) {
+    .col-8, .col-6, .col-4, .col-3 { grid-column: span 12; }
+    .hero { grid-template-columns: 1fr; }
+    .task-form { grid-template-columns: 1fr 1fr; }
+    .task-form button { grid-column: span 2; }
+  }
   @media (max-width: 760px) {
-    .shell { padding: 12px; }
-    .topbar { padding: 1rem; }
-    .hero-stats, .achievement-grid, .task-form, .schedule-form, .tight-form, .skin-select { grid-template-columns: 1fr; }
-    .calendar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); border-left: none; border-top: none; gap: 8px; }
+    .shell { padding: 1rem; }
+    .topbar { padding: 1rem; justify-content: center;}
+    .task-form { grid-template-columns: 1fr; }
+    .task-form button { grid-column: span 1; }
+    .schedule-form, .tight-form { grid-template-columns: 1fr; }
+    .calendar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); border: none; gap: 10px; background: transparent;}
     .day-header { display: none; }
-    .day-cell { border: 1px solid var(--border); border-radius: 10px; min-height: 95px; }
+    .day-cell { border: 1px solid var(--border); border-radius: var(--radius-md); min-height: 95px; }
     .shot-grid { grid-template-columns: 1fr; }
   }
 </style>
@@ -224,61 +239,87 @@
 <canvas id="fxCanvas"></canvas>
 
 <div class="shell">
+  <!-- Top Navigation Bar -->
   <header class="topbar">
     <div class="brand">
-      <div class="brand-badge">EP</div>
+      <div class="brand-badge">
+        <svg class="eagle-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 22l10-4 10 4L12 2zm0 6l4.5 9.5-4.5-1.8-4.5 1.8L12 8z"/>
+        </svg>
+      </div>
       <div>
-        <p class="eyebrow">Student Productivity Dashboard</p>
-        <h1>EPStudy</h1>
+        <p class="eyebrow">Eastside Preparatory School</p>
+        <h1>EPS Eagles Hub</h1>
       </div>
     </div>
     <div class="actions">
-      <button id="minimalToggle" class="button" type="button">Minimalist Mode: Off</button>
-      <button id="clearDoneBtn" class="button" type="button">Clear Completed</button>
-      <button id="tutorialBtn" class="button" type="button">Tutorial</button>
-      <button id="openCalendarWindowBtn" class="button" type="button">Open Canvas Calendar</button>
-      <button id="resetAllBtn" class="button danger" type="button">Reset</button>
+      <button id="minimalToggle" class="button" type="button">Minimalist: Off</button>
+      <button id="clearDoneBtn" class="button" type="button">Clear Done</button>
+      <button id="tutorialBtn" class="button primary" type="button">Guide</button>
+      <button id="resetAllBtn" class="button danger" type="button" style="margin-left: auto;">Reset</button>
     </div>
   </header>
 
-  <section class="hero">
-    <article class="panel hero-main">
-      <p class="eyebrow">Mission Brief</p>
+  <!-- Dashboard Workflow Area -->
+  <h2 class="section-title">Daily Workflow 
+    <span style="font-size: 0.85rem; font-weight: 500; color: var(--muted); border: none;">Focus on what matters.</span>
+  </h2>
+  
+  <section class="grid">
+    <!-- Hero Performance -->
+    <article class="panel hero-panel col-4">
+      <p class="eyebrow">Performance</p>
+      <h2>Mission Brief</h2>
       <p class="helper-text">Stay schedule-aware, prioritize overdue work first, and turn free blocks into real progress.</p>
       <div class="hero-stats">
         <div class="stat-chip">
-          <span class="mini-text">Sessions</span>
+          <span class="mini-text" style="color: rgba(255,255,255,0.7)">Sessions</span>
           <strong id="heroSessions">0</strong>
         </div>
         <div class="stat-chip">
-          <span class="mini-text">Focus Minutes</span>
+          <span class="mini-text" style="color: rgba(255,255,255,0.7)">Focus Mins</span>
           <strong id="heroMinutes">0</strong>
         </div>
         <div class="stat-chip">
-          <span class="mini-text">Streak</span>
+          <span class="mini-text" style="color: rgba(255,255,255,0.7)">Streak</span>
           <strong id="heroStreak">0 days</strong>
         </div>
       </div>
     </article>
 
-    <aside class="panel">
-      <h2>Schedule Awareness</h2>
-      <div id="scheduleChip" class="status-chip free">Free Block</div>
-      <p id="schedulePrimary" class="helper-text">Checking schedule...</p>
-      <p id="scheduleSecondary" class="mini-text"></p>
-      <div class="progress-track">
-        <div id="scheduleProgress" class="progress-fill"></div>
+    <!-- KEEP IT UP SECTION -->
+    <article class="panel quote-panel col-4">
+      <p class="eyebrow" style="color: var(--gold); margin-bottom: 8px;">Keep It Up, Eagles</p>
+      <p id="motivationalQuote" class="quote-text">"Success is the sum of small efforts, repeated day in and day out."</p>
+      <p id="quoteAuthor" class="quote-author">- Robert Collier</p>
+    </article>
+
+    <!-- ENHANCED SCHEDULE TIMELINE -->
+    <aside class="panel col-4">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <h2>Schedule Awareness</h2>
+        <div id="scheduleChip" class="status-chip free">Free Block</div>
+      </div>
+      <div style="margin-top: 1rem;">
+        <p id="schedulePrimary" class="helper-text" style="font-size: 1.1rem; color: var(--text-dark); font-weight: 600;">Checking schedule...</p>
+        <div class="progress-track" style="margin-top: 1rem; margin-bottom: 0;">
+          <div id="scheduleProgress" class="progress-fill"></div>
+        </div>
+        <div id="scheduleTimeline" class="schedule-timeline">
+          <!-- Rendered via JS -->
+        </div>
       </div>
     </aside>
   </section>
 
   <section class="grid">
+    <!-- Main Task Management -->
     <article class="panel col-8">
       <h2>Intelligent Task Manager</h2>
       <form id="taskForm" class="task-form">
-        <input id="taskTitle" class="field" type="text" placeholder="Task title" required />
+        <input id="taskTitle" class="field" type="text" placeholder="What do you need to do?" required />
         <select id="taskCourse" class="field"></select>
-        <input id="taskMinutes" class="number-field" type="number" min="1" max="360" value="25" placeholder="Minutes" required />
+        <input id="taskMinutes" class="number-field" type="number" min="1" max="360" value="25" placeholder="Mins" required />
         <input id="taskDueDate" class="date-field" type="date" required />
         <input id="taskDueTime" class="field" type="time" value="23:59" required />
         <button class="button primary" type="submit">Add Task</button>
@@ -286,54 +327,94 @@
       <div id="taskList" class="task-list"></div>
     </article>
 
-    <article class="panel col-4">
-      <h2>Do This Now</h2>
-      <p id="smartMessage" class="helper-text">Analyzing your queue...</p>
-      <p id="smartTaskMeta" class="mini-text" style="margin-top: 4px; font-weight: 600;"></p>
-      <div class="row" style="margin-top:10px;">
-        <button id="useSmartTaskBtn" class="button" type="button">Focus Smart Task</button>
-      </div>
-    </article>
+    <!-- Right Sidebar for Workflow -->
+    <div class="col-4 stack">
+      <article class="panel">
+        <h2>Focus Center</h2>
+        <div class="timer-container">
+          <div id="timerDisplay" class="timer">25:00</div>
+          <div class="progress-track">
+            <div id="timerProgress" class="progress-fill"></div>
+          </div>
+          <p id="timerHint" class="mini-text" style="margin-top: 10px;">Ready to begin.</p>
+          
+          <div class="row" style="justify-content: center; margin-top: 15px;">
+            <label class="mini-text" style="display:flex; align-items:center; gap: 8px;">
+              Duration: <input id="timerInput" class="number-field" style="width: 80px; padding: 4px 8px; text-align: center;" type="number" min="1" max="180" value="25" />
+            </label>
+          </div>
 
-    <article class="panel col-4">
-      <h2>Focus Center</h2>
-      <div id="timerDisplay" class="timer">25:00</div>
-      <label class="mini-text" for="timerInput">Session Minutes</label>
-      <input id="timerInput" class="number-field" type="number" min="1" max="180" value="25" />
-      <div class="progress-track">
-        <div id="timerProgress" class="progress-fill"></div>
-      </div>
-      <p id="timerHint" class="mini-text">Ready to begin.</p>
-      <div class="row" style="margin-top:8px;">
-        <button id="startPauseBtn" class="button primary" type="button">Start</button>
-        <button id="resetBtn" class="button" type="button">Reset</button>
-        <button id="finishBtn" class="button success" type="button">Finished Work!</button>
-      </div>
-    </article>
+          <div class="timer-controls">
+            <button id="startPauseBtn" class="button primary" type="button" style="flex: 1;">Start Focus</button>
+            <button id="resetBtn" class="button" type="button">Reset</button>
+          </div>
+          <button id="finishBtn" class="button success" type="button" style="width: 100%; margin-top: 10px;">Log Complete Session</button>
+        </div>
+      </article>
 
-    <article class="panel col-4">
-      <h2>Achievements</h2>
-      <div id="achievementGrid" class="achievement-grid"></div>
-      <p id="achievementSummary" class="alert"></p>
-    </article>
+      <article class="panel" style="background: #f8fafc; border-color: var(--gold);">
+        <h2>Smart Suggestion</h2>
+        <p id="smartMessage" class="helper-text" style="font-size: 0.85rem;">Analyzing your queue...</p>
+        <p id="smartTaskMeta" class="mini-text" style="margin-top: 8px; font-weight: 700; color: var(--text-dark); font-size: 1rem;"></p>
+        <button id="useSmartTaskBtn" class="button primary" type="button" style="width: 100%; margin-top: 15px;">Select This Task</button>
+      </article>
+    </div>
+  </section>
 
+  <section class="grid">
+    <article class="panel col-12">
+      <div class="calendar-top">
+        <h2>Calendar Outline</h2>
+        <div class="row">
+          <strong id="calendarLabel" style="margin-right: 15px;"></strong>
+          <button id="calendarPrevBtn" class="button" type="button">&larr;</button>
+          <button id="calendarTodayBtn" class="button" type="button">Today</button>
+          <button id="calendarNextBtn" class="button" type="button">&rarr;</button>
+          <button id="openCalendarWindowBtn" class="button primary" type="button">Open Detailed View</button>
+        </div>
+      </div>
+      <div id="calendarGrid" class="calendar-grid"></div>
+    </article>
+  </section>
+
+  <!-- Settings & Integrations Area (Visually separated) -->
+  <h2 class="section-title">Settings & Integrations 
+    <span style="font-size: 0.85rem; font-weight: 500; color: var(--muted); border: none;">Configure your dashboard.</span>
+  </h2>
+  
+  <section class="settings-grid">
     <article class="panel col-4">
       <h2>Canvas Sync</h2>
       <div class="canvas-form">
         <input id="canvasDomain" class="field" type="text" placeholder="school.instructure.com" />
         <input id="canvasToken" class="password-field" type="password" placeholder="Canvas API token" />
-        <div class="row" style="align-items: center; margin-bottom: 4px;">
+        <div class="row" style="align-items: center; margin-top: 4px;">
           <input type="checkbox" id="canvasUseProxy" checked />
-          <label for="canvasUseProxy" class="mini-text" title="Required to bypass browser blocks, but routes requests through web proxies">Use multi-web proxy bypass (Fixes network blocks)</label>
+          <label for="canvasUseProxy" class="mini-text">Use private proxy bypass</label>
         </div>
-        <button id="canvasSyncBtn" class="button primary" type="button">Sync Canvas Todo</button>
-        <button id="canvasTokenGuideBtn" class="button help-link-btn" type="button">How To Get Canvas Token</button>
+        <button id="canvasSyncBtn" class="button primary" type="button" style="margin-top: 8px;">Sync Canvas Todo</button>
+        <button id="canvasTokenGuideBtn" class="button help-link-btn" type="button">How to find token</button>
       </div>
-      <p id="canvasMessage" class="alert">Enter domain + token to securely import Canvas tasks.</p>
+      <p id="canvasMessage" class="alert">Enter domain + token to securely import assignments.</p>
     </article>
 
     <article class="panel col-4">
-      <h2>Schedule Set</h2>
+      <h2>TeamSnap Sync</h2>
+      <div class="canvas-form">
+        <input id="teamSnapTeamId" class="field" type="text" placeholder="TeamSnap Team ID" />
+        <input id="teamSnapToken" class="password-field" type="password" placeholder="TeamSnap API token" />
+        <div class="row" style="align-items: center; margin-top: 4px;">
+          <input type="checkbox" id="teamSnapUseProxy" checked />
+          <label for="teamSnapUseProxy" class="mini-text">Use private proxy bypass</label>
+        </div>
+        <button id="teamSnapSyncBtn" class="button primary" type="button" style="margin-top: 8px;">Sync TeamSnap</button>
+      </div>
+      <p id="teamSnapMessage" class="alert">Imports practices/games as tasks when available.</p>
+    </article>
+
+    <article class="panel col-4">
+      <h2>Availability Schedule</h2>
+      <p class="mini-text" style="margin-bottom: 12px;">Define when you are free to work each day.</p>
       <form id="scheduleSetForm" class="schedule-form">
         <select id="scheduleDay" class="field">
           <option value="1">Monday</option>
@@ -346,111 +427,94 @@
         </select>
         <input id="scheduleStart" class="field" type="time" value="16:00" required />
         <input id="scheduleEnd" class="field" type="time" value="18:00" required />
-        <button class="button primary" type="submit">Set</button>
+        <button class="button primary" type="submit">Add</button>
       </form>
-      <div class="row" style="margin-bottom:8px;">
-        <button id="weekdayCopyBtn" class="button" type="button">Copy To Mon-Fri</button>
-      </div>
+      <button id="weekdayCopyBtn" class="button" type="button" style="width: 100%; margin-bottom: 12px;">Copy Time To Mon-Fri</button>
       <div id="scheduleSetList" class="schedule-list"></div>
-      <p id="scheduleSetMessage" class="mini-text">Define when you are free to work each day.</p>
     </article>
 
     <article class="panel col-4">
-      <h2>Course Section</h2>
-      <form id="courseForm" class="tight-form">
-        <input id="courseName" class="field" type="text" placeholder="Course name" required />
+      <h2>Course Management</h2>
+      <form id="courseForm" class="tight-form" style="margin-bottom: 12px;">
+        <input id="courseName" class="field" type="text" placeholder="Course Name" required style="grid-column: span 2;" />
         <input id="courseCode" class="field" type="text" placeholder="Code" />
-        <input id="courseColor" class="field" type="color" value="#2563eb" />
-        <button class="button primary" type="submit">Add</button>
+        <input id="courseColor" class="field" type="color" value="#2563eb" style="padding: 2px;" />
+        <button class="button primary" type="submit" style="grid-column: span 4;">Add Course</button>
       </form>
       <div id="courseList" class="stack"></div>
     </article>
 
     <article class="panel col-4">
-      <h2>Grades Section</h2>
-      <form id="gradeForm" class="tight-form">
-        <select id="gradeCourse" class="field"></select>
-        <input id="gradeName" class="field" type="text" placeholder="Assignment" required />
-        <input id="gradeScore" class="number-field" type="number" min="0" max="100" placeholder="Score" required />
+      <h2>Grade Tracker</h2>
+      <form id="gradeForm" class="tight-form" style="margin-bottom: 12px;">
+        <select id="gradeCourse" class="field" style="grid-column: span 4;"></select>
+        <input id="gradeName" class="field" type="text" placeholder="Assignment Name" required style="grid-column: span 2;" />
+        <input id="gradeScore" class="number-field" type="number" min="0" max="100" placeholder="Score %" required />
         <button class="button primary" type="submit">Save</button>
       </form>
       <div id="gradeList" class="stack"></div>
     </article>
 
     <article class="panel col-4">
-      <h2>TeamSnap Sync</h2>
-      <div class="canvas-form">
-        <input id="teamSnapTeamId" class="field" type="text" placeholder="TeamSnap Team ID" />
-        <input id="teamSnapToken" class="password-field" type="password" placeholder="TeamSnap API token" />
-        <div class="row" style="align-items: center; margin-bottom: 4px;">
-          <input type="checkbox" id="teamSnapUseProxy" checked />
-          <label for="teamSnapUseProxy" class="mini-text">Use web proxy (fixes connection issues)</label>
-        </div>
-        <button id="teamSnapSyncBtn" class="button primary" type="button">Sync TeamSnap</button>
-      </div>
-      <p id="teamSnapMessage" class="alert">Imports practices/games as tasks when available.</p>
-    </article>
-
-    <article class="panel col-8">
-      <h2>Skins & Feature Unlocks</h2>
+      <h2>Dashboard Skins</h2>
       <div class="skin-select">
         <select id="skinSelect" class="field"></select>
-        <button id="applySkinBtn" class="button primary" type="button">Apply Skin</button>
-        <button id="uploadSkinBtn" class="button" type="button">Upload Custom</button>
+        <button id="applySkinBtn" class="button primary" type="button">Apply</button>
+        <button id="uploadSkinBtn" class="button" type="button">Custom Bg</button>
       </div>
       <input id="uploadSkinInput" type="file" accept="image/png, image/jpeg, image/webp" style="display:none;" />
-      <div class="row" style="margin-bottom:8px;">
-        <label class="mini-text"><input id="confettiEnabled" type="checkbox" checked /> Confetti enabled</label>
+      <div class="row" style="margin: 12px 0;">
+        <label class="mini-text" style="display:flex; align-items:center; gap: 8px;">
+          <input id="confettiEnabled" type="checkbox" checked /> Enable Confetti Animations
+        </label>
       </div>
       <div id="skinList" class="stack"></div>
     </article>
-
-    <article class="panel col-8">
-      <h2>Calendar View</h2>
-      <div class="calendar-top">
-        <div class="row">
-          <button id="calendarPrevBtn" class="button" type="button">Previous</button>
-          <button id="calendarTodayBtn" class="button" type="button">Today</button>
-          <button id="calendarNextBtn" class="button" type="button">Next</button>
-        </div>
-        <strong id="calendarLabel"></strong>
-      </div>
-      <div id="calendarGrid" class="calendar-grid"></div>
+    
+    <article class="panel col-12">
+      <h2>Achievements Unlocked</h2>
+      <div id="achievementGrid" class="achievement-grid"></div>
+      <p id="achievementSummary" class="alert" style="text-align: center;"></p>
     </article>
   </section>
+
+  <!-- Copyright Footer -->
+  <footer class="site-footer">
+    <p>&copy; <span id="currentYear"></span> EPStudy. All rights reserved.</p>
+  </footer>
 </div>
 
+<!-- Modals -->
 <div id="tutorialModal" class="modal-backdrop" aria-hidden="true">
   <div class="modal-card">
-    <h2 style="margin-top:0;">Welcome To EPStudy (Secure Edition)</h2>
+    <h2>Welcome To EPStudy Pro</h2>
     <ol>
-      <li>Set free-time windows in <b>Schedule Set</b> so Smart Task can fit work to your day.</li>
+      <li>Set free-time windows in <b>Availability Schedule</b> so Smart Task can fit work to your day.</li>
       <li>Create <b>Courses</b> and colors, then add assignments with specific time lengths.</li>
-      <li>Use the <b>Smart Task</b> and <b>Focus Center</b> to auto-pick what to do next based on your availability.</li>
-      <li>Sync your Canvas using your API token (use the web proxy option if your browser blocks it).</li>
-      <li>Upload your own images safely for custom <b>Skins</b> without crashing the app.</li>
+      <li>Use the <b>Smart Suggestion</b> and <b>Focus Center</b> to auto-pick what to do next based on your schedule.</li>
+      <li>Sync your Canvas using your API token (Powered by your private Cloudflare worker).</li>
+      <li>Upload your own images safely for custom <b>Skins</b> to personalize your workspace.</li>
     </ol>
-    <div class="row" style="margin-top:1rem;">
-      <button id="tutorialCloseBtn" class="button primary" type="button">Got It</button>
+    <div class="row" style="margin-top:2rem;">
+      <button id="tutorialCloseBtn" class="button primary" type="button">Get Started</button>
     </div>
   </div>
 </div>
 
 <div id="canvasTokenModal" class="modal-backdrop" aria-hidden="true">
   <div class="modal-card token-guide">
-    <h2 style="margin-top:0;">Canvas Token Setup Guide</h2>
-    <p class="guide-note">Follow these exact steps in Canvas, then paste the token into Canvas Sync. Keep this token private and never share it.</p>
+    <h2>Canvas Token Setup Guide</h2>
+    <p class="helper-text" style="margin-bottom: 1.5rem;">Follow these exact steps in Canvas, then paste the token into Canvas Sync. Keep this token private and never share it.</p>
 
-    <h3>Step-by-step</h3>
     <ol>
       <li>In Canvas, click your profile avatar/initials in the left nav.</li>
       <li>Click Settings from the account menu.</li>
-      <li>Scroll to Approved Integrations and click + New Access Token.</li>
+      <li>Scroll to Approved Integrations and click <b>+ New Access Token</b>.</li>
       <li>Set Purpose to EPStudy and choose an expiration date/time.</li>
-      <li>Click Generate Token.</li>
+      <li>Click <b>Generate Token</b>.</li>
       <li>Copy the token immediately from Access Token Details.</li>
-      <li>In EPStudy, enter domain as eastsideprep.instructure.com and paste token into Canvas API token.</li>
-      <li>Keep Use multi-web proxy bypass checked, then click Sync Canvas Todo.</li>
+      <li>In EPStudy, enter domain as your school's URL and paste token into the field.</li>
+      <li>Keep Use private proxy bypass checked, then click Sync.</li>
     </ol>
 
     <h3 style="margin-top:16px;">Screenshot Walkthrough</h3>
@@ -481,16 +545,19 @@
       </div>
     </div>
 
-    <div class="row" style="margin-top:1rem;">
-      <button id="canvasTokenCloseBtn" class="button primary" type="button">Close</button>
+    <div class="row" style="margin-top:2rem;">
+      <button id="canvasTokenCloseBtn" class="button primary" type="button">Close Guide</button>
     </div>
   </div>
 </div>
 
 <div id="canvasModal" class="modal-backdrop" aria-hidden="true">
-  <div class="modal-card" style="width: 1100px; max-height: 90vh; display: flex; flex-direction: column;">
-    <h2 id="canvasModalTitle" style="margin-top:0;">Canvas Style Calendar</h2>
-    <div style="overflow-y: auto; flex: 1; margin-bottom: 1rem;">
+  <div class="modal-card" style="width: 1100px; max-height: 90vh; display: flex; flex-direction: column; padding: 0;">
+    <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+      <h2 id="canvasModalTitle" style="margin: 0;">Canvas Style Calendar</h2>
+      <button id="canvasModalCloseBtn" class="icon-button" style="border: none; background: transparent; font-size: 1.2rem; cursor: pointer;">✕</button>
+    </div>
+    <div style="overflow-y: auto; flex: 1; padding: 2rem;">
       <table class="canvas-table">
         <thead>
           <tr><th>Due Date</th><th>Course</th><th>Assignment</th></tr>
@@ -498,15 +565,12 @@
         <tbody id="canvasModalBody"></tbody>
       </table>
     </div>
-    <div class="row">
-      <button id="canvasModalCloseBtn" class="button primary" type="button">Close Calendar</button>
-    </div>
   </div>
 </div>
 
 <script>
   // STATE MANAGEMENT
-  const STORAGE_KEY = "epstudy_secure_v5";
+  const STORAGE_KEY = "epstudy_secure_pro_v6";
 
   const SCHOOL_SCHEDULE = [
     { id: "P1", label: "Period 1", start: "08:30", end: "09:40" },
@@ -535,15 +599,15 @@
   ];
 
   const SKIN_LIBRARY = [
-    { id: "default", label: "Default", detail: "Classic EPStudy look", unlock: () => true, className: "" },
-    { id: "confetti", label: "Confetti Mode", detail: "Burst effects tuned up", unlock: (s) => s.sessionsCompleted >= 1, className: "" },
-    { id: "coding", label: "Coding Sector", detail: "Code-blue workspace", unlock: (s) => s.focusMinutes >= 90, className: "skin-coding" },
-    { id: "hack", label: "Hack Mode", detail: "Green terminal glow", unlock: (s) => s.sessionsCompleted >= 8, className: "skin-hack" },
-    { id: "rainbow", label: "Rainbow Mode", detail: "Spectrum topbar", unlock: (s) => s.streakDays >= 2, className: "skin-rainbow" },
-    { id: "sparkle", label: "Sparkle Mode", detail: "Starry background", unlock: (s) => s.focusMinutes >= 150, className: "skin-sparkle" },
-    { id: "beach", label: "Beach Mode", detail: "Warm coast palette", unlock: (s) => s.tasks.filter((t) => t.completed).length >= 6, className: "skin-beach" },
-    { id: "midnight", label: "Midnight Mode", detail: "Night dashboard", unlock: (s) => s.canvasImports >= 1, className: "skin-midnight" },
-    { id: "upload", label: "Upload Mode", detail: "Theme from your image", unlock: (s) => s.sessionsCompleted >= 3, className: "skin-upload" }
+    { id: "default", label: "Professional", detail: "Default sleek look", unlock: () => true, className: "" },
+    { id: "confetti", label: "Confetti Burst", detail: "Extra animations", unlock: (s) => s.sessionsCompleted >= 1, className: "" },
+    { id: "coding", label: "Dark Developer", detail: "Code-blue workspace", unlock: (s) => s.focusMinutes >= 90, className: "skin-coding" },
+    { id: "hack", label: "Terminal Matrix", detail: "Green terminal glow", unlock: (s) => s.sessionsCompleted >= 8, className: "skin-hack" },
+    { id: "rainbow", label: "Spectrum", detail: "Rainbow header", unlock: (s) => s.streakDays >= 2, className: "skin-rainbow" },
+    { id: "sparkle", label: "Starlight", detail: "Starry background", unlock: (s) => s.focusMinutes >= 150, className: "skin-sparkle" },
+    { id: "beach", label: "Coastal Warmth", detail: "Warm beach palette", unlock: (s) => s.tasks.filter((t) => t.completed).length >= 6, className: "skin-beach" },
+    { id: "midnight", label: "Deep Midnight", detail: "Dark mode dashboard", unlock: (s) => s.canvasImports >= 1, className: "skin-midnight" },
+    { id: "upload", label: "Custom Upload", detail: "Your image background", unlock: (s) => s.sessionsCompleted >= 3, className: "skin-upload" }
   ];
 
   const MOCK_CANVAS_ITEMS = [
@@ -554,6 +618,17 @@
   const MOCK_TEAMSNAP_ITEMS = [
     { title: "MOCK: Soccer Practice", start_at: new Date(Date.now() + 36 * 3600000).toISOString(), minutes: 90 },
     { title: "MOCK: Game Review", start_at: new Date(Date.now() + 72 * 3600000).toISOString(), minutes: 45 }
+  ];
+
+  const MOTIVATIONAL_QUOTES = [
+    { text: "Success is the sum of small efforts, repeated day in and day out.", author: "Robert Collier" },
+    { text: "The secret to getting ahead is getting started.", author: "Mark Twain" },
+    { text: "Focus on the step in front of you, not the whole staircase.", author: "Anonymous" },
+    { text: "Discipline is choosing between what you want now and what you want most.", author: "Abraham Lincoln" },
+    { text: "Your potential is endless. Go do what you were created to do.", author: "Anonymous" },
+    { text: "Don't let what you cannot do interfere with what you can do.", author: "John Wooden" },
+    { text: "It’s not about having time. It’s about making time.", author: "Unknown" },
+    { text: "Soar higher today than you did yesterday.", author: "EPS Spirit" }
   ];
 
   const state = loadState();
@@ -700,10 +775,10 @@
 
   function pickSmartTask(ref = new Date()) {
     const classStatus = getScheduleStatus(ref);
-    if (classStatus.inClass) return { message: `You are currently in ${classStatus.currentBlock.label}. Focus class work for now.`, task: null };
+    if (classStatus.inClass) return { message: `You are currently in ${classStatus.currentBlock.label}. Focus on class.`, task: null };
     
     const pending = openTasksSorted(ref);
-    if (pending.length === 0) return { message: "No pending tasks right now. Add one to get started.", task: null };
+    if (pending.length === 0) return { message: "Queue empty. Add a task to get started.", task: null };
 
     const avail = getAvailabilityStatus(ref);
     const availMins = avail.availableMinutes;
@@ -721,10 +796,10 @@
     scored.sort((a, b) => b.score - a.score);
     const chosen = scored[0].task;
 
-    let msg = "Smart priority uses due date plus time length.";
-    if (avail.isFreeNow) msg = `Free now for ${availMins} min, so matching task length is boosted.`;
-    else if (avail.nextWindow) msg = `Next free block is ${toTimeLabel(avail.nextWindow.start)}-${toTimeLabel(avail.nextWindow.end)}.`;
-    if (isOverdue(chosen, ref)) msg = `Overdue is still top priority. ${msg}`;
+    let msg = "Priority based on due date and duration.";
+    if (avail.isFreeNow) msg = `Free for ${availMins} min. Matched task to block.`;
+    else if (avail.nextWindow) msg = `Next block: ${toTimeLabel(avail.nextWindow.start)}-${toTimeLabel(avail.nextWindow.end)}.`;
+    if (isOverdue(chosen, ref)) msg = `Overdue task takes top priority. ${msg}`;
 
     return { message: msg, task: chosen };
   }
@@ -735,59 +810,70 @@
   function renderHeaderStats() {
     document.getElementById("heroSessions").textContent = String(state.sessionsCompleted);
     document.getElementById("heroMinutes").textContent = String(state.focusMinutes);
-    document.getElementById("heroStreak").textContent = `${state.streakDays} day${state.streakDays === 1 ? "" : "s"}`;
-    document.getElementById("clearDoneBtn").textContent = `Clear Completed (${state.tasks.filter(t => t.completed).length})`;
+    document.getElementById("heroStreak").textContent = `${state.streakDays}`;
+    document.getElementById("clearDoneBtn").textContent = `Clear Done (${state.tasks.filter(t => t.completed).length})`;
   }
 
   function renderScheduleCard() {
     const status = getScheduleStatus(), avail = getAvailabilityStatus();
-    const chip = document.getElementById("scheduleChip"), prim = document.getElementById("schedulePrimary"), sec = document.getElementById("scheduleSecondary"), prog = document.getElementById("scheduleProgress");
+    const chip = document.getElementById("scheduleChip"), prim = document.getElementById("schedulePrimary"), prog = document.getElementById("scheduleProgress"), timeline = document.getElementById("scheduleTimeline");
     
     if (status.inClass) {
       chip.className = "status-chip class"; chip.textContent = "In Class";
-      prim.textContent = `${status.currentBlock.label} ends in ${status.minutesLeft} min`;
-      sec.textContent = `Current time: ${new Date().toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'})}`;
+      prim.textContent = `${status.currentBlock.label} ends in ${status.minutesLeft}m`;
       prog.style.width = `${status.progress}%`;
-      return;
-    }
-    chip.className = "status-chip free"; chip.textContent = "Free Block";
-    if (avail.isFreeNow && avail.currentWindow) {
-      prim.textContent = `You are in your study window: ${toTimeLabel(avail.currentWindow.start)}-${toTimeLabel(avail.currentWindow.end)}.`;
-      sec.textContent = `${avail.availableMinutes} min left.`;
-    } else if (avail.nextWindow) {
-      prim.textContent = `Next planned free block: ${toTimeLabel(avail.nextWindow.start)}-${toTimeLabel(avail.nextWindow.end)}.`;
-      sec.textContent = "You can change this in Schedule Set.";
-    } else if (status.nextBlock) {
-      prim.textContent = `${status.freeMinutes} min until ${status.nextBlock.label}`;
-      sec.textContent = `Next class starts at ${status.nextBlock.start}`;
     } else {
-      prim.textContent = "School schedule complete.";
-      sec.textContent = "No free window set today.";
+      chip.className = "status-chip free"; chip.textContent = "Free Block";
+      if (avail.isFreeNow && avail.currentWindow) {
+        prim.textContent = `Study Window: ${toTimeLabel(avail.currentWindow.start)}-${toTimeLabel(avail.currentWindow.end)}`;
+      } else if (avail.nextWindow) {
+        prim.textContent = `Next block: ${toTimeLabel(avail.nextWindow.start)}-${toTimeLabel(avail.nextWindow.end)}`;
+      } else if (status.nextBlock) {
+        prim.textContent = `${status.freeMinutes}m until ${status.nextBlock.label}`;
+      } else {
+        prim.textContent = "Schedule complete.";
+      }
+      prog.style.width = "100%";
     }
-    prog.style.width = "100%";
+
+    // Render Enhanced Timeline
+    const now = nowMinutes(new Date());
+    timeline.innerHTML = SCHOOL_SCHEDULE.map(block => {
+      const start = toMinutes(block.start);
+      const end = toMinutes(block.end);
+      let stateClass = "";
+      
+      if (now >= end) stateClass = "past";
+      else if (now >= start && now < end) stateClass = "active";
+      
+      return `<div class="timeline-item ${stateClass}">
+        <span class="timeline-time">${toTimeLabel(block.start)}</span>
+        <span class="timeline-name">${block.label}</span>
+      </div>`;
+    }).join("");
   }
 
   function renderTaskList() {
     const container = document.getElementById("taskList");
-    if (!state.tasks.length) return container.innerHTML = "<p class='empty'>No tasks yet. Add your first task above.</p>";
+    if (!state.tasks.length) return container.innerHTML = "<p class='empty'>No tasks found. Add a task to build your queue.</p>";
     
     const sorted = [...state.tasks].sort((a, b) => a.completed !== b.completed ? (a.completed ? 1 : -1) : new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     container.innerHTML = sorted.map(t => {
       const sel = t.id === state.selectedTaskId, od = !t.completed && isOverdue(t);
       const c = getCourseById(t.courseId);
-      const cPill = c ? `<span class='pill' style='background:${c.color}22;color:${c.color};'>${escapeHtml(c.code || c.name)}</span>` : "";
+      const cPill = c ? `<span class='pill' style='background:${c.color}15;color:${c.color};border-color:${c.color}40'>${escapeHtml(c.code || c.name)}</span>` : "";
       const sPill = t.source === "canvas" ? "<span class='pill canvas'>Canvas</span>" : (t.source === "teamsnap" ? "<span class='pill teamsnap'>TeamSnap</span>" : "");
       
       return `<div class="task-item ${sel ? "selected" : ""} ${t.completed ? "completed" : ""}">
         <div class="task-main">
           <div class="task-title">${escapeHtml(t.title)}</div>
-          <div class="task-meta"><span>${t.estimatedMinutes} min</span><span>${normalizeDueDate(t.dueDate)}</span>${cPill}${od ? "<span class='pill overdue'>Overdue</span>" : ""}${sPill}</div>
+          <div class="task-meta"><span>${t.estimatedMinutes}m</span><span>&bull;</span><span>${normalizeDueDate(t.dueDate)}</span>${cPill}${od ? "<span class='pill overdue'>Overdue</span>" : ""}${sPill}</div>
         </div>
         <div class="task-actions">
-          <button class="icon-button" data-action="select" data-id="${t.id}" title="Select">S</button>
-          <button class="icon-button" data-action="edit" data-id="${t.id}" title="Edit">E</button>
-          <button class="icon-button" data-action="toggle" data-id="${t.id}" title="Toggle">${t.completed ? "U" : "D"}</button>
-          <button class="icon-button" data-action="delete" data-id="${t.id}" title="Delete">X</button>
+          <button class="icon-button" data-action="select" data-id="${t.id}" title="Select Task">🎯</button>
+          <button class="icon-button" data-action="edit" data-id="${t.id}" title="Edit Time">⏱️</button>
+          <button class="icon-button" data-action="toggle" data-id="${t.id}" title="Toggle Done">${t.completed ? "↺" : "✓"}</button>
+          <button class="icon-button" style="color:var(--danger)" data-action="delete" data-id="${t.id}" title="Delete">✕</button>
         </div>
       </div>`;
     }).join("");
@@ -797,7 +883,7 @@
     const smart = pickSmartTask(), msg = document.getElementById("smartMessage"), meta = document.getElementById("smartTaskMeta");
     msg.textContent = smart.message;
     if (!smart.task) { meta.textContent = ""; return maybeAutofillTimer(null); }
-    meta.textContent = `${smart.task.title} | ${smart.task.estimatedMinutes} min | due ${normalizeDueDate(smart.task.dueDate)}`;
+    meta.textContent = `${smart.task.title} (${smart.task.estimatedMinutes}m)`;
     maybeAutofillTimer(state.tasks.find(t => t.id === state.selectedTaskId) || smart.task);
   }
 
@@ -826,7 +912,7 @@
   function toggleTimer() {
     const btn = document.getElementById("startPauseBtn");
     if (timerInterval) {
-      clearInterval(timerInterval); timerInterval = null; btn.textContent = "Resume";
+      clearInterval(timerInterval); timerInterval = null; btn.textContent = "Resume Focus";
       document.getElementById("timerHint").textContent = "Timer paused.";
     } else {
       if (timerRemainingSeconds <= 0) timerRemainingSeconds = timerDurationSeconds;
@@ -834,7 +920,7 @@
         timerRemainingSeconds--; updateTimerUi();
         if (timerRemainingSeconds <= 0) { timerRemainingSeconds = 0; updateTimerUi(); completeSession(); }
       }, 1000);
-      btn.textContent = "Pause"; document.getElementById("timerHint").textContent = "Focus session running.";
+      btn.textContent = "Pause Timer"; document.getElementById("timerHint").textContent = "Focus session active.";
     }
   }
 
@@ -859,9 +945,9 @@
     if (doneTask) doneTask.completed = true;
 
     emitConfetti(100);
-    document.getElementById("timerHint").textContent = doneTask ? `Done! Marked "${doneTask.title}" complete.` : "Session done. Great progress.";
+    document.getElementById("timerHint").textContent = doneTask ? `Done! "${doneTask.title}" marked complete.` : "Session logged. Great focus!";
     setTimerFromMinutes(state.timerMinutes, true);
-    document.getElementById("startPauseBtn").textContent = "Start";
+    document.getElementById("startPauseBtn").textContent = "Start Focus";
     saveState(); renderAll();
   }
 
@@ -884,11 +970,11 @@
     for (let d = 1; d <= days; d++) {
       const k = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
       const tks = map[k] || [];
-      const thtml = tks.slice(0, 2).map(t => {
+      const thtml = tks.slice(0, 3).map(t => {
         const c = getCourseById(t.courseId);
-        return `<div class="calendar-task ${t.source==="canvas"?"canvas":""}" ${c ? `style="background:${c.color};"` : ""}>${escapeHtml(t.title)}</div>`;
+        return `<div class="calendar-task ${t.source==="canvas"?"canvas":""}" ${c ? `style="background:${c.color}; color:#fff;"` : ""}>${escapeHtml(t.title)}</div>`;
       }).join("");
-      html += `<div class="day-cell ${k === todayK ? "today" : ""}"><span class="day-number">${d}</span>${thtml}${tks.length > 2 ? `<div class="mini-text">+${tks.length - 2} more</div>` : ""}</div>`;
+      html += `<div class="day-cell ${k === todayK ? "today" : ""}"><span class="day-number">${d}</span>${thtml}${tks.length > 3 ? `<div class="mini-text" style="font-size:0.65rem;text-align:center">+${tks.length - 3} more</div>` : ""}</div>`;
     }
     
     const tail = (offset + days) % 7 === 0 ? 0 : 7 - ((offset + days) % 7);
@@ -902,47 +988,31 @@
     
     tbody.innerHTML = openTasks.length ? openTasks.map(t => {
       const c = getCourseById(t.courseId);
-      const cName = c ? `${c.name}${c.code ? ` (${c.code})` : ""}` : "Course";
-      const color = c ? c.color : "#003d7a";
-      return `<tr><td>${normalizeDueDate(t.dueDate)}</td><td><span class="course-dot" style="background:${color}; border-color:transparent;"></span>${escapeHtml(cName)}</td><td>${escapeHtml(t.title)}</td></tr>`;
-    }).join("") : `<tr><td colspan="3" style="text-align:center; color:#64748b;">No active assignments.</td></tr>`;
+      const cName = c ? `${c.name}${c.code ? ` (${c.code})` : ""}` : "General";
+      const color = c ? c.color : "#0f172a";
+      return `<tr><td>${normalizeDueDate(t.dueDate)}</td><td><span class="course-dot" style="background:${color};"></span><span style="font-weight:600;color:var(--navy-primary)">${escapeHtml(cName)}</span></td><td>${escapeHtml(t.title)}</td></tr>`;
+    }).join("") : `<tr><td colspan="3" style="text-align:center; color:#64748b; padding: 2rem;">No active assignments. Enjoy your free time!</td></tr>`;
     
-    document.getElementById("canvasModalTitle").textContent = `Canvas Style Calendar - ${new Date(state.calendarYear, state.calendarMonth, 1).toLocaleDateString([], {month: "long", year: "numeric"})}`;
+    document.getElementById("canvasModalTitle").textContent = `Detailed Agenda - ${new Date(state.calendarYear, state.calendarMonth, 1).toLocaleDateString([], {month: "long", year: "numeric"})}`;
     document.getElementById("canvasModal").classList.add("open");
   }
 
   // --- SECURE MULTI-PROXY SYNC API --- //
-  
   function parseLinkHeader(linkHeader) {
     if (!linkHeader) return null;
-    const parts = String(linkHeader).split(",");
-    for (const part of parts) {
-      const section = part.trim();
-      if (section.includes('rel="next"')) {
-        const match = section.match(/<([^>]+)>/);
+    for (const part of String(linkHeader).split(",")) {
+      if (part.trim().includes('rel="next"')) {
+        const match = part.trim().match(/<([^>]+)>/);
         if (match && match[1]) return match[1];
       }
     }
     return null;
   }
 
-  function withAccessToken(url, token) {
-    try {
-      const u = new URL(url);
-      if (!u.searchParams.get("access_token")) u.searchParams.set("access_token", token);
-      return u.toString();
-    } catch {
-      const sep = String(url).includes("?") ? "&" : "?";
-      return `${url}${sep}access_token=${encodeURIComponent(token)}`;
-    }
-  }
-
   function colorFromString(input) {
-    const text = String(input || "canvas");
     let hash = 0;
-    for (let i = 0; i < text.length; i += 1) hash = (hash * 31 + text.charCodeAt(i)) | 0;
-    const hue = Math.abs(hash) % 360;
-    return `hsl(${hue}, 70%, 48%)`;
+    for (let i = 0; i < input.length; i++) hash = (hash * 31 + input.charCodeAt(i)) | 0;
+    return `hsl(${Math.abs(hash) % 360}, 65%, 45%)`;
   }
 
   function ensureCanvasCourse(canvasCourse, courseIdRaw) {
@@ -950,11 +1020,7 @@
     const canvasName = String(canvasCourse?.name || canvasCourse?.course_code || `Canvas ${cid}`).trim();
     const canvasCode = String(canvasCourse?.course_code || "").trim();
 
-    const existing = state.courses.find((c) =>
-      c.id === `canvas-course-${cid}` ||
-      (canvasCode && String(c.code || "").toLowerCase() === canvasCode.toLowerCase()) ||
-      String(c.name || "").toLowerCase() === canvasName.toLowerCase()
-    );
+    const existing = state.courses.find((c) => c.id === `canvas-course-${cid}` || (canvasCode && String(c.code||"").toLowerCase() === canvasCode.toLowerCase()) || String(c.name||"").toLowerCase() === canvasName.toLowerCase());
     if (existing) return existing.id;
 
     const newCourse = { id: `canvas-course-${cid}`, name: canvasName, code: canvasCode || `C${cid}`, color: colorFromString(`${canvasName}-${cid}`) };
@@ -962,85 +1028,62 @@
     return newCourse.id;
   }
 
+  // PRIVATE CLOUDFLARE WORKER 
   async function fetchCanvasPages(initialUrl, token, useProxy) {
     const rows = [];
     let nextUrl = initialUrl;
-
-    // Private Cloudflare Worker proxy
-    const myProxy = "https://canvas-token.aarinikmehta.workers.dev";
+    const myProxy = "https://canvas-token.aarinikmehta.workers.dev"; // Private Worker
 
     while (nextUrl) {
-      let res = null;
-
-      const requestUrl = useProxy
-        ? `${myProxy}/?url=${encodeURIComponent(nextUrl)}`
-        : nextUrl;
-
-      const headers = { Authorization: `Bearer ${token}` };
-
-      res = await fetch(requestUrl, { headers });
+      const requestUrl = useProxy ? `${myProxy}/?url=${encodeURIComponent(nextUrl)}` : nextUrl;
+      const res = await fetch(requestUrl, { headers: { Authorization: `Bearer ${token}` } });
+      
       if (!res.ok) {
         if (res.status === 401) throw new Error("Invalid Canvas Token");
-        if (res.status === 404) throw new Error("Invalid Canvas Domain");
+        if (res.status === 404) throw new Error("Invalid Domain");
         throw new Error(`Server Error (${res.status})`);
       }
 
       const json = await res.json();
       if (Array.isArray(json)) rows.push(...json);
-
-      const link = res.headers.get("Link");
-      nextUrl = parseLinkHeader(link);
+      nextUrl = parseLinkHeader(res.headers.get("Link"));
     }
-
     return rows;
   }
 
   function importCanvasAssignments(assignments, canvasCoursesById) {
     const fallbackCourseId = state.courses[0]?.id || "";
-    const windowStart = new Date();
-    windowStart.setMonth(windowStart.getMonth() - 1);
+    const windowStart = new Date(); windowStart.setMonth(windowStart.getMonth() - 1);
     const imported = [];
 
     for (const item of assignments) {
       const dueRaw = item?.due_at || item?.lock_at || item?.unlock_at;
       if (!dueRaw) continue;
-
       const dueDate = new Date(dueRaw);
-      if (Number.isNaN(dueDate.getTime())) continue;
-      if (dueDate.getTime() < windowStart.getTime()) continue;
+      if (Number.isNaN(dueDate.getTime()) || dueDate.getTime() < windowStart.getTime()) continue;
 
       const title = String(item?.name || item?.title || "Canvas Assignment").trim();
       const courseIdRaw = String(item?.course_id || "");
-      const canvasCourse = canvasCoursesById.get(courseIdRaw) || null;
-      const courseId = canvasCourse ? ensureCanvasCourse(canvasCourse, courseIdRaw) : fallbackCourseId;
+      const courseId = canvasCoursesById.get(courseIdRaw) ? ensureCanvasCourse(canvasCoursesById.get(courseIdRaw), courseIdRaw) : fallbackCourseId;
       const estimatedMinutes = Math.max(10, Math.min(180, Number(item?.points_possible) ? Math.round(Number(item.points_possible) * 1.5) : 30));
 
-      imported.push({
-        id: `canvas-${item.course_id || "x"}-${item.id}`,
-        title, estimatedMinutes, dueDate: dueDate.toISOString(), source: "canvas", courseId, completed: false,
-        externalKey: `canvas:${item.course_id || "x"}:${item.id}`
-      });
+      imported.push({ id: `canvas-${item.course_id||"x"}-${item.id}`, title, estimatedMinutes, dueDate: dueDate.toISOString(), source: "canvas", courseId, completed: false, externalKey: `canvas:${item.course_id||"x"}:${item.id}` });
     }
 
     let added = 0, updated = 0;
     const existingByKey = new Map();
+    state.tasks.forEach((t, idx) => existingByKey.set(t.externalKey || `${t.source||"m"}:${t.id}`, { task: t, index: idx }));
 
-    state.tasks.forEach((t, idx) => existingByKey.set(t.externalKey || `${t.source || "manual"}:${t.id}`, { task: t, index: idx }));
-
-    for (const incoming of imported) {
-      const found = existingByKey.get(incoming.externalKey);
-      if (!found) {
-        state.tasks.push(incoming); added++;
-      } else {
-        state.tasks[found.index] = { ...found.task, title: incoming.title, dueDate: incoming.dueDate, estimatedMinutes: incoming.estimatedMinutes, source: "canvas", courseId: incoming.courseId, externalKey: incoming.externalKey, completed: Boolean(found.task.completed) };
-        updated++;
-      }
+    for (const inc of imported) {
+      const found = existingByKey.get(inc.externalKey);
+      if (!found) { state.tasks.push(inc); added++; } 
+      else { state.tasks[found.index] = { ...found.task, title: inc.title, dueDate: inc.dueDate, estimatedMinutes: inc.estimatedMinutes, source: "canvas", courseId: inc.courseId, externalKey: inc.externalKey, completed: Boolean(found.task.completed) }; updated++; }
     }
 
     state.tasks.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     state.canvasImports += added;
     saveState(); renderAll();
-    return { added, updated, importedInWindow: imported.length };
+    return { added, updated };
   }
   
   async function syncCanvas() {
@@ -1050,50 +1093,35 @@
     const msg = document.getElementById("canvasMessage");
     
     if (!domain || !token) return msg.textContent = "Domain and token required.";
-    msg.textContent = "Syncing Canvas assignments... (Trying to bypass firewall)";
+    msg.textContent = "Syncing Canvas assignments via Private Worker...";
 
     const cleanUrl = domain.startsWith("http") ? domain.replace(/\/$/, "") : `https://${domain.replace(/\/$/, "")}`;
 
-    const runSync = async (proxyEnabled) => {
+    try {
       const courseUrl = `${cleanUrl}/api/v1/courses?enrollment_state=active&per_page=100`;
-      const courses = await fetchCanvasPages(courseUrl, token, proxyEnabled);
-
-      // If fetch worked, remove any mock placeholders.
-      state.tasks = state.tasks.filter(t => !String(t.title || "").includes("MOCK:"));
-
+      const courses = await fetchCanvasPages(courseUrl, token, useProxy);
+      
+      state.tasks = state.tasks.filter(t => !String(t.title || "").includes("MOCK:")); // Scrub mocks
+      
       const validCourses = courses.filter(c => c && c.id && !c.access_restricted_by_date);
       const canvasCoursesById = new Map(validCourses.map(c => [String(c.id), c]));
 
       let assignments = [];
       for (const c of validCourses) {
         const assignUrl = `${cleanUrl}/api/v1/courses/${encodeURIComponent(c.id)}/assignments?per_page=100&order_by=due_at`;
-        const rows = await fetchCanvasPages(assignUrl, token, proxyEnabled);
+        const rows = await fetchCanvasPages(assignUrl, token, useProxy);
         assignments = assignments.concat(rows.map(r => ({ ...r, course_id: r.course_id || c.id })));
       }
-      return importCanvasAssignments(assignments.filter(a => !a?.has_submitted_submissions), canvasCoursesById);
-    };
-
-    try {
-      const result = await runSync(useProxy);
-      msg.textContent = `Canvas synced! +${result.added} new, ${result.updated} updated.`;
+      
+      const res = importCanvasAssignments(assignments.filter(a => !a?.has_submitted_submissions), canvasCoursesById);
+      msg.textContent = `Canvas synced! +${res.added} new, ${res.updated} updated.`;
     } catch (err) {
-      if (!useProxy) {
-        // Fallback to Proxy if Direct was unchecked but failed
-        try {
-          document.getElementById("canvasUseProxy").checked = true;
-          const result = await runSync(true);
-          msg.textContent = `Canvas synced via proxy: +${result.added} new, ${result.updated} updated.`;
-          return;
-        } catch (proxyErr) {
-          console.warn("Canvas proxy sync failed.", proxyErr);
-        }
-      } else {
-        console.warn("Canvas proxy sync failed.", err);
-      }
-
-      // If we reach here, absolutely everything failed.
-      processImportedTasks(MOCK_CANVAS_ITEMS.map(i => ({ title: i.title, dueDate: i.due_at, source: "canvas" })));
-      msg.textContent = `Error: ${err.message}. (Loaded mock data instead). Check your Canvas token!`;
+      console.warn("Canvas sync error:", err);
+      // Fallback Demo Mocks
+      const imported = MOCK_CANVAS_ITEMS.map(i => ({ title: i.title, dueDate: i.due_at, source: "canvas", estimatedMinutes: 30, courseId: state.courses[0]?.id }));
+      state.tasks = [...imported, ...state.tasks.filter(t => !t.title.includes("MOCK:"))];
+      saveState(); renderAll();
+      msg.textContent = `Error: ${err.message}. Loaded mock data for demo.`;
     }
   }
 
@@ -1106,59 +1134,30 @@
     if(!id || !tkn) return msg.textContent = "Team ID and token required.";
     msg.textContent = "Syncing TeamSnap via private worker...";
 
-    // YOUR PRIVATE WORKER URL
     const myProxy = "https://canvas-token.aarinikmehta.workers.dev";
     const endpoint = `https://api.teamsnap.com/v3/teams/${encodeURIComponent(id)}/events`;
-    
-    const requestUrl = useProxy 
-      ? `${myProxy}/?url=${encodeURIComponent(endpoint)}` 
-      : endpoint;
+    const requestUrl = useProxy ? `${myProxy}/?url=${encodeURIComponent(endpoint)}` : endpoint;
 
     try {
       const res = await fetch(requestUrl, { headers: { Authorization: `Bearer ${tkn}` } });
       if (!res.ok) throw new Error(`Access Denied (${res.status})`);
-
       const json = await res.json();
-      state.tasks = state.tasks.filter(t => !String(t.title || "").includes("MOCK:"));
-
+      
+      state.tasks = state.tasks.filter(t => !String(t.title || "").includes("MOCK:")); // Scrub mocks
       const items = Array.isArray(json.collection?.items) ? json.collection.items : [];
-      processImportedTasks(items.map(i => ({ 
-        title: `TeamSnap: ${i.title || i.name || 'Event'}`, 
-        dueDate: i.start_at || i.startDate || new Date().toISOString(), 
-        source: "teamsnap" 
-      })));
+      
+      const imported = items.map(i => ({ title: `TeamSnap: ${i.title || i.name || 'Event'}`, dueDate: i.start_at || i.startDate || new Date().toISOString(), source: "teamsnap", estimatedMinutes: 60, courseId: state.courses[0]?.id }));
+      state.tasks = [...imported, ...state.tasks];
+      saveState(); renderAll();
+
       msg.textContent = "Successfully imported TeamSnap items.";
     } catch (err) {
-      msg.textContent = `Sync failed: ${err.message}. Check your token.`;
+      msg.textContent = `Sync failed: ${err.message}. Loaded mock data.`;
+      const imported = MOCK_TEAMSNAP_ITEMS.map(i => ({ title: i.title, dueDate: i.start_at, source: "teamsnap", estimatedMinutes: 60, courseId: state.courses[0]?.id }));
+      state.tasks = [...imported, ...state.tasks.filter(t => !t.title.includes("MOCK:"))];
+      saveState(); renderAll();
     }
   });
-
-  // --- END API CONNECTIONS --- //
-
-  function processImportedTasks(rawList) {
-    const imported = [];
-    rawList.forEach(t => {
-      const match = t.title.match(/(\d+)\s*(m|min|mins|minute|minutes)/i);
-      const mins = match ? Number(match[1]) : 30;
-      
-      const lower = t.title.toLowerCase();
-      const cMatch = state.courses.find(c => lower.includes(c.name.toLowerCase()) || (c.code && lower.includes(c.code.toLowerCase())));
-      const cId = cMatch ? cMatch.id : state.courses[0]?.id;
-
-      if (mins < 60) imported.push({ id: `c-${Date.now()}-${Math.random().toString(16).slice(2)}`, title: t.title, estimatedMinutes: mins, dueDate: t.dueDate, source: t.source, courseId: cId, completed: false });
-      else {
-        const chunks = Math.ceil(mins / 25);
-        for(let i=0; i<chunks; i++) imported.push({ id: `c-${Date.now()}-${Math.random().toString(16).slice(2)}`, title: `${t.title} (${i+1}/${chunks})`, estimatedMinutes: (i===chunks-1 ? mins-(25*(chunks-1)) : 25), dueDate: t.dueDate, source: t.source, courseId: cId, completed: false });
-      }
-    });
-
-    const fPrints = new Set(state.tasks.map(t => `${t.title}|${t.dueDate}`));
-    const deduped = imported.filter(t => { const k = `${t.title}|${t.dueDate}`; if(fPrints.has(k)) return false; fPrints.add(k); return true; });
-    
-    state.tasks = [...deduped, ...state.tasks];
-    if (rawList.length && rawList[0].source === "canvas") state.canvasImports += deduped.length; else state.teamsnapImports += deduped.length;
-    saveState(); renderAll();
-  }
 
   // OTHER UI RENDERERS
   function applySkin() {
@@ -1170,7 +1169,7 @@
 
   function renderAll() {
     document.body.classList.toggle("minimalist", Boolean(state.minimalist));
-    document.getElementById("minimalToggle").textContent = `Minimalist Mode: ${state.minimalist ? "On" : "Off"}`;
+    document.getElementById("minimalToggle").textContent = `Minimalist: ${state.minimalist ? "On" : "Off"}`;
     
     // Skins
     const skinS = document.getElementById("skinSelect"), skinL = document.getElementById("skinList"), unl = new Set(SKIN_LIBRARY.filter(s=>s.unlock(state)).map(s=>s.id));
@@ -1184,23 +1183,28 @@
     const coHtml = state.courses.map(c => `<option value="${c.id}">${escapeHtml(c.name)}${c.code?` (${escapeHtml(c.code)})`:""}</option>`).join("");
     document.getElementById("taskCourse").innerHTML = coHtml; document.getElementById("gradeCourse").innerHTML = coHtml;
     
-    document.getElementById("courseList").innerHTML = state.courses.length ? state.courses.map(c => `<div class="course-row"><span><span class="course-dot" style="background:${c.color};"></span>${escapeHtml(c.name)} ${c.code?`(${escapeHtml(c.code)})`:""}</span><button class="icon-button" data-action="delete-course" data-id="${c.id}">X</button></div>`).join("") : "<p class='empty'>No courses.</p>";
+    document.getElementById("courseList").innerHTML = state.courses.length ? state.courses.map(c => `<div class="course-row"><span><span class="course-dot" style="background:${c.color};"></span><span style="font-weight:600">${escapeHtml(c.name)}</span> ${c.code?`<span class="mini-text">(${escapeHtml(c.code)})</span>`:""}</span><button class="icon-button" data-action="delete-course" data-id="${c.id}">✕</button></div>`).join("") : "<p class='empty'>No courses added.</p>";
     
     const gradesHtml = state.courses.map(c => {
       const e = state.grades.filter(g => g.courseId === c.id);
       if(!e.length) return null;
-      return `<div class="grade-row"><span><span class="course-dot" style="background:${c.color};"></span>${escapeHtml(c.name)} avg: <strong>${Math.round(e.reduce((s,i)=>s+i.score,0)/e.length)}%</strong></span><span class="mini-text">${e.length} grades</span></div>`;
+      return `<div class="grade-row"><span><span class="course-dot" style="background:${c.color};"></span><span style="font-weight:600">${escapeHtml(c.name)}</span> avg: <strong>${Math.round(e.reduce((s,i)=>s+i.score,0)/e.length)}%</strong></span><span class="mini-text">${e.length} items</span></div>`;
     }).filter(Boolean).join("");
-    document.getElementById("gradeList").innerHTML = gradesHtml || "<p class='empty'>No grades.</p>";
+    document.getElementById("gradeList").innerHTML = gradesHtml || "<p class='empty'>No grades recorded.</p>";
 
     // Schedules
     const d = Number(document.getElementById("scheduleDay").value);
     const ws = getDayWindows(d);
-    document.getElementById("scheduleSetList").innerHTML = ws.length ? ws.map((w,i) => `<div class="schedule-item"><span>${LONG_DAY_LABELS[d]}: ${toTimeLabel(w.start)}-${toTimeLabel(w.end)}</span><button class="icon-button" data-action="delete-window" data-day="${d}" data-index="${i}">X</button></div>`).join("") : "<p class='empty'>No free windows set for this day.</p>";
+    document.getElementById("scheduleSetList").innerHTML = ws.length ? ws.map((w,i) => `<div class="schedule-item"><span><strong style="color:var(--navy-primary)">${LONG_DAY_LABELS[d]}</strong>: ${toTimeLabel(w.start)} - ${toTimeLabel(w.end)}</span><button class="icon-button" data-action="delete-window" data-day="${d}" data-index="${i}">✕</button></div>`).join("") : "<p class='empty'>No free windows set for this day.</p>";
 
     // Achievements
-    document.getElementById("achievementGrid").innerHTML = ACHIEVEMENTS.map(a => `<div class="achievement ${a.test(state)?"unlocked":""}"><strong>${a.title}</strong><p class="mini-text">${a.detail}</p></div>`).join("");
-    document.getElementById("achievementSummary").textContent = `${ACHIEVEMENTS.filter(a=>a.test(state)).length}/${ACHIEVEMENTS.length} unlocked.`;
+    document.getElementById("achievementGrid").innerHTML = ACHIEVEMENTS.map(a => `<div class="achievement ${a.test(state)?"unlocked":""}"><strong>${a.title}</strong><span class="mini-text">${a.detail}</span></div>`).join("");
+    document.getElementById("achievementSummary").textContent = `${ACHIEVEMENTS.filter(a=>a.test(state)).length}/${ACHIEVEMENTS.length} achievements unlocked.`;
+
+    // Keep It Up Quotes
+    const quoteObj = MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)];
+    document.getElementById("motivationalQuote").textContent = `"${quoteObj.text}"`;
+    document.getElementById("quoteAuthor").textContent = `- ${quoteObj.author}`;
 
     renderHeaderStats(); renderScheduleCard(); renderTaskList(); renderSmartCard(); renderCalendar(); updateTimerUi();
   }
@@ -1230,7 +1234,7 @@
       if (act === "toggle") { const t=state.tasks.find(x=>x.id===id); if(t) { t.completed=!t.completed; if(t.completed) emitConfetti(28); } }
       if (act === "edit") {
          const t=state.tasks.find(x=>x.id===id); if(!t) return;
-         const nm = prompt("Minutes", t.estimatedMinutes); if(!nm || isNaN(nm)) return;
+         const nm = prompt("Update estimated minutes:", t.estimatedMinutes); if(!nm || isNaN(nm)) return;
          t.estimatedMinutes = Math.max(1, Number(nm));
       }
       saveState(); renderAll();
@@ -1276,7 +1280,6 @@
       saveState(); e.target.reset(); renderAll();
     });
 
-    // Image Resizer Fix
     document.getElementById("uploadSkinBtn").addEventListener("click", () => document.getElementById("uploadSkinInput").click());
     document.getElementById("uploadSkinInput").addEventListener("change", e => {
       const file = e.target.files[0]; if (!file) return;
@@ -1288,7 +1291,7 @@
           let w = img.width, h = img.height, MAX = 1600;
           if (w > h && w > MAX) { h *= MAX/w; w = MAX; } else if (h > MAX) { w *= MAX/h; h = MAX; }
           cvs.width = w; cvs.height = h; ctx.drawImage(img, 0, 0, w, h);
-          state.customSkinImage = cvs.toDataURL("image/jpeg", 0.6); // heavily compress to avoid localstorage quota error
+          state.customSkinImage = cvs.toDataURL("image/jpeg", 0.6); 
           state.selectedSkin = "upload"; saveState(); renderAll();
         };
         img.src = re.target.result;
@@ -1298,21 +1301,21 @@
 
     document.getElementById("applySkinBtn").addEventListener("click", () => {
       const v = document.getElementById("skinSelect").value;
-      if (!SKIN_LIBRARY.find(s=>s.id===v).unlock(state)) return alert("Skin locked!");
+      if (!SKIN_LIBRARY.find(s=>s.id===v).unlock(state)) return alert("Skin locked! Complete more tasks/sessions to unlock.");
       state.selectedSkin = v; saveState(); renderAll();
     });
 
     document.getElementById("confettiEnabled").addEventListener("change", e => { state.confettiEnabled = e.target.checked; saveState(); });
     
     document.getElementById("startPauseBtn").addEventListener("click", toggleTimer);
-    document.getElementById("resetBtn").addEventListener("click", () => { clearInterval(timerInterval); timerInterval=null; setTimerFromMinutes(state.timerMinutes, true); document.getElementById("startPauseBtn").textContent="Start"; });
+    document.getElementById("resetBtn").addEventListener("click", () => { clearInterval(timerInterval); timerInterval=null; setTimerFromMinutes(state.timerMinutes, true); document.getElementById("startPauseBtn").textContent="Start Focus"; });
     document.getElementById("finishBtn").addEventListener("click", () => completeSession());
     document.getElementById("timerInput").addEventListener("change", e => setTimerFromMinutes(e.target.value));
     
     document.getElementById("useSmartTaskBtn").addEventListener("click", () => { const s = pickSmartTask(); if(s.task) { state.selectedTaskId = s.task.id; saveState(); renderAll(); } });
     document.getElementById("clearDoneBtn").addEventListener("click", () => { state.tasks = state.tasks.filter(t=>!t.completed); saveState(); renderAll(); });
     document.getElementById("minimalToggle").addEventListener("click", () => { state.minimalist = !state.minimalist; saveState(); renderAll(); });
-    document.getElementById("resetAllBtn").addEventListener("click", () => { if(prompt("Type RESET to delete all data")==="RESET") { localStorage.removeItem(STORAGE_KEY); location.reload(); } });
+    document.getElementById("resetAllBtn").addEventListener("click", () => { if(prompt("Type RESET to wipe all data")==="RESET") { localStorage.removeItem(STORAGE_KEY); location.reload(); } });
     
     document.getElementById("calendarPrevBtn").addEventListener("click", () => { state.calendarMonth--; if(state.calendarMonth<0){state.calendarMonth=11; state.calendarYear--;} saveState(); renderCalendar(); });
     document.getElementById("calendarNextBtn").addEventListener("click", () => { state.calendarMonth++; if(state.calendarMonth>11){state.calendarMonth=0; state.calendarYear++;} saveState(); renderCalendar(); });
@@ -1333,6 +1336,9 @@
   function resizeFxCanvas() { fxCanvas.width = window.innerWidth; fxCanvas.height = window.innerHeight; }
   window.addEventListener("resize", resizeFxCanvas);
   
+  // Set Current Year in Footer
+  document.getElementById("currentYear").textContent = new Date().getFullYear();
+
   function emitConfetti(count) {
     if (!state.confettiEnabled) return;
     for (let i = 0; i < count; i++) confetti.push({ x: window.innerWidth * (0.2 + Math.random() * 0.6), y: window.innerHeight * 0.3, vx: (Math.random() - 0.5) * 8, vy: -Math.random() * 7 - 2, life: 90, size: Math.random() * 4 + 2, hue: Math.random() * 120 + 150 });
