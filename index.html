@@ -166,11 +166,18 @@
   .icon-button { width: 36px; height: 36px; padding: 0; display: grid; place-items: center; }
 
   /* Forms & Inputs */
-  .field, .date-field, .number-field, .password-field { width: 100%; border: 1px solid var(--border); border-radius: var(--radius-md); outline: none; background: var(--panel); color: var(--text-dark); padding: 0.7rem 1rem; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s;}
+  .field, .date-field, .number-field, .password-field { width: 100%; border: 2px solid var(--border); border-radius: var(--radius-md); outline: none; background: var(--panel); color: var(--text-dark); padding: 0.7rem 1rem; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; min-height: 44px;}
   .field:focus, .date-field:focus, .number-field:focus, .password-field:focus { border-color: var(--navy-primary); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); }
   .field::placeholder, .password-field::placeholder { color: var(--muted); }
 
-  .task-form { display: grid; gap: 10px; grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; margin-bottom: 1.5rem; background: var(--bg-gray); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);}
+  .task-form { display: grid; gap: 12px; grid-template-columns: repeat(12, minmax(0, 1fr)); margin-bottom: 1.5rem; background: var(--bg-gray); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border);}
+  .field-group { display: grid; gap: 6px; }
+  .field-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
+  .span-3 { grid-column: span 3; }
+  .span-4 { grid-column: span 4; }
+  .span-6 { grid-column: span 6; }
+  .span-12 { grid-column: span 12; }
+  .align-end { align-self: end; }
   .tight-form { display: grid; gap: 10px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .canvas-form { display: grid; gap: 10px; }
   .schedule-form { display: grid; gap: 10px; grid-template-columns: 1fr 1fr 1fr auto; margin-bottom: 1rem; }
@@ -186,6 +193,15 @@
   .timer-container { text-align: center; padding: 2rem 0; }
   .timer { font-size: clamp(3.5rem, 6vw, 5rem); color: var(--text-dark); font-weight: 800; font-family: "Inter", monospace; line-height: 1; margin-bottom: 1rem; letter-spacing: -0.05em; }
   .timer-controls { display: flex; justify-content: center; gap: 10px; margin-top: 1.5rem; }
+
+  /* Focus Tools */
+  .link-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .link-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel); color: var(--text-dark); text-decoration: none; font-weight: 700; font-size: 0.85rem; transition: 0.2s; }
+  .link-button:hover { border-color: var(--navy-primary); background: var(--bg-gray); }
+  .blocklist { display: grid; gap: 8px; }
+  .blocklist-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel); }
+  .blocklist-domain { font-weight: 600; color: var(--text-dark); font-size: 0.9rem; }
+  .audio-row { display: grid; gap: 10px; }
 
   /* Tasks & Lists */
   .task-list, .schedule-list { display: grid; gap: 10px; }
@@ -305,14 +321,15 @@
   @media (max-width: 1200px) {
     .col-8, .col-6, .col-4, .col-3 { grid-column: span 12; }
     .hero { grid-template-columns: 1fr; }
-    .task-form { grid-template-columns: 1fr 1fr; }
-    .task-form button { grid-column: span 2; }
+    .task-form { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   }
   @media (max-width: 760px) {
     .shell { padding: 1rem; }
     .topbar { padding: 1rem; justify-content: center;}
     .task-form { grid-template-columns: 1fr; }
-    .task-form button { grid-column: span 1; }
+    .task-form .span-6, .task-form .span-4, .task-form .span-3 { grid-column: span 1; }
+    .task-form .align-end { justify-self: stretch; }
+    .link-grid { grid-template-columns: 1fr; }
     .schedule-form, .tight-form { grid-template-columns: 1fr; }
     .calendar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); border: none; gap: 10px; background: transparent;}
     .day-header { display: none; }
@@ -419,12 +436,29 @@
     <article class="panel col-8">
       <h2>Intelligent Task Manager</h2>
       <form id="taskForm" class="task-form">
-        <input id="taskTitle" class="field" type="text" placeholder="What do you need to do?" required />
-        <select id="taskCourse" class="field"></select>
-        <input id="taskMinutes" class="number-field" type="number" min="1" max="360" value="25" placeholder="Mins" required />
-        <input id="taskDueDate" class="date-field" type="date" required />
-        <input id="taskDueTime" class="field" type="time" value="23:59" required />
-        <button class="button primary" type="submit">Add Task</button>
+        <div class="field-group span-6">
+          <label class="field-label" for="taskTitle">Task</label>
+          <input id="taskTitle" class="field" type="text" placeholder="What do you need to do?" required />
+        </div>
+        <div class="field-group span-3">
+          <label class="field-label" for="taskCourse">Course</label>
+          <select id="taskCourse" class="field"></select>
+        </div>
+        <div class="field-group span-3">
+          <label class="field-label" for="taskMinutes">Minutes</label>
+          <input id="taskMinutes" class="number-field" type="number" min="1" max="360" value="25" placeholder="Mins" required />
+        </div>
+        <div class="field-group span-4">
+          <label class="field-label" for="taskDueDate">Due Date</label>
+          <input id="taskDueDate" class="date-field" type="date" required />
+        </div>
+        <div class="field-group span-4">
+          <label class="field-label" for="taskDueTime">Due Time</label>
+          <input id="taskDueTime" class="field" type="time" value="23:59" required />
+        </div>
+        <div class="field-group span-4 align-end">
+          <button class="button primary" type="submit">Add Task</button>
+        </div>
       </form>
       <div id="taskList" class="task-list"></div>
     </article>
@@ -459,6 +493,41 @@
         <p id="smartMessage" class="helper-text" style="font-size: 0.85rem;">Analyzing your queue...</p>
         <p id="smartTaskMeta" class="mini-text" style="margin-top: 8px; font-weight: 700; color: var(--text-dark); font-size: 1rem;"></p>
         <button id="useSmartTaskBtn" class="button primary" type="button" style="width: 100%; margin-top: 15px;">Select This Task</button>
+      </article>
+
+      <article class="panel">
+        <h2>Focus Tools</h2>
+        <div class="stack">
+          <div>
+            <p class="mini-text" style="margin-bottom: 8px;">Study links</p>
+            <div class="link-grid" id="studyLinkGrid">
+              <button class="link-button" type="button" data-open-link="https://www.britannica.com">Britannica</button>
+              <button class="link-button" type="button" data-open-link="https://go.gale.com">Gale</button>
+              <button class="link-button" type="button" data-open-link="https://scholar.google.com">Google Scholar</button>
+              <button class="link-button" type="button" data-open-link="https://www.khanacademy.org">Khan Academy</button>
+            </div>
+          </div>
+
+          <div>
+            <p class="mini-text" style="margin-bottom: 8px;">Distraction blocklist (blocks links opened from EPStudy)</p>
+            <label class="mini-text" style="display:flex; align-items:center; gap: 8px; margin-bottom: 8px; color: var(--text-dark);">
+              <input id="focusBlockerEnabled" type="checkbox" /> Enable Focus Shield
+            </label>
+            <div class="row" style="margin-bottom: 8px;">
+              <input id="blockSiteInput" class="field" type="text" placeholder="Add domain (e.g. youtube.com)" />
+              <button id="blockSiteAddBtn" class="button" type="button">Add</button>
+            </div>
+            <div id="blockerStatus" class="mini-text" style="color: var(--muted);"></div>
+            <div id="blockSiteList" class="blocklist"></div>
+          </div>
+
+          <div class="audio-row">
+            <p class="mini-text" style="margin-bottom: 6px;">Study audio</p>
+            <input id="studyAudioInput" class="field" type="file" accept="audio/*" />
+            <audio id="studyAudioPlayer" controls preload="none" style="width: 100%;"></audio>
+            <div id="studyAudioMeta" class="mini-text" style="color: var(--muted);"></div>
+          </div>
+        </div>
       </article>
     </div>
   </section>
@@ -597,6 +666,7 @@
           <label style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; color: var(--text-dark);"><input type="checkbox" id="notifQuizzes" checked /> Quiz reminders</label>
           <label style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; color: var(--text-dark);"><input type="checkbox" id="notifAssignments" checked /> New assignments</label>
           <label style="display: flex; gap: 8px; align-items: center; color: var(--text-dark);"><input type="checkbox" id="notifOverdue" checked /> Overdue warnings</label>
+          <label style="display: flex; gap: 8px; margin-top: 8px; align-items: center; color: var(--text-dark);"><input type="checkbox" id="notifTimerDone" checked /> Focus timer finished</label>
         </div>
         <div class="settings-card col-4">
           <h3>About EPStudy</h3>
@@ -801,7 +871,8 @@
     { id: "course-math", name: "Math", code: "MATH", color: "#2563eb" },
     { id: "course-english", name: "English", code: "ENG", color: "#ef4444" },
     { id: "course-science", name: "Science", code: "SCI", color: "#10b981" },
-    { id: "course-history", name: "History", code: "HIST", color: "#f59e0b" }
+    { id: "course-history", name: "History", code: "HIST", color: "#f59e0b" },
+    { id: "course-other", name: "Other", code: "OTHER", color: "#64748b" }
   ];
 
   const SKIN_LIBRARY = [
@@ -856,9 +927,12 @@
       availabilityByDay: { "0": [], "1": [{ start: "16:00", end: "18:00" }], "2": [{ start: "16:00", end: "18:00" }], "3": [{ start: "16:00", end: "18:00" }], "4": [{ start: "16:00", end: "18:00" }], "5": [{ start: "16:00", end: "18:00" }], "6": [] },
       canvasEvents: [],
       notifications: [],
-      notificationSettings: { membean: true, quizzes: true, assignments: true, overdue: true },
+      notificationSettings: { membean: true, quizzes: true, assignments: true, overdue: true, timerdone: true },
       currentPage: "dashboard",
-      skinChangeRestrictedToFreePeriods: true
+      skinChangeRestrictedToFreePeriods: true,
+      focusBlockerEnabled: true,
+      blockedSites: ["youtube.com", "music.youtube.com", "spotify.com", "poki.com", "crazygames.com"],
+      studyAudioName: ""
     };
   }
 
@@ -874,6 +948,11 @@
       merged.grades = Array.isArray(merged.grades) ? merged.grades : [];
       merged.canvasEvents = Array.isArray(merged.canvasEvents) ? merged.canvasEvents : [];
       merged.availabilityByDay = typeof merged.availabilityByDay === "object" && merged.availabilityByDay ? merged.availabilityByDay : base.availabilityByDay;
+      merged.notificationSettings = { ...base.notificationSettings, ...(merged.notificationSettings || {}) };
+      merged.focusBlockerEnabled = typeof merged.focusBlockerEnabled === "boolean" ? merged.focusBlockerEnabled : base.focusBlockerEnabled;
+      merged.blockedSites = Array.isArray(merged.blockedSites) && merged.blockedSites.length ? merged.blockedSites : base.blockedSites.slice();
+      merged.blockedSites = merged.blockedSites.map(normalizeDomain).filter(Boolean);
+      merged.studyAudioName = typeof merged.studyAudioName === "string" ? merged.studyAudioName : "";
 
       merged.courses = merged.courses.map((c, i) => ({
         id: c?.id ? String(c.id) : `course-${i}-${Math.random().toString(16).slice(2, 6)}`,
@@ -924,6 +1003,7 @@
   let timerInterval = null;
   let lastAutoFilledTaskId = null;
   let currentSubmissionTask = null; // Used for Canvas Text Submission
+  let studyAudioObjectUrl = "";
 
   const fxCanvas = document.getElementById("fxCanvas");
   const fxCtx = fxCanvas.getContext("2d");
@@ -1123,6 +1203,57 @@
 
   function escapeHtml(str) { return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])); }
   function getCourseById(id) { return state.courses.find(c => c.id === id) || null; }
+  function normalizeDomain(value) {
+    return String(value || "").trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/$/, "");
+  }
+
+  function isBlockedUrl(url) {
+    if (!state.focusBlockerEnabled) return false;
+    const hostname = normalizeDomain(new URL(url, window.location.origin).hostname);
+    return state.blockedSites.some(site => hostname === normalizeDomain(site) || hostname.endsWith(`.${normalizeDomain(site)}`));
+  }
+
+  function openLinkWithBlocker(url) {
+    if (isBlockedUrl(url)) {
+      addNotification(`Focus Shield blocked ${url}`, "warning", 4000);
+      const status = document.getElementById("blockerStatus");
+      if (status) status.textContent = `Blocked: ${url}`;
+      return;
+    }
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  function renderBlocklist() {
+    const list = document.getElementById("blockSiteList");
+    if (!list) return;
+    const items = state.blockedSites.map(site => `
+      <div class="blocklist-item">
+        <span class="blocklist-domain">${escapeHtml(site)}</span>
+        <button class="icon-button" data-action="remove-block" data-domain="${site}">✕</button>
+      </div>
+    `).join("");
+    list.innerHTML = items || "<p class='empty'>No blocked sites yet.</p>";
+  }
+
+  function setStudyAudio(file) {
+    const player = document.getElementById("studyAudioPlayer");
+    const meta = document.getElementById("studyAudioMeta");
+    if (!player || !meta) return;
+    if (studyAudioObjectUrl) URL.revokeObjectURL(studyAudioObjectUrl);
+    if (!file) {
+      player.removeAttribute("src");
+      player.load();
+      meta.textContent = "";
+      state.studyAudioName = "";
+      saveState();
+      return;
+    }
+    studyAudioObjectUrl = URL.createObjectURL(file);
+    player.src = studyAudioObjectUrl;
+    state.studyAudioName = file.name || "Local audio";
+    meta.textContent = `Loaded: ${state.studyAudioName}`;
+    saveState();
+  }
 
   // UI RENDERERS
   function renderHeaderStats() {
@@ -1277,6 +1408,16 @@
     }
   }
 
+  function notifyTimerFinished(doneTask) {
+    if (!state.notificationSettings.timerdone) return;
+    const msg = doneTask ? `Focus timer finished. "${doneTask.title}" marked complete.` : "Focus timer finished. Session logged.";
+    addNotification(msg, "info", 8000);
+    if (!("Notification" in window)) return;
+    if (Notification.permission === "granted") {
+      new Notification("Focus timer complete", { body: msg });
+    }
+  }
+
   function completeSession(overrideMins = null) {
     clearInterval(timerInterval); timerInterval = null;
     state.sessionsCompleted++;
@@ -1299,6 +1440,7 @@
     emitConfetti(100);
     const th = document.getElementById("timerHint");
     if (th) th.textContent = doneTask ? `Done! "${doneTask.title}" marked complete.` : "Session logged. Great focus!";
+    notifyTimerFinished(doneTask);
     setTimerFromMinutes(state.timerMinutes, true);
     
     const btn = document.getElementById("startPauseBtn");
@@ -1624,6 +1766,15 @@
         if (ssl) ssl.innerHTML = ws.length ? ws.map((w,i) => `<div class="schedule-item"><span><strong style="color:var(--navy-primary)">${LONG_DAY_LABELS[d]}</strong>: ${toTimeLabel(w.start)} - ${toTimeLabel(w.end)}</span><button class="icon-button" data-action="delete-window" data-day="${d}" data-index="${i}">✕</button></div>`).join("") : "<p class='empty'>No free windows set for this day.</p>";
     }
 
+    const fbe = document.getElementById("focusBlockerEnabled");
+    if (fbe) fbe.checked = Boolean(state.focusBlockerEnabled);
+    const bs = document.getElementById("blockerStatus");
+    if (bs) bs.textContent = state.focusBlockerEnabled ? "Focus Shield active." : "Focus Shield is off.";
+    renderBlocklist();
+
+    const sm = document.getElementById("studyAudioMeta");
+    if (sm) sm.textContent = state.studyAudioName ? `Loaded: ${state.studyAudioName} (re-upload after refresh)` : "Upload an audio file to play.";
+
     const ag = document.getElementById("achievementGrid"); if (ag) ag.innerHTML = ACHIEVEMENTS.map(a => `<div class="achievement ${a.test(state)?"unlocked":""}"><strong>${a.title}</strong><span class="mini-text">${a.detail}</span></div>`).join("");
     const as = document.getElementById("achievementSummary"); if (as) as.textContent = `${ACHIEVEMENTS.filter(a=>a.test(state)).length}/${ACHIEVEMENTS.length} achievements unlocked.`;
 
@@ -1679,6 +1830,7 @@
       notifQuizzes: state.notificationSettings.quizzes,
       notifAssignments: state.notificationSettings.assignments,
       notifOverdue: state.notificationSettings.overdue,
+      notifTimerDone: state.notificationSettings.timerdone,
       skinLockCheckbox: state.skinChangeRestrictedToFreePeriods,
       confettiEnabled: state.confettiEnabled
     };
@@ -1852,6 +2004,39 @@
     document.getElementById("useSmartTaskBtn")?.addEventListener("click", () => { const s = pickSmartTask(); if(s.task) { state.selectedTaskId = s.task.id; saveState(); renderAll(); } });
     document.getElementById("clearDoneBtn")?.addEventListener("click", () => { state.tasks = state.tasks.filter(t=>!t.completed); saveState(); renderAll(); });
     document.getElementById("minimalToggle")?.addEventListener("click", () => { state.minimalist = !state.minimalist; saveState(); renderAll(); });
+
+    document.getElementById("studyLinkGrid")?.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-open-link]");
+      if (!btn) return;
+      openLinkWithBlocker(btn.dataset.openLink);
+    });
+
+    document.getElementById("focusBlockerEnabled")?.addEventListener("change", (e) => {
+      state.focusBlockerEnabled = e.target.checked;
+      saveState(); renderAll();
+    });
+
+    document.getElementById("blockSiteAddBtn")?.addEventListener("click", () => {
+      const input = document.getElementById("blockSiteInput");
+      const raw = input?.value;
+      const domain = normalizeDomain(raw);
+      if (!domain) return;
+      if (!state.blockedSites.includes(domain)) state.blockedSites.unshift(domain);
+      if (input) input.value = "";
+      saveState(); renderAll();
+    });
+
+    document.getElementById("blockSiteList")?.addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      if (!btn || btn.dataset.action !== "remove-block") return;
+      state.blockedSites = state.blockedSites.filter(site => site !== btn.dataset.domain);
+      saveState(); renderAll();
+    });
+
+    document.getElementById("studyAudioInput")?.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      setStudyAudio(file || null);
+    });
     
     document.getElementById("resetAllBtn")?.addEventListener("click", () => { 
       showPrompt("Type RESET to wipe all data", "", (val) => {
@@ -1899,9 +2084,12 @@
       }
     });
 
-    ["notifMembean", "notifQuizzes", "notifAssignments", "notifOverdue"].forEach(id => {
+    ["notifMembean", "notifQuizzes", "notifAssignments", "notifOverdue", "notifTimerDone"].forEach(id => {
       document.getElementById(id)?.addEventListener("change", e => {
         state.notificationSettings[id.replace("notif", "").toLowerCase()] = e.target.checked;
+        if (id === "notifTimerDone" && e.target.checked && ("Notification" in window) && Notification.permission === "default") {
+          Notification.requestPermission();
+        }
         saveState();
       });
     });
