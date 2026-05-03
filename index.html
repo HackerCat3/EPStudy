@@ -3,35 +3,38 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>EPStudy Workspace Pro</title>
+<title>EPS Eagles Workspace</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-9YV2XSFT24"></script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YOUR_MEASUREMENT_ID"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-9YV2XSFT24');
+
+  // Replace this ID with your real Measurement ID (e.g., G-12345ABCD)
+  gtag('config', 'G-YOUR_MEASUREMENT_ID');
 </script>
+
 <style>
   :root {
-    /* Eastside Preparatory School Colors (Default Theme) */
+    /* Eastside Preparatory School Colors */
     --navy-primary: #002B5C; /* EPS Navy */
-    --primary-content: #ffffff; /* Text color on top of primary */
-    --navy-light: #004488;
+    --navy-light: #004488;   /* EPS Light Navy */
     --navy-bg: #001530;
-    --gold: #FFC72C;
+    --gold: #FFC72C;         /* EPS Gold */
     --gold-hover: #EAA812;
-    --bg-gray: #f4f7f9;
-    --border: #e2e8f0;
-    --text-main: #475569;
-    --text-dark: #0f172a;
-    --muted: #64748b;
+    --bg-gray: #f4f7f9;      
+    --border: #e2e8f0;       
+    --text-main: #334155;    
+    --text-dark: #002B5C;    /* Navy Text */
+    --muted: #64748b;        
     --panel: #ffffff;
-    --danger: #ef4444;
-    --canvas: #e11d48;
+    --danger: #ef4444;       
+    --canvas: #e11d48;       /* Canvas Red */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -40,72 +43,34 @@
   }
 
   * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-  html, body { margin: 0; min-height: 100%; background: var(--bg-gray); color: var(--text-main); font-family: "Inter", sans-serif; line-height: 1.5; transition: background-color 0.3s ease, color 0.3s ease; }
-  button, input, label, select, textarea { font: inherit; }
+  html, body { margin: 0; min-height: 100%; background: var(--bg-gray); color: var(--text-main); font-family: "Inter", sans-serif; line-height: 1.5; }
+  button, input, label, select { font: inherit; }
 
   #fxCanvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.4; transition: opacity 0.2s ease; }
   
   .shell { position: relative; z-index: 10; max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; }
   
   /* Modern Header */
-  .topbar { background: var(--panel); border: 1px solid var(--border); box-shadow: var(--shadow-sm); border-radius: var(--radius-lg); padding: 1.25rem 2rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; transition: all 0.3s ease; }
+  .topbar { background: var(--panel); border: 1px solid var(--border); box-shadow: var(--shadow-sm); border-radius: var(--radius-lg); padding: 1.25rem 2rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
   .brand { display: flex; align-items: center; gap: 1rem; }
-  .brand-badge { width: 48px; height: 48px; border-radius: var(--radius-md); display: grid; place-items: center; font-weight: 800; font-size: 1.1rem; background: var(--navy-primary); color: var(--primary-content); box-shadow: var(--shadow-md); transition: all 0.3s ease; }
+  .brand-badge { width: 48px; height: 48px; border-radius: var(--radius-md); display: grid; place-items: center; font-weight: 800; font-size: 1.1rem; background: var(--navy-primary); color: #ffffff; box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2); }
   .eyebrow { margin: 0; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.75rem; font-weight: 600; color: var(--muted); }
   h1 { margin: 0; font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.02em; font-weight: 800; color: var(--text-dark); }
   .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
   
+  /* Tabs */
+  .app-tabs { display: flex; gap: 10px; margin-bottom: 2rem; border-bottom: 2px solid var(--border); padding-bottom: 1rem; overflow-x: auto; }
+  .tab-btn { background: transparent; border: none; color: var(--muted); font-weight: 700; font-size: 1.05rem; padding: 0.6rem 1.2rem; cursor: pointer; transition: 0.2s; border-radius: var(--radius-md); white-space: nowrap; }
+  .tab-btn:hover { background: #f1f5f9; color: var(--text-dark); }
+  .tab-btn.active { background: var(--navy-primary); color: #ffffff; box-shadow: var(--shadow-sm); }
+  
+  .page { display: none; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
   /* Section Dividers */
   .section-title { font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border); display: flex; justify-content: space-between; align-items: flex-end;}
   
-  /* NAVIGATION & PAGES */
-  .navbar { display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border); }
-  .nav-btn { background: transparent; border: 2px solid var(--border); color: var(--text-dark); padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; font-size: 0.9rem; }
-  .nav-btn.active { background: var(--navy-primary); color: var(--primary-content); border-color: var(--navy-primary); }
-  .nav-btn:hover:not(.active) { background: var(--bg-gray); border-color: var(--navy-primary); color: var(--text-dark); }
-  .page { display: none; animation: fadeIn 0.3s ease; }
-  .page.active { display: block; }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-  /* NOTIFICATIONS */
-  .notification-badge { position: absolute; top: -6px; right: -6px; background: var(--danger); color: #ffffff; border-radius: 50%; width: 22px; height: 22px; display: grid; place-items: center; font-size: 0.65rem; font-weight: 800; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .notifications-panel { max-height: 400px; overflow-y: auto; background: var(--bg-gray); border-radius: 12px; padding: 12px; margin-top: 12px; border: 1px solid var(--border); }
-  .notification-item { border-left: 4px solid var(--navy-primary); background: var(--panel); color: var(--text-dark); padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: start; gap: 8px; border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); box-shadow: var(--shadow-sm); }
-  .notification-item.warning { border-left-color: #f59e0b; }
-  .notification-item.info { border-left-color: var(--navy-primary); }
-  .notification-item.danger { border-left-color: var(--danger); }
-  .notification-item .notif-time { display: block; font-size: 0.75rem; color: var(--muted); margin-top: 4px; white-space: nowrap; }
-  .notification-item-content { flex: 1; }
-  .notification-item-close { cursor: pointer; color: var(--muted); font-weight: 700; transition: color 0.2s; }
-  .notification-item-close:hover { color: var(--danger); }
-
-  /* CANVAS-LIKE CALENDAR */
-  .calendar-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-  .calendar-all-assignments { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; margin-top: 16px; }
-  .assignment-card { border: 1px solid var(--border); border-left: 4px solid var(--navy-primary); border-radius: 10px; padding: 14px; background: var(--panel); transition: all 0.2s ease; }
-  .assignment-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-  .assignment-card-header { display: flex; justify-content: space-between; align-items: start; gap: 10px; margin-bottom: 8px; }
-  .assignment-card-title { font-weight: 700; color: var(--text-dark); font-size: 0.95rem; flex: 1; }
-  .assignment-card-due { font-size: 0.8rem; color: var(--text-main); background: var(--bg-gray); padding: 4px 8px; border-radius: 4px; }
-  .assignment-card-course { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-top: 8px; color: #ffffff; }
-  .assignment-card-status { font-size: 0.8rem; color: var(--muted); margin-top: 8px; }
-
-  /* SETTINGS PAGE */
-  .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
-  .settings-card { background: var(--bg-gray); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
-  .settings-card h3 { margin: 0 0 12px; color: var(--text-dark); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
-  .settings-card p { margin: 0 0 12px; color: var(--muted); font-size: 0.9rem; }
-
-  /* TIMER PAGE */
-  .timer-expanded { font-size: 5rem; font-weight: 800; color: var(--navy-primary); text-align: center; margin: 3rem 0; font-family: 'Courier New', monospace; }
-  .timer-controls-expanded { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 2rem 0; }
-
-  /* CONTACT PAGE */
-  .contact-form { display: grid; gap: 12px; max-width: 500px; margin: 2rem auto; }
-  .contact-form input, .contact-form textarea { border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: inherit; font-size: 0.95rem; background: var(--panel); color: var(--text-dark); }
-  .contact-form textarea { resize: vertical; min-height: 140px; }
-  .contact-form button { margin-top: 12px; }
-
   /* Grid & Panels */
   .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;}
   .col-12 { grid-column: span 12; }
@@ -113,147 +78,148 @@
   .col-6 { grid-column: span 6; }
   .col-4 { grid-column: span 4; }
   .col-3 { grid-column: span 3; }
-
-  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 1.75rem; transition: all 0.3s ease; }
+  
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 1.75rem; transition: box-shadow 0.3s ease; }
   .panel:hover { box-shadow: var(--shadow-md); }
   .panel h2 { margin: 0 0 1.25rem; font-size: 0.95rem; font-weight: 700; color: var(--text-dark); display: flex; align-items: center; gap: 10px; }
-  
-  .panel.hero-panel { background: var(--navy-primary); color: var(--primary-content); border: 1px solid var(--navy-primary); }
-  .panel.hero-panel h2, .panel.hero-panel .helper-text, .panel.hero-panel strong { color: var(--primary-content); }
+  .panel.hero-panel { background: var(--navy-primary); color: white; border: none; }
+  .panel.hero-panel h2, .panel.hero-panel .helper-text { color: #e2e8f0; }
   .panel.hero-panel .eyebrow { color: var(--gold); }
-  .panel.hero-panel .stat-chip { background: rgba(0, 0, 0, 0.2); border-color: rgba(255, 255, 255, 0.1); }
-
+  .panel.hero-panel strong { color: white; }
+  
   /* EPS Specialization & Quotes */
-  .quote-panel { background: var(--bg-gray); color: var(--text-dark); border: 1px solid var(--navy-primary); display: flex; flex-direction: column; justify-content: center; text-align: center; position: relative; overflow: hidden; }
-  .quote-panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--navy-primary), var(--gold)); }
-  .quote-panel .quote-text { font-size: 1.1rem; font-style: italic; font-weight: 500; margin-bottom: 0.5rem; line-height: 1.4; color: var(--text-dark); }
-  .quote-panel .quote-author { font-size: 0.85rem; color: var(--navy-primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+  .quote-panel { background: linear-gradient(135deg, var(--navy-primary), var(--navy-light)); color: white; border: none; display: flex; flex-direction: column; justify-content: center; text-align: center; }
+  .quote-panel .quote-text { font-size: 1.1rem; font-style: italic; font-weight: 500; margin-bottom: 0.5rem; line-height: 1.4; color: #f8fafc; }
+  .quote-panel .quote-author { font-size: 0.85rem; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
 
   /* Professional Schedule Timeline */
   .schedule-timeline { margin-top: 1.25rem; display: flex; flex-direction: column; gap: 8px; }
-  .timeline-item { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; padding: 8px 12px; border-radius: var(--radius-md); background: var(--bg-gray); border: 1px solid var(--border); color: var(--text-dark); transition: 0.2s; }
-  .timeline-item.active { background: var(--navy-primary); color: var(--primary-content); border-color: var(--navy-primary); transform: scale(1.02); box-shadow: var(--shadow-sm); }
+  .timeline-item { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; padding: 12px; border-radius: var(--radius-md); background: #f8fafc; border: 1px solid var(--border); transition: 0.2s; }
+  .timeline-item.active { background: var(--navy-primary); color: white; border-color: var(--navy-primary); transform: scale(1.02); box-shadow: var(--shadow-sm); }
   .timeline-item.active .timeline-time { color: var(--gold); }
   .timeline-item.past { opacity: 0.5; background: transparent; border-color: transparent; }
-  .timeline-time { font-weight: 700; color: var(--muted); min-width: 75px; }
-  .timeline-name { font-weight: 600; flex: 1; }
+  .timeline-time { font-weight: 700; color: var(--muted); min-width: 90px; }
+  .timeline-name { font-weight: 600; flex: 1; font-size: 0.95rem; }
 
   /* Logo SVG */
   .eagle-icon { width: 28px; height: 28px; fill: var(--gold); }
 
   /* Stats Grid */
   .hero-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
-  .stat-chip { border-radius: var(--radius-md); padding: 1rem; backdrop-filter: blur(10px); }
+  .stat-chip { border-radius: var(--radius-md); background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.1); padding: 1rem; backdrop-filter: blur(10px); }
   .stat-chip strong { display: block; margin-top: 4px; font-weight: 800; font-size: 1.5rem; letter-spacing: -0.02em;}
-
+  
   /* Typography & Utilities */
   .helper-text { color: var(--muted); margin: 0; line-height: 1.5; font-size: 0.95rem;}
   .mini-text { color: var(--muted); font-size: 0.8rem; margin: 0; font-weight: 500;}
-  .empty { color: var(--muted); margin: 0; font-style: italic; font-size: 0.95rem; text-align: center; padding: 2rem 0; background: var(--bg-gray); border-radius: var(--radius-md); border: 1px dashed var(--border);}
-  .alert { margin-top: 12px; min-height: 18px; color: var(--text-main); font-size: 0.85rem; background: var(--bg-gray); padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border);}
+  .empty { color: var(--muted); margin: 0; font-style: italic; font-size: 0.95rem; text-align: center; padding: 2rem 0; background: #f8fafc; border-radius: var(--radius-md); border: 1px dashed var(--border);}
+  .alert { margin-top: 12px; min-height: 18px; color: var(--muted); font-size: 0.85rem; background: #f1f5f9; padding: 10px; border-radius: var(--radius-md);}
   .row { display: flex; gap: 10px; flex-wrap: wrap; }
   .stack { display: grid; gap: 10px; }
+  .time-planner { display: grid; gap: 12px; }
+  .time-quick-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .time-plan-list { display: grid; gap: 8px; }
+  .time-plan-step { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 10px 12px; border-radius: var(--radius-md); border: 1px solid var(--border); background: #f8fafc; }
+  .time-plan-step.focus { border-left: 4px solid var(--navy-primary); }
+  .time-plan-step.break { border-left: 4px solid var(--gold); }
+  .time-plan-step .step-actions { display: flex; align-items: center; gap: 8px; }
+  .task-skip-btn { border: 1px solid var(--border); background: transparent; color: var(--danger); width: 30px; height: 30px; border-radius: 999px; display: inline-grid; place-items: center; cursor: pointer; }
+  .task-skip-btn:hover { background: rgba(239, 68, 68, 0.08); }
 
   /* Buttons */
-  .button, .icon-button { background: var(--panel); border: 1px solid var(--border); color: var(--text-dark); padding: 0.6rem 1.2rem; cursor: pointer; font-weight: 600; border-radius: var(--radius-md); transition: all 0.2s ease; font-size: 0.9rem; box-shadow: var(--shadow-sm);}
-  .button:hover { background: var(--bg-gray); border-color: var(--navy-primary); }
-  .button.primary { background: var(--navy-primary); color: var(--primary-content); border-color: var(--navy-primary); }
-  .button.primary:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: var(--shadow-md);}
-  .button.success { background: var(--gold); border: 1px solid var(--gold); color: #000000; font-weight: 800; }
-  .button.success:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: var(--shadow-md);}
-  .button.danger { background: transparent; color: var(--danger); border-color: var(--danger); }
-  .button.danger:hover { background: var(--danger); color: #ffffff; }
+  .button, .icon-button { background: #ffffff; border: 1px solid var(--border); color: var(--text-dark); padding: 0.6rem 1.2rem; cursor: pointer; font-weight: 600; border-radius: var(--radius-md); transition: all 0.2s ease; font-size: 0.9rem; box-shadow: var(--shadow-sm);}
+  .button:hover { background: #f1f5f9; border-color: #cbd5e1; }
+  .button.primary { background: var(--navy-primary); color: #ffffff; border-color: var(--navy-primary); }
+  .button.primary:hover { background: var(--navy-light); border-color: var(--navy-light); transform: translateY(-1px); box-shadow: var(--shadow-md);}
+  .button.success { background: var(--gold); border: none; color: var(--navy-primary); font-weight: 800; }
+  .button.success:hover { background: var(--gold-hover); transform: translateY(-1px); box-shadow: var(--shadow-md);}
+  .button.danger { color: var(--danger); border-color: #fca5a5; background: #fef2f2;}
+  .button.danger:hover { background: var(--danger); color: #ffffff; border-color: var(--danger);}
   .icon-button { width: 36px; height: 36px; padding: 0; display: grid; place-items: center; }
 
   /* Forms & Inputs */
-  .field, .date-field, .number-field, .password-field { width: 100%; border: 2px solid var(--border); border-radius: var(--radius-md); outline: none; background: var(--panel); color: var(--text-dark); padding: 0.7rem 1rem; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; min-height: 44px;}
-  .field:focus, .date-field:focus, .number-field:focus, .password-field:focus { border-color: var(--navy-primary); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); }
-  .field::placeholder, .password-field::placeholder { color: var(--muted); }
+  .field, .date-field, .number-field, .password-field { width: 100%; border: 1px solid var(--border); border-radius: var(--radius-md); outline: none; background: #ffffff; color: var(--text-main); padding: 0.85rem 1rem; font-size: 1.05rem; transition: border-color 0.2s, box-shadow 0.2s; cursor: text;}
+  .field:focus, .date-field:focus, .number-field:focus, .password-field:focus { border-color: var(--navy-primary); box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1); }
+  .field::placeholder, .password-field::placeholder { color: #94a3b8; }
+  select.field { cursor: pointer; }
+  
+  /* REDESIGNED TASK FORM */
+  .task-form { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; margin-bottom: 1.5rem; background: #f8fafc; padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border);}
+  .task-form-full { grid-column: span 2; }
+  .task-form-half { grid-column: span 1; }
 
-  .task-form { display: grid; gap: 12px; grid-template-columns: repeat(12, minmax(0, 1fr)); margin-bottom: 1.5rem; background: var(--bg-gray); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border);}
-  .field-group { display: grid; gap: 6px; }
-  .field-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
-  .span-3 { grid-column: span 3; }
-  .span-4 { grid-column: span 4; }
-  .span-6 { grid-column: span 6; }
-  .span-12 { grid-column: span 12; }
-  .align-end { align-self: end; }
   .tight-form { display: grid; gap: 10px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .canvas-form { display: grid; gap: 10px; }
   .schedule-form { display: grid; gap: 10px; grid-template-columns: 1fr 1fr 1fr auto; margin-bottom: 1rem; }
-
+  
   /* Status & Progress */
   .status-chip { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 14px; font-size: 0.75rem; letter-spacing: 0.05em; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; }
-  .status-chip.class { background: var(--navy-primary); color: var(--primary-content); }
-  .status-chip.free { background: var(--gold); color: #000000; }
-  .progress-track { margin: 12px 0 8px; height: 10px; border-radius: 999px; background: var(--border); overflow: hidden; }
+  .status-chip.class { background: rgba(15, 23, 42, 0.1); color: var(--navy-primary); }
+  .status-chip.free { background: rgba(251, 191, 36, 0.2); color: #b45309; }
+  .progress-track { margin: 12px 0 8px; height: 10px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
   .progress-fill { height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--navy-primary), var(--gold)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  
+  /* Analytics Bar Chart */
+  .analytics-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .analytics-label { width: 120px; font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--navy-primary); }
+  .analytics-bar-bg { flex: 1; height: 24px; background: #f1f5f9; border-radius: 4px; overflow: hidden; position: relative; }
+  .analytics-bar-fill { height: 100%; min-width: 4px; border-radius: 4px; transition: width 0.5s ease; }
+  .analytics-val { font-size: 0.8rem; font-weight: 700; color: var(--muted); width: 45px; text-align: right; }
 
   /* Enhanced Timer */
-  .timer-container { text-align: center; padding: 2rem 0; }
+  .timer-container { text-align: center; padding: 1.5rem 0 0.5rem 0; }
   .timer { font-size: clamp(3.5rem, 6vw, 5rem); color: var(--text-dark); font-weight: 800; font-family: "Inter", monospace; line-height: 1; margin-bottom: 1rem; letter-spacing: -0.05em; }
   .timer-controls { display: flex; justify-content: center; gap: 10px; margin-top: 1.5rem; }
 
-  /* Focus Tools */
-  .link-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-  .link-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel); color: var(--text-dark); text-decoration: none; font-weight: 700; font-size: 0.85rem; transition: 0.2s; }
-  .link-button:hover { border-color: var(--navy-primary); background: var(--bg-gray); }
-  .blocklist { display: grid; gap: 8px; }
-  .blocklist-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel); }
-  .blocklist-domain { font-weight: 600; color: var(--text-dark); font-size: 0.9rem; }
-  .audio-row { display: grid; gap: 10px; }
+  /* Audio Player Styling */
+  audio { width: 100%; margin-top: 10px; border-radius: var(--radius-md); }
+  audio::-webkit-media-controls-panel { background-color: #f1f5f9; }
 
   /* Tasks & Lists */
   .task-list, .schedule-list { display: grid; gap: 10px; }
-  .task-item { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; background: var(--panel); display: flex; gap: 12px; align-items: center; transition: all 0.2s ease; box-shadow: var(--shadow-sm);}
-  .task-item:hover { border-color: var(--navy-primary); transform: translateX(2px); }
-  .task-item.selected { border-left: 6px solid var(--gold); background: var(--bg-gray); border-color: var(--gold);}
-  .task-item.completed { opacity: 0.5; background: var(--bg-gray); filter: grayscale(0.5); }
+  .task-item { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; background: #ffffff; display: flex; gap: 12px; align-items: center; transition: all 0.2s ease; box-shadow: var(--shadow-sm);}
+  .task-item:hover { border-color: #cbd5e1; transform: translateX(2px); }
+  .task-item.selected { border-left: 6px solid var(--gold); background: #fffbeb; border-color: #fde68a;}
+  .task-item.completed { opacity: 0.6; background: #f8fafc; }
   .task-main { flex: 1; min-width: 0; }
   .task-title { font-weight: 600; font-size: 1.05rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-dark);}
   .task-item.completed .task-title { text-decoration: line-through; color: var(--muted); }
   .task-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
-
-  .pill { border-radius: 999px; padding: 4px 10px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: var(--bg-gray); color: var(--text-main); border: 1px solid var(--border);}
-  .pill.overdue { background: transparent; color: var(--danger); border-color: var(--danger); }
-  .pill.canvas { background: transparent; color: var(--canvas); border-color: var(--canvas);}
-  .pill.teamsnap { background: transparent; color: var(--navy-primary); border-color: var(--navy-primary);}
-  .task-actions { display: flex; gap: 6px; align-items: center; }
-  .submit-btn { font-size: 0.8rem; background: var(--canvas); color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
-  .submit-btn:hover { filter: brightness(0.8); transform: translateY(-1px); }
-
+  
+  .pill { border-radius: 999px; padding: 4px 10px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: #f1f5f9; color: var(--muted); border: 1px solid var(--border);}
+  .pill.overdue { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+  .pill.canvas { background: #ffe4e6; color: var(--canvas); border-color: #fecdd3;}
+  .pill.teamsnap { background: #eff6ff; color: #2563eb; border-color: #dbeafe;}
+  .task-actions { display: flex; gap: 6px; }
+  
   /* Rows & Grid items */
-  .schedule-item, .course-row, .grade-row, .skin-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 14px; background: var(--panel); }
+  .schedule-item, .course-row, .grade-row, .skin-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 14px; background: #ffffff; }
   .course-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; margin-right: 10px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); vertical-align: middle;}
-
+  
   /* Achievements */
   .achievement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-  .achievement { border-radius: var(--radius-md); border: 2px dashed var(--border); background: var(--bg-gray); opacity: 0.5; filter: grayscale(1); padding: 1rem; text-align: center; transition: 0.3s; display: flex; flex-direction: column; justify-content: center;}
-  .achievement.unlocked { opacity: 1; filter: grayscale(0); background: var(--panel); border: 2px solid var(--gold); transform: translateY(-2px); box-shadow: var(--shadow-sm);}
+  .achievement { border-radius: var(--radius-md); border: 2px solid #e2e8f0; background: #f8fafc; opacity: 0.4; filter: grayscale(1); padding: 1rem; text-align: center; transition: 0.3s; display: flex; flex-direction: column; justify-content: center;}
+  .achievement.unlocked { opacity: 1; filter: grayscale(0); background: #ffffff; border-color: var(--gold); transform: translateY(-2px); box-shadow: var(--shadow-sm);}
   .achievement strong { display: block; margin-bottom: 6px; color: var(--navy-primary); font-size: 0.95rem;}
 
   /* Calendar View */
   .calendar-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 1rem; }
-  #calendarLabel { font-size: 1.25rem; font-weight: 800; color: var(--text-dark); }
+  #calendarLabel { font-size: 1.25rem; font-weight: 800; }
   .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden;}
-  .day-header { background: var(--bg-gray); color: var(--muted); text-align: center; padding: 12px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; }
-  .day-cell { min-height: 120px; padding: 8px; background: var(--panel); display: grid; align-content: start; gap: 6px; transition: background 0.2s;}
-  .day-cell:hover { background: var(--bg-gray); }
-  .day-cell.other-month { background: var(--bg-gray); opacity: 0.6; }
-  .day-cell.today { background: var(--panel); border: 2px solid var(--navy-primary); }
-  .day-number { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;}
-  .day-cell.today .day-number { background: var(--navy-primary); color: var(--primary-content); }
+  .day-header { background: #f8fafc; text-align: center; padding: 12px; font-weight: 700; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .day-cell { min-height: 120px; padding: 8px; background: #ffffff; display: grid; align-content: start; gap: 6px; transition: background 0.2s;}
+  .day-cell:hover { background: #f8fafc; }
+  .day-cell.other-month { background: #f1f5f9; }
+  .day-cell.today { background: #fffbeb; }
+  .day-number { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 0.85rem; font-weight: 700; color: var(--muted); margin-bottom: 4px;}
+  .day-cell.today .day-number { background: var(--gold); color: var(--navy-primary); }
   .calendar-task { color: #ffffff; font-size: 0.7rem; padding: 4px 8px; border-radius: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; background: var(--navy-primary); box-shadow: var(--shadow-sm);}
-
-  /* Full Calendar Specific */
-  .full-calendar-cell { min-height: 140px; padding: 8px; border: 1px solid var(--border); background: var(--panel); overflow-y: auto; transition: box-shadow 0.2s; }
-  .full-calendar-cell:hover { box-shadow: var(--shadow-md); z-index: 2; position: relative; }
-  .full-calendar-cell.today { border: 2px solid var(--navy-primary); }
+  .calendar-task.canvas { background: var(--canvas); }
 
   /* Modals */
-  .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); z-index: 60; display: none; padding: 20px; overflow-y: auto; backdrop-filter: blur(8px);}
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); z-index: 60; display: none; padding: 20px; overflow-y: auto; backdrop-filter: blur(4px);}
   .modal-backdrop.open { display: grid; place-items: center; }
-  .modal-card { width: min(800px, 100%); background: var(--panel); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 2.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+  .modal-card { width: min(800px, 100%); background: #ffffff; border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 2.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
   .modal-card h2 { font-size: 1.5rem; font-weight: 800; color: var(--text-dark); margin-top: 0; margin-bottom: 1.5rem;}
   .modal-card ol { margin: 0 0 2rem; padding-left: 1.5rem; line-height: 1.6; color: var(--text-main); font-size: 1.05rem;}
   .modal-card li { margin-bottom: 0.75rem; }
@@ -262,17 +228,11 @@
   .token-guide { max-height: min(78vh, 820px); overflow-y: auto; }
   .token-guide h3 { margin: 0 0 10px; color: var(--navy-primary); font-size: 1rem; }
   .token-guide .guide-note { margin: 0 0 12px; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
-  .shot-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
-  .shot-card { border: 1px solid var(--border); border-radius: 10px; background: var(--bg-gray); padding: 10px; }
-  .shot-placeholder { height: 120px; border-radius: 8px; border: 1px dashed var(--muted); background: var(--panel); color: var(--muted); display: grid; place-items: center; font-size: 0.75rem; text-align: center; padding: 8px; }
-  .shot-caption { margin: 8px 0 0; font-size: 0.78rem; color: var(--text-main); line-height: 1.4; }
   
-  .canvas-table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; font-size: 0.95rem;}
-  .canvas-table th { background: var(--bg-gray); padding: 12px 16px; text-align: left; font-weight: 700; color: var(--navy-primary); border-bottom: 1px solid var(--border);}
-  .canvas-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text-dark); }
+  .canvas-table { width: 100%; border-collapse: separate; border-spacing: 0; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; font-size: 0.95rem;}
+  .canvas-table th { background: #f8fafc; padding: 12px 16px; text-align: left; font-weight: 700; color: var(--navy-primary); border-bottom: 1px solid var(--border);}
+  .canvas-table td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; }
   .canvas-table tr:last-child td { border-bottom: none; }
-
-  .submit-textarea { width: 100%; min-height: 200px; padding: 12px; background: var(--panel); color: var(--text-dark); border: 1px solid var(--border); border-radius: var(--radius-md); font-family: inherit; font-size: 0.95rem; resize: vertical; margin-bottom: 1rem; }
 
   /* Settings Layout Adjustments */
   .settings-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1.5rem; }
@@ -280,40 +240,90 @@
   /* Footer */
   .site-footer { text-align: center; padding-top: 1.5rem; padding-bottom: 0.5rem; margin-top: 2rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.85rem; }
 
-  /* ========================================================= */
-  /* PREMIUM SKINS ARCHITECTURE                                */
-  /* ========================================================= */
-
-  /* Dark Themes - High Contrast, Deep Tones, Professional */
-  body.skin-coding { --bg-gray: #0f172a; --panel: #1e293b; --text-main: #94a3b8; --text-dark: #f1f5f9; --muted: #64748b; --border: #334155; --navy-primary: #3b82f6; --primary-content: #ffffff; --gold: #10b981; }
-  body.skin-hack { --bg-gray: #090e0c; --panel: #111c18; --text-main: #6ee7b7; --text-dark: #ecfdf5; --muted: #065f46; --border: #064e3b; --navy-primary: #10b981; --primary-content: #022c22; --gold: #34d399; }
-  body.skin-midnight { --bg-gray: #09090b; --panel: #18181b; --text-main: #a1a1aa; --text-dark: #fafafa; --muted: #52525b; --border: #27272a; --navy-primary: #38bdf8; --primary-content: #0f172a; --gold: #fbbf24; }
-  body.skin-forest { --bg-gray: #1b2420; --panel: #24302a; --text-main: #a3b8af; --text-dark: #e2ede8; --muted: #4b6659; --border: #33423b; --navy-primary: #4ade80; --primary-content: #064e3b; --gold: #fbbf24; }
-  body.skin-sunset { --bg-gray: #2a1f1d; --panel: #362826; --text-main: #bda6a1; --text-dark: #f2e3e0; --muted: #6b4d47; --border: #4a3834; --navy-primary: #fb923c; --primary-content: #431407; --gold: #f43f5e; }
-  body.skin-ocean { --bg-gray: #0c192c; --panel: #13253f; --text-main: #93b3d8; --text-dark: #e2f0ff; --muted: #3a5b8c; --border: #1e3a5f; --navy-primary: #38bdf8; --primary-content: #082f49; --gold: #2dd4bf; }
-  body.skin-lavender { --bg-gray: #1e1b2e; --panel: #29253d; --text-main: #afa6c7; --text-dark: #ebe7f5; --muted: #574b7a; --border: #3b3554; --navy-primary: #a78bfa; --primary-content: #2e1065; --gold: #f472b6; }
-  body.skin-rose { --bg-gray: #2d1b22; --panel: #3d242e; --text-main: #c99ba9; --text-dark: #fce2eb; --muted: #78485a; --border: #5c3545; --navy-primary: #fb7185; --primary-content: #4c0519; --gold: #fda4af; }
-  body.skin-nord { --bg-gray: #2e3440; --panel: #3b4252; --text-main: #d8dee9; --text-dark: #eceff4; --muted: #4c566a; --border: #434c5e; --navy-primary: #88c0d0; --primary-content: #2e3440; --gold: #ebcb8b; }
-  body.skin-dracula { --bg-gray: #282a36; --panel: #44475a; --text-main: #f8f8f2; --text-dark: #ffffff; --muted: #6272a4; --border: #6272a4; --navy-primary: #bd93f9; --primary-content: #282a36; --gold: #ffb86c; }
-  body.skin-monokai { --bg-gray: #272822; --panel: #3e3d32; --text-main: #f8f8f2; --text-dark: #ffffff; --muted: #75715e; --border: #75715e; --navy-primary: #a6e22e; --primary-content: #272822; --gold: #e6db74; }
-
-  /* Elegant Light/Warm Themes */
-  body.skin-beach { --bg-gray: #fafaf9; --panel: #ffffff; --text-main: #57534e; --text-dark: #1c1917; --muted: #a8a29e; --border: #e7e5e4; --navy-primary: #0284c7; --primary-content: #ffffff; --gold: #ea580c; }
-  
-  /* Glassmorphism / Gradient Themes */
-  body.skin-rainbow { background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 50%, #faf5ff 100%); --bg-gray: rgba(255, 255, 255, 0.4); --panel: rgba(255, 255, 255, 0.85); --text-main: #334155; --text-dark: #0f172a; --muted: #64748b; --border: rgba(255, 255, 255, 0.6); --navy-primary: #4f46e5; --primary-content: #ffffff; --gold: #e11d48; }
-  body.skin-rainbow .panel { backdrop-filter: blur(12px); box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05); }
-  
-  body.skin-sparkle { background: radial-gradient(circle at 10% 20%, #1e293b, #020617); --bg-gray: rgba(15, 23, 42, 0.4); --panel: rgba(30, 41, 59, 0.7); --text-main: #94a3b8; --text-dark: #f8fafc; --muted: #475569; --border: rgba(255, 255, 255, 0.1); --navy-primary: #38bdf8; --primary-content: #0f172a; --gold: #818cf8; }
-  body.skin-sparkle .panel { backdrop-filter: blur(16px); }
-
-  body.skin-upload { background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; --panel: rgba(255, 255, 255, 0.95); --bg-gray: rgba(244, 247, 249, 0.8); }
-  body.skin-upload .panel { backdrop-filter: blur(10px); }
+  /* Skins Customization */
+  body.skin-hack { --navy-primary: #0f3d2b; --navy-light: #166534; --gold: #22c55e; --bg-gray: #040b06; --panel: #0c1a12; --text-main: #86efac; --text-dark: #bbf7d0; --muted: #4ade80; --border: #14532d; --shadow-sm: 0 0 10px rgba(34, 197, 94, 0.1); }
+  body.skin-rainbow .topbar { background: linear-gradient(90deg, #ef4444, #f59e0b, #22c55e, #06b6d4, #6366f1); border-color: transparent;}
+  body.skin-sparkle { background-image: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.9), transparent 30%), radial-gradient(circle at 80% 35%, rgba(255, 215, 0, 0.45), transparent 25%), radial-gradient(circle at 50% 80%, rgba(56, 189, 248, 0.25), transparent 30%); }
+  body.skin-beach { --bg-gray: #fff7e6; --panel: #fffef9; --navy-primary: #0f766e; --navy-light: #0ea5a4; --gold: #f59e0b; background-image: linear-gradient(180deg, #c7f9ff 0%, #fff7e6 35%, #fde68a 100%); }
+  body.skin-coding { --bg-gray: #0b1020; --panel: #111827; --text-main: #d1d5db; --text-dark: #f3f4f6; --muted: #93c5fd; --border: #1f2937; --navy-primary: #60a5fa; --gold: #34d399; }
+  body.skin-midnight {
+    --bg-gray: #020617;
+    --panel: rgba(10, 16, 31, 0.82);
+    --text-main: #dbeafe;
+    --text-dark: #f8fbff;
+    --muted: #9fb4d1;
+    --border: rgba(148, 163, 184, 0.22);
+    --navy-primary: #7dd3fc;
+    --navy-light: #38bdf8;
+    --gold: #f8e08a;
+    background:
+      radial-gradient(circle at 18% 18%, rgba(125, 211, 252, 0.13), transparent 24%),
+      radial-gradient(circle at 82% 6%, rgba(56, 189, 248, 0.14), transparent 28%),
+      radial-gradient(circle at 50% 82%, rgba(99, 102, 241, 0.16), transparent 32%),
+      linear-gradient(180deg, #020617 0%, #07111f 52%, #0b1020 100%);
+  }
+  body.skin-upload { background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; }
+  body.skin-midnight .shell { filter: drop-shadow(0 24px 40px rgba(2, 6, 23, 0.14)); }
+  body.skin-midnight #fxCanvas { opacity: 1; mix-blend-mode: screen; }
+  body.skin-midnight .topbar,
+  body.skin-midnight .panel,
+  body.skin-midnight .app-tabs,
+  body.skin-midnight .alert,
+  body.skin-midnight .empty,
+  body.skin-midnight .timeline-item,
+  body.skin-midnight .skin-row,
+  body.skin-midnight .grade-row,
+  body.skin-midnight .course-row,
+  body.skin-midnight .schedule-item,
+  body.skin-midnight .time-plan-step {
+    background: rgba(8, 15, 29, 0.72);
+    backdrop-filter: blur(18px);
+    border-color: rgba(148, 163, 184, 0.2);
+    box-shadow: 0 18px 40px rgba(2, 6, 23, 0.28);
+  }
+  body.skin-midnight .panel.hero-panel,
+  body.skin-midnight .quote-panel {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.96));
+  }
+  body.skin-midnight .button,
+  body.skin-midnight .field,
+  body.skin-midnight .number-field,
+  body.skin-midnight .date-field,
+  body.skin-midnight .icon-button {
+    background: rgba(15, 23, 42, 0.84);
+    color: #e0f2fe;
+    border-color: rgba(148, 163, 184, 0.22);
+  }
+  body.skin-midnight .button.primary {
+    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    border-color: transparent;
+    box-shadow: 0 14px 30px rgba(14, 165, 233, 0.24);
+  }
+  body.skin-midnight .button.primary:hover { background: linear-gradient(135deg, #38bdf8, #818cf8); }
+  body.skin-midnight .task-item,
+  body.skin-midnight .achievement,
+  body.skin-midnight .skin-row,
+  body.skin-midnight .grade-row,
+  body.skin-midnight .course-row,
+  body.skin-midnight .schedule-item {
+    background: rgba(15, 23, 42, 0.7);
+    border-color: rgba(148, 163, 184, 0.2);
+  }
+  body.skin-midnight .task-item.selected { box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.55), 0 16px 32px rgba(2, 6, 23, 0.24); }
+  body.skin-midnight .pill { background: rgba(15, 23, 42, 0.8); color: #e0f2fe; border-color: rgba(148, 163, 184, 0.2); }
+  body.skin-midnight .pill.overdue { background: rgba(251, 191, 36, 0.12); color: #fde68a; }
+  body.skin-midnight .time-plan-step { background: rgba(15, 23, 42, 0.72); box-shadow: 0 12px 28px rgba(2, 6, 23, 0.22); }
+  body.skin-midnight .tab-btn.active { background: linear-gradient(135deg, #0ea5e9, #6366f1); }
+  body.skin-midnight .status-chip.free { background: rgba(56, 189, 248, 0.15); color: #bfdbfe; }
+  body.skin-midnight .time-plan-step.focus { border-left-color: #67e8f9; }
+  body.skin-midnight .time-plan-step.break { border-left-color: #f8e08a; }
+  body.skin-midnight .hero-panel,
+  body.skin-midnight .quote-panel { box-shadow: 0 20px 48px rgba(2, 6, 23, 0.34); }
 
   /* Minimalist Mode */
   body.minimalist { background: #ffffff; }
   body.minimalist #fxCanvas { opacity: 0; }
-  body.minimalist .hero-panel, body.minimalist .quote-panel { display: none; }
+  body.minimalist .hero { display: none; }
   body.minimalist .settings-grid { display: none; }
   body.minimalist .section-title { display: none; }
 
@@ -321,20 +331,18 @@
   @media (max-width: 1200px) {
     .col-8, .col-6, .col-4, .col-3 { grid-column: span 12; }
     .hero { grid-template-columns: 1fr; }
-    .task-form { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    .task-form { grid-template-columns: 1fr 1fr; }
+    .task-form button { grid-column: span 2; }
   }
   @media (max-width: 760px) {
     .shell { padding: 1rem; }
     .topbar { padding: 1rem; justify-content: center;}
     .task-form { grid-template-columns: 1fr; }
-    .task-form .span-6, .task-form .span-4, .task-form .span-3 { grid-column: span 1; }
-    .task-form .align-end { justify-self: stretch; }
-    .link-grid { grid-template-columns: 1fr; }
+    .task-form-full, .task-form-half { grid-column: span 1; }
     .schedule-form, .tight-form { grid-template-columns: 1fr; }
     .calendar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); border: none; gap: 10px; background: transparent;}
     .day-header { display: none; }
-    .day-cell, .full-calendar-cell { border: 1px solid var(--border); border-radius: var(--radius-md); min-height: 95px; }
-    .shot-grid { grid-template-columns: 1fr; }
+    .day-cell { border: 1px solid var(--border); border-radius: var(--radius-md); min-height: 95px; }
   }
 </style>
 </head>
@@ -363,399 +371,326 @@
       <button id="resetAllBtn" class="button danger" type="button" style="margin-left: auto;">Reset</button>
     </div>
   </header>
-  <!-- Multi-Page Navigation -->
-  <div class="navbar">
-    <button class="nav-btn active" data-page="dashboard" onclick="navigate('dashboard')">📊 Dashboard</button>
-    <button class="nav-btn" data-page="timer" onclick="navigate('timer')">⏱️ Focus Timer</button>
-    <button class="nav-btn" data-page="calendar" onclick="navigate('calendar')">📅 Full Calendar</button>
-    <button class="nav-btn" data-page="settings" onclick="navigate('settings')">⚙️ Settings</button>
-    <button class="nav-btn" data-page="notifications" onclick="navigate('notifications')" style="position: relative;">
-      🔔 Notifications
-      <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
-    </button>
-    <button class="nav-btn" data-page="contact" onclick="navigate('contact')">💬 Contact</button>
+
+  <!-- Page Navigation Tabs -->
+  <div class="app-tabs">
+    <button class="tab-btn active" data-target="page-dashboard">Dashboard</button>
+    <button class="tab-btn" data-target="page-schedule">Daily Schedule</button>
+    <button class="tab-btn" data-target="page-lunch">Lunch Menu</button>
+    <button class="tab-btn" data-target="page-settings">Settings & Sync</button>
   </div>
 
-    <!-- DASHBOARD PAGE (Main Content) -->
-    <div id="page-dashboard" class="page active">
+  <!-- ==================== DASHBOARD PAGE ==================== -->
+  <div id="page-dashboard" class="page active">
+    <h2 class="section-title">Daily Workflow 
+      <span style="font-size: 0.85rem; font-weight: 500; color: var(--muted); border: none;">Focus on what matters.</span>
+    </h2>
+    
+    <section class="grid">
+      <!-- Hero Performance -->
+      <article class="panel hero-panel col-4">
+        <p class="eyebrow">Performance</p>
+        <h2>Mission Brief</h2>
+        <p class="helper-text">Stay schedule-aware, prioritize overdue work first, and turn free blocks into real progress.</p>
+        <div class="hero-stats">
+          <div class="stat-chip">
+            <span class="mini-text" style="color: rgba(255,255,255,0.7)">Sessions</span>
+            <strong id="heroSessions">0</strong>
+          </div>
+          <div class="stat-chip">
+            <span class="mini-text" style="color: rgba(255,255,255,0.7)">Focus Mins</span>
+            <strong id="heroMinutes">0</strong>
+          </div>
+          <div class="stat-chip">
+            <span class="mini-text" style="color: rgba(255,255,255,0.7)">Streak</span>
+            <strong id="heroStreak">0 days</strong>
+          </div>
+        </div>
+      </article>
 
-  <!-- Dashboard Workflow Area -->
-  <h2 class="section-title">Daily Workflow 
-    <span style="font-size: 0.85rem; font-weight: 500; color: var(--muted); border: none;">Focus on what matters.</span>
-  </h2>
-  
-  <section class="grid">
-    <!-- Hero Performance -->
-    <article class="panel hero-panel col-4">
-      <p class="eyebrow">Performance</p>
-      <h2>Mission Brief</h2>
-      <p class="helper-text">Stay schedule-aware, prioritize overdue work first, and turn free blocks into real progress.</p>
-      <div class="hero-stats">
-        <div class="stat-chip">
-          <span class="mini-text" style="color: rgba(255,255,255,0.7)">Sessions</span>
-          <strong id="heroSessions">0</strong>
+      <!-- KEEP IT UP SECTION -->
+      <article class="panel quote-panel col-4">
+        <p class="eyebrow" style="color: var(--gold); margin-bottom: 8px;">Keep It Up, Eagles</p>
+        <p id="motivationalQuote" class="quote-text">"Success is the sum of small efforts, repeated day in and day out."</p>
+        <p id="quoteAuthor" class="quote-author">- Robert Collier</p>
+      </article>
+
+      <!-- SCHEDULE SUMMARY -->
+      <aside class="panel col-4">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <h2>Schedule Awareness</h2>
+          <div id="scheduleChip" class="status-chip free">Free Block</div>
         </div>
-        <div class="stat-chip">
-          <span class="mini-text" style="color: rgba(255,255,255,0.7)">Focus Mins</span>
-          <strong id="heroMinutes">0</strong>
+        <div style="margin-top: 1rem;">
+          <p id="schedulePrimary" class="helper-text" style="font-size: 1.1rem; color: var(--text-dark); font-weight: 600;">Checking schedule...</p>
+          <div class="progress-track" style="margin-top: 1rem; margin-bottom: 0;">
+            <div id="scheduleProgress" class="progress-fill"></div>
+          </div>
+          <p class="mini-text" style="margin-top:8px;">View the 'Daily Schedule' tab for full class details.</p>
         </div>
-        <div class="stat-chip">
-          <span class="mini-text" style="color: rgba(255,255,255,0.7)">Streak</span>
-          <strong id="heroStreak">0 days</strong>
-        </div>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <!-- Main Task Management -->
+      <article class="panel col-8">
+        <h2>Intelligent Task Manager</h2>
+        <form id="taskForm" class="task-form">
+          <!-- Spans full width of the form -->
+          <input id="taskTitle" class="field task-form-full" type="text" placeholder="What do you need to do?" required />
+          
+          <!-- Next row items -->
+          <select id="taskCourse" class="field task-form-half"></select>
+          <input id="taskMinutes" class="number-field task-form-half" type="number" min="1" max="360" value="25" placeholder="Est. Mins" required />
+          
+          <!-- Next row items -->
+          <input id="taskDueDate" class="date-field task-form-half" type="date" required />
+          <input id="taskDueTime" class="field task-form-half" type="time" value="23:59" required />
+          
+          <!-- Full width submit button -->
+          <button class="button primary task-form-full" type="submit" style="font-size: 1.05rem; padding: 0.85rem; margin-top: 4px;">+ Add Task To Queue</button>
+        </form>
+        <div id="taskList" class="task-list"></div>
+      </article>
+
+      <!-- Right Sidebar for Workflow -->
+      <div class="col-4 stack">
+        <article class="panel">
+          <h2>Focus Center</h2>
+          <div class="timer-container">
+            <div id="timerDisplay" class="timer">25:00</div>
+            <div class="progress-track">
+              <div id="timerProgress" class="progress-fill"></div>
+            </div>
+            <p id="timerHint" class="mini-text" style="margin-top: 10px;">Ready to begin.</p>
+            
+            <div class="row" style="justify-content: center; margin-top: 15px;">
+              <label class="mini-text" style="display:flex; align-items:center; gap: 8px;">
+                Duration: <input id="timerInput" class="number-field" style="width: 80px; padding: 4px 8px; text-align: center;" type="number" min="1" max="180" value="25" />
+              </label>
+            </div>
+
+            <div class="timer-controls">
+              <button id="startPauseBtn" class="button primary" type="button" style="flex: 1;">Start Focus</button>
+              <button id="resetBtn" class="button" type="button">Reset</button>
+            </div>
+            <button id="finishBtn" class="button success" type="button" style="width: 100%; margin-top: 10px;">Log Complete Session</button>
+          </div>
+        </article>
+
+        <article class="panel time-planner-panel">
+          <h2>How much time do you have?</h2>
+          <p class="helper-text" style="margin-bottom: 12px;">Enter your available minutes and EPStudy will split them into focused work blocks, breaks, and a next-step plan.</p>
+          <div class="time-planner">
+            <label class="mini-text" for="timeBudgetInput">Minutes available</label>
+            <input id="timeBudgetInput" class="number-field" type="number" min="5" max="480" value="60" />
+            <label class="mini-text" style="display:flex; align-items:center; gap: 8px;">
+              <input id="timePlannerBreaks" type="checkbox" checked /> Include breaks
+            </label>
+            <div class="time-quick-actions">
+              <button class="button" type="button" data-time-minutes="25">25</button>
+              <button class="button" type="button" data-time-minutes="50">50</button>
+              <button class="button" type="button" data-time-minutes="90">90</button>
+            </div>
+            <button id="buildTimePlanBtn" class="button primary" type="button">Build My Plan</button>
+          </div>
+          <div id="timePlanSummary" class="mini-text" style="margin-top: 12px;"></div>
+          <div id="timePlanOutput" class="time-plan-list" style="margin-top: 12px;"></div>
+        </article>
+
+        <article class="panel">
+          <h2>Study Music Player</h2>
+          <p class="mini-text" style="margin-bottom: 12px;">Upload an mp3/m4a file from your device to listen while you work.</p>
+          <input type="file" id="musicUpload" accept="audio/*" class="field" style="padding: 0.5rem; font-size: 0.8rem; cursor: pointer;" />
+          <audio id="audioPlayer" controls style="display: none;"></audio>
+        </article>
+
+        <article class="panel" style="background: #f8fafc; border-color: var(--gold);">
+          <h2>Smart Suggestion</h2>
+          <p id="smartMessage" class="helper-text" style="font-size: 0.85rem;">Analyzing your queue...</p>
+          <p id="smartTaskMeta" class="mini-text" style="margin-top: 8px; font-weight: 700; color: var(--text-dark); font-size: 1rem;"></p>
+          <button id="useSmartTaskBtn" class="button primary" type="button" style="width: 100%; margin-top: 15px;">Select This Task</button>
+        </article>
       </div>
-    </article>
+    </section>
 
-    <!-- KEEP IT UP SECTION -->
-    <article class="panel quote-panel col-4">
-      <p class="eyebrow" style="color: var(--gold); margin-bottom: 8px;">Keep It Up, Eagles</p>
-      <p id="motivationalQuote" class="quote-text">"Success is the sum of small efforts, repeated day in and day out."</p>
-      <p id="quoteAuthor" class="quote-author">- Robert Collier</p>
-    </article>
-
-    <!-- ENHANCED SCHEDULE TIMELINE -->
-    <aside class="panel col-4">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-        <h2>Schedule Awareness</h2>
-        <div id="scheduleChip" class="status-chip free">Free Block</div>
-      </div>
-      <div style="margin-top: 1rem;">
-        <p id="schedulePrimary" class="helper-text" style="font-size: 1.1rem; color: var(--text-dark); font-weight: 600;">Checking schedule...</p>
-        <div class="progress-track" style="margin-top: 1rem; margin-bottom: 0;">
-          <div id="scheduleProgress" class="progress-fill"></div>
-        </div>
-        <div id="scheduleTimeline" class="schedule-timeline">
+    <!-- Performance Analytics -->
+    <section class="grid">
+      <article class="panel col-12">
+        <h2>Performance Analytics</h2>
+        <p class="helper-text" style="margin-bottom: 1.5rem;">Total time invested per course (based on completed tasks).</p>
+        <div id="courseAnalytics" class="stack">
           <!-- Rendered via JS -->
         </div>
-      </div>
-    </aside>
-  </section>
+      </article>
+    </section>
 
-  <section class="grid">
-    <!-- Main Task Management -->
-    <article class="panel col-8">
-      <h2>Intelligent Task Manager</h2>
-      <form id="taskForm" class="task-form">
-        <div class="field-group span-6">
-          <label class="field-label" for="taskTitle">Task</label>
-          <input id="taskTitle" class="field" type="text" placeholder="What do you need to do?" required />
+    <section class="grid">
+      <article class="panel col-12">
+        <div class="calendar-top">
+          <h2>Calendar Outline</h2>
+          <div class="row">
+            <strong id="calendarLabel" style="margin-right: 15px;"></strong>
+            <button id="calendarPrevBtn" class="button" type="button">&larr;</button>
+            <button id="calendarTodayBtn" class="button" type="button">Today</button>
+            <button id="calendarNextBtn" class="button" type="button">&rarr;</button>
+            <button id="openCalendarWindowBtn" class="button primary" type="button">Open Detailed View</button>
+          </div>
         </div>
-        <div class="field-group span-3">
-          <label class="field-label" for="taskCourse">Course</label>
-          <select id="taskCourse" class="field"></select>
-        </div>
-        <div class="field-group span-3">
-          <label class="field-label" for="taskMinutes">Minutes</label>
-          <input id="taskMinutes" class="number-field" type="number" min="1" max="360" value="25" placeholder="Mins" required />
-        </div>
-        <div class="field-group span-4">
-          <label class="field-label" for="taskDueDate">Due Date</label>
-          <input id="taskDueDate" class="date-field" type="date" required />
-        </div>
-        <div class="field-group span-4">
-          <label class="field-label" for="taskDueTime">Due Time</label>
-          <input id="taskDueTime" class="field" type="time" value="23:59" required />
-        </div>
-        <div class="field-group span-4 align-end">
-          <button class="button primary" type="submit">Add Task</button>
-        </div>
-      </form>
-      <div id="taskList" class="task-list"></div>
-    </article>
+        <div id="calendarGrid" class="calendar-grid"></div>
+      </article>
+    </section>
+  </div>
 
-    <!-- Right Sidebar for Workflow -->
-    <div class="col-4 stack">
-      <article class="panel">
-        <h2>Focus Center</h2>
-        <div class="timer-container">
-          <div id="timerDisplay" class="timer">25:00</div>
-          <div class="progress-track">
-            <div id="timerProgress" class="progress-fill"></div>
-          </div>
-          <p id="timerHint" class="mini-text" style="margin-top: 10px;">Ready to begin.</p>
-          
-          <div class="row" style="justify-content: center; margin-top: 15px;">
-            <label class="mini-text" style="display:flex; align-items:center; gap: 8px;">
-              Duration: <input id="timerInput" class="number-field" style="width: 80px; padding: 4px 8px; text-align: center;" type="number" min="1" max="180" value="25" />
-            </label>
-          </div>
+  <!-- ==================== SCHEDULE PAGE ==================== -->
+  <div id="page-schedule" class="page">
+    <h2 class="section-title">Daily EPS Schedule
+      <span style="font-size: 0.85rem; font-weight: 500; color: var(--muted); border: none;">Automatically synced.</span>
+    </h2>
+    <section class="grid">
+      <article class="panel col-12">
+        <h2 id="schedulePageDate">Today's Schedule</h2>
+        <div id="dailyScheduleContainer" class="schedule-timeline" style="margin-top: 1rem; max-width: 600px;">
+          <p class="alert">Loading today's schedule from four11...</p>
+        </div>
+      </article>
+    </section>
+  </div>
 
-          <div class="timer-controls">
-            <button id="startPauseBtn" class="button primary" type="button" style="flex: 1;">Start Focus</button>
-            <button id="resetBtn" class="button" type="button">Reset</button>
-          </div>
-          <button id="finishBtn" class="button success" type="button" style="width: 100%; margin-top: 10px;">Log Complete Session</button>
+  <!-- ==================== LUNCH PAGE ==================== -->
+  <div id="page-lunch" class="page">
+    <h2 class="section-title">EPS Lunch Menu
+      <span style="font-size: 0.85rem; font-weight: 500; color: var(--muted); border: none;">What's cooking today.</span>
+    </h2>
+    <section class="grid">
+      <article class="panel col-12">
+        <h2 id="lunchPageDate">Today's Lunch</h2>
+        <div id="lunchMenuContainer" style="margin-top: 1rem; max-width: 800px; font-size: 1.05rem; line-height: 1.6;">
+          <p class="alert">Fetching the latest lunch menu via calendar sync...</p>
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <!-- ==================== SETTINGS PAGE ==================== -->
+  <div id="page-settings" class="page">
+    <h2 class="section-title">Settings & Integrations 
+      <span style="font-size: 0.85rem; font-weight: 500; color: var(--muted); border: none;">Configure your dashboard.</span>
+    </h2>
+    
+    <section class="settings-grid">
+      <article class="panel col-4">
+        <h2>Study Resources</h2>
+        <div class="stack" style="margin-top: 1rem;">
+          <a href="https://eastsideprep.instructure.com/" target="_blank" class="button primary" style="text-align:center; text-decoration:none;">🏫 EPS Canvas Login</a>
+          <a href="https://www.britannica.com/" target="_blank" class="button" style="text-align:center; text-decoration:none;">📚 Encyclopedia Britannica</a>
+          <a href="https://www.gale.com/" target="_blank" class="button" style="text-align:center; text-decoration:none;">📖 Gale Research Databases</a>
+        </div>
+        <div class="alert" style="margin-top: 1rem; border-left: 4px solid var(--danger);">
+          <strong>Distraction Notice:</strong> Browsers do not allow a webpage to physically block other tabs (like YouTube or Poki). To fully block distractions, we recommend installing a free browser extension like <em>BlockSite</em>!
         </div>
       </article>
 
-      <article class="panel" style="background: var(--bg-gray); border-color: var(--gold);">
-        <h2>Smart Suggestion</h2>
-        <p id="smartMessage" class="helper-text" style="font-size: 0.85rem;">Analyzing your queue...</p>
-        <p id="smartTaskMeta" class="mini-text" style="margin-top: 8px; font-weight: 700; color: var(--text-dark); font-size: 1rem;"></p>
-        <button id="useSmartTaskBtn" class="button primary" type="button" style="width: 100%; margin-top: 15px;">Select This Task</button>
+      <article class="panel col-4">
+        <h2>Canvas Sync</h2>
+        <div class="canvas-form">
+          <input id="canvasDomain" class="field" type="text" placeholder="school.instructure.com" value="eastsideprep.instructure.com" />
+          <input id="canvasToken" class="password-field" type="password" placeholder="Canvas API token" title="Token auto-saves" />
+          <div class="row" style="align-items: center; margin-top: 4px;">
+            <input type="checkbox" id="canvasUseProxy" checked />
+            <label for="canvasUseProxy" class="mini-text">Use private proxy bypass</label>
+          </div>
+          <button id="canvasSyncBtn" class="button primary" type="button" style="margin-top: 8px;">Sync Canvas Todo</button>
+          <button id="canvasTokenGuideBtn" class="button help-link-btn" type="button">How to find token</button>
+        </div>
+        <p id="canvasMessage" class="alert">Enter your Canvas token to securely import assignments. (Your token automatically saves securely).</p>
       </article>
 
-      <article class="panel">
-        <h2>Focus Tools</h2>
-        <div class="stack">
-          <div>
-            <p class="mini-text" style="margin-bottom: 8px;">Study links</p>
-            <div class="link-grid" id="studyLinkGrid">
-              <button class="link-button" type="button" data-open-link="https://www.britannica.com">Britannica</button>
-              <button class="link-button" type="button" data-open-link="https://go.gale.com">Gale</button>
-              <button class="link-button" type="button" data-open-link="https://scholar.google.com">Google Scholar</button>
-              <button class="link-button" type="button" data-open-link="https://www.khanacademy.org">Khan Academy</button>
-            </div>
+      <article class="panel col-4">
+        <h2>TeamSnap Sync</h2>
+        <div class="canvas-form">
+          <input id="teamSnapTeamId" class="field" type="text" placeholder="TeamSnap Team ID" />
+          <input id="teamSnapToken" class="password-field" type="password" placeholder="TeamSnap API token" />
+          <div class="row" style="align-items: center; margin-top: 4px;">
+            <input type="checkbox" id="teamSnapUseProxy" checked />
+            <label for="teamSnapUseProxy" class="mini-text">Use private proxy bypass</label>
           </div>
-
-          <div>
-            <p class="mini-text" style="margin-bottom: 8px;">Distraction blocklist (blocks links opened from EPStudy)</p>
-            <label class="mini-text" style="display:flex; align-items:center; gap: 8px; margin-bottom: 8px; color: var(--text-dark);">
-              <input id="focusBlockerEnabled" type="checkbox" /> Enable Focus Shield
-            </label>
-            <div class="row" style="margin-bottom: 8px;">
-              <input id="blockSiteInput" class="field" type="text" placeholder="Add domain (e.g. youtube.com)" />
-              <button id="blockSiteAddBtn" class="button" type="button">Add</button>
-            </div>
-            <div id="blockerStatus" class="mini-text" style="color: var(--muted);"></div>
-            <div id="blockSiteList" class="blocklist"></div>
-          </div>
-
-          <div class="audio-row">
-            <p class="mini-text" style="margin-bottom: 6px;">Study audio</p>
-            <input id="studyAudioInput" class="field" type="file" accept="audio/*" />
-            <audio id="studyAudioPlayer" controls preload="none" style="width: 100%;"></audio>
-            <div id="studyAudioMeta" class="mini-text" style="color: var(--muted);"></div>
-          </div>
+          <button id="teamSnapSyncBtn" class="button primary" type="button" style="margin-top: 8px;">Sync TeamSnap</button>
         </div>
+        <p id="teamSnapMessage" class="alert">Imports practices/games as tasks when available.</p>
       </article>
-    </div>
-  </section>
 
-  <section class="grid">
-    <article class="panel col-12">
-      <div class="calendar-top">
-        <h2>Calendar Outline</h2>
-        <div class="row">
-          <strong id="calendarLabel" style="margin-right: 15px; color: var(--text-dark);"></strong>
-          <button id="calendarPrevBtn" class="button" type="button">&larr;</button>
-          <button id="calendarTodayBtn" class="button" type="button">Today</button>
-          <button id="calendarNextBtn" class="button" type="button">&rarr;</button>
-          <button id="openCalendarWindowBtn" class="button primary" type="button" onclick="navigate('calendar')">Open Full Calendar</button>
+      <article class="panel col-4">
+        <h2>Availability Schedule</h2>
+        <p class="mini-text" style="margin-bottom: 12px;">Define when you are free to work each day.</p>
+        <form id="scheduleSetForm" class="schedule-form">
+          <select id="scheduleDay" class="field">
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="3">Wednesday</option>
+            <option value="4">Thursday</option>
+            <option value="5">Friday</option>
+            <option value="6">Saturday</option>
+            <option value="0">Sunday</option>
+          </select>
+          <input id="scheduleStart" class="field" type="time" value="16:00" required />
+          <input id="scheduleEnd" class="field" type="time" value="18:00" required />
+          <button class="button primary" type="submit">Add</button>
+        </form>
+        <button id="weekdayCopyBtn" class="button" type="button" style="width: 100%; margin-bottom: 12px;">Copy Time To Mon-Fri</button>
+        <div id="scheduleSetList" class="schedule-list"></div>
+      </article>
+
+      <article class="panel col-4">
+        <h2>Course Management</h2>
+        <form id="courseForm" class="tight-form" style="margin-bottom: 12px;">
+          <input id="courseName" class="field" type="text" placeholder="Course Name" required style="grid-column: span 2;" />
+          <input id="courseCode" class="field" type="text" placeholder="Code" />
+          <input id="courseColor" class="field" type="color" value="#2563eb" style="padding: 2px;" />
+          <button class="button primary" type="submit" style="grid-column: span 4;">Add Course</button>
+        </form>
+        <div id="courseList" class="stack"></div>
+      </article>
+
+      <article class="panel col-4">
+        <h2>Grade Tracker</h2>
+        <form id="gradeForm" class="tight-form" style="margin-bottom: 12px;">
+          <select id="gradeCourse" class="field" style="grid-column: span 4;"></select>
+          <input id="gradeName" class="field" type="text" placeholder="Assignment Name" required style="grid-column: span 2;" />
+          <input id="gradeScore" class="number-field" type="number" min="0" max="100" placeholder="Score %" required />
+          <button class="button primary" type="submit">Save</button>
+        </form>
+        <div id="gradeList" class="stack"></div>
+      </article>
+
+      <article class="panel col-4">
+        <h2>Dashboard Skins</h2>
+        <div class="skin-select">
+          <select id="skinSelect" class="field"></select>
+          <button id="applySkinBtn" class="button primary" type="button">Apply</button>
+          <button id="uploadSkinBtn" class="button" type="button">Custom Bg</button>
         </div>
-      </div>
-      <div id="calendarGrid" class="calendar-grid"></div>
-    </article>
-  </section>
+        <input id="uploadSkinInput" type="file" accept="image/png, image/jpeg, image/webp" style="display:none;" />
+        <div class="row" style="margin: 12px 0;">
+          <label class="mini-text" style="display:flex; align-items:center; gap: 8px;">
+            <input id="confettiEnabled" type="checkbox" checked /> Enable Confetti Animations
+          </label>
+        </div>
+        <div id="skinList" class="stack"></div>
+      </article>
+      
+      <article class="panel col-8">
+        <h2>Achievements Unlocked</h2>
+        <div id="achievementGrid" class="achievement-grid"></div>
+        <p id="achievementSummary" class="alert" style="text-align: center;"></p>
+      </article>
+    </section>
+  </div>
 
-  <!-- Copyright Footer on dashboard -->
+  <!-- Copyright Footer -->
   <footer class="site-footer">
     <p>&copy; <span id="currentYear"></span> EPStudy. All rights reserved.</p>
   </footer>
-
-  </div>  <!-- End Dashboard Page -->
-
-    <!-- SETTINGS PAGE -->
-    <div id="page-settings" class="page">
-      <h2 class="section-title">Settings & Preferences</h2>
-      
-      <section class="settings-grid">
-        <article class="panel col-4">
-          <h2>Canvas Sync</h2>
-          <div class="canvas-form">
-            <input id="canvasDomain" class="field" type="text" placeholder="school.instructure.com" />
-            <input id="canvasToken" class="password-field" type="password" placeholder="Canvas API token" />
-            <div class="row" style="align-items: center; margin-top: 4px;">
-              <input type="checkbox" id="canvasUseProxy" checked />
-              <label for="canvasUseProxy" class="mini-text">Use private proxy bypass</label>
-            </div>
-            <button id="canvasSyncBtn" class="button primary" type="button" style="margin-top: 8px;">Sync Canvas Todo & Schedule</button>
-            <button id="canvasTokenGuideBtn" class="button help-link-btn" type="button">How to find token</button>
-          </div>
-          <p id="canvasMessage" class="alert">Enter domain + token to securely import assignments and events.</p>
-        </article>
-
-        <article class="panel col-4">
-          <h2>TeamSnap Sync</h2>
-          <div class="canvas-form">
-            <input id="teamSnapTeamId" class="field" type="text" placeholder="TeamSnap Team ID" />
-            <input id="teamSnapToken" class="password-field" type="password" placeholder="TeamSnap API token" />
-            <div class="row" style="align-items: center; margin-top: 4px;">
-              <input type="checkbox" id="teamSnapUseProxy" checked />
-              <label for="teamSnapUseProxy" class="mini-text">Use private proxy bypass</label>
-            </div>
-            <button id="teamSnapSyncBtn" class="button primary" type="button" style="margin-top: 8px;">Sync TeamSnap</button>
-          </div>
-          <p id="teamSnapMessage" class="alert">Imports practices/games as tasks when available.</p>
-        </article>
-
-        <article class="panel col-4">
-          <h2>Availability Schedule</h2>
-          <p class="mini-text" style="margin-bottom: 12px;">Define when you are free to work each day.</p>
-          <form id="scheduleSetForm" class="schedule-form">
-            <select id="scheduleDay" class="field">
-              <option value="1">Monday</option>
-              <option value="2">Tuesday</option>
-              <option value="3">Wednesday</option>
-              <option value="4">Thursday</option>
-              <option value="5">Friday</option>
-              <option value="6">Saturday</option>
-              <option value="0">Sunday</option>
-            </select>
-            <input id="scheduleStart" class="field" type="time" value="16:00" required />
-            <input id="scheduleEnd" class="field" type="time" value="18:00" required />
-            <button class="button primary" type="submit">Add</button>
-          </form>
-          <button id="weekdayCopyBtn" class="button" type="button" style="width: 100%; margin-bottom: 12px;">Copy Time To Mon-Fri</button>
-          <div id="scheduleSetList" class="schedule-list"></div>
-        </article>
-
-        <article class="panel col-4">
-          <h2>Course Management</h2>
-          <form id="courseForm" class="tight-form" style="margin-bottom: 12px;">
-            <input id="courseName" class="field" type="text" placeholder="Course Name" required style="grid-column: span 2;" />
-            <input id="courseCode" class="field" type="text" placeholder="Code" />
-            <input id="courseColor" class="field" type="color" value="#2563eb" style="padding: 2px;" />
-            <button class="button primary" type="submit" style="grid-column: span 4;">Add Course</button>
-          </form>
-          <div id="courseList" class="stack"></div>
-        </article>
-
-        <article class="panel col-4">
-          <h2>Grade Tracker</h2>
-          <form id="gradeForm" class="tight-form" style="margin-bottom: 12px;">
-            <select id="gradeCourse" class="field" style="grid-column: span 4;"></select>
-            <input id="gradeName" class="field" type="text" placeholder="Assignment Name" required style="grid-column: span 2;" />
-            <input id="gradeScore" class="number-field" type="number" min="0" max="100" placeholder="Score %" required />
-            <button class="button primary" type="submit">Save</button>
-          </form>
-          <div id="gradeList" class="stack"></div>
-        </article>
-
-        <article class="panel col-4">
-          <h2>Dashboard Skins</h2>
-          <div class="skin-select">
-            <select id="skinSelect" class="field"></select>
-            <button id="applySkinBtn" class="button primary" type="button">Apply</button>
-            <button id="uploadSkinBtn" class="button" type="button">Custom Bg</button>
-          </div>
-          <input id="uploadSkinInput" type="file" accept="image/png, image/jpeg, image/webp" style="display:none;" />
-          <div class="row" style="margin: 12px 0;">
-            <label class="mini-text" style="display:flex; align-items:center; gap: 8px;">
-              <input id="confettiEnabled" type="checkbox" checked /> Enable Confetti Animations
-            </label>
-            <label class="mini-text" style="display:flex; align-items:center; gap: 8px;">
-              <input id="skinLockCheckbox" type="checkbox" checked /> Restrict skins to free periods
-            </label>
-          </div>
-          <div id="skinList" class="stack"></div>
-        </article>
-        
-        <article class="panel col-12">
-          <h2>Achievements Unlocked</h2>
-          <div id="achievementGrid" class="achievement-grid"></div>
-          <p id="achievementSummary" class="alert" style="text-align: center;"></p>
-        </article>
-      </section>
-      
-      <div class="settings-grid" style="margin-top: 1.5rem;">
-        <div class="settings-card col-4">
-          <h3>Notifications</h3>
-          <p>Configure which notifications to receive</p>
-          <label style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; color: var(--text-dark);"><input type="checkbox" id="notifMembean" checked /> Membean alerts</label>
-          <label style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; color: var(--text-dark);"><input type="checkbox" id="notifQuizzes" checked /> Quiz reminders</label>
-          <label style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; color: var(--text-dark);"><input type="checkbox" id="notifAssignments" checked /> New assignments</label>
-          <label style="display: flex; gap: 8px; align-items: center; color: var(--text-dark);"><input type="checkbox" id="notifOverdue" checked /> Overdue warnings</label>
-          <label style="display: flex; gap: 8px; margin-top: 8px; align-items: center; color: var(--text-dark);"><input type="checkbox" id="notifTimerDone" checked /> Focus timer finished</label>
-        </div>
-        <div class="settings-card col-4">
-          <h3>About EPStudy</h3>
-          <p>Version 3.1 Pro - Premium Interface</p>
-          <p style="font-size: 0.85rem; margin-top: 8px;">Built for Eastside Preparatory School</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- TIMER PAGE -->
-    <div id="page-timer" class="page">
-      <h2 class="section-title">Focus Session Timer</h2>
-      <div class="panel" style="max-width: 600px; margin: 2rem auto; text-align: center;">
-        <div id="timerExpandedDisplay" class="timer-expanded">25:00</div>
-        <label style="display: block; margin: 1rem 0; font-weight: 600; color: var(--text-dark);">Session Duration (minutes)</label>
-        <input id="timerExpandedInput" type="number" min="1" max="180" value="25" class="field" style="max-width: 200px; margin: 0 auto; font-size: 1.2rem; text-align: center;">
-        <div class="timer-controls-expanded">
-          <button class="button primary" onclick="document.getElementById('startPauseExpandedBtn').click()" style="font-size: 1.1rem; padding: 12px 24px;">Start Focus</button>
-          <button class="button" onclick="document.getElementById('resetExpandedBtn').click()" style="font-size: 1rem; padding: 12px 20px;">Reset</button>
-          <button class="button success" onclick="document.getElementById('finishExpandedBtn').click()" style="font-size: 1rem; padding: 12px 20px;">Finish Session</button>
-        </div>
-        <p id="timerExpandedHint" style="margin-top: 1rem; color: var(--muted);">Ready to focus</p>
-        <div class="progress-track" style="margin-top: 2rem;">
-          <div id="timerExpandedProgress" class="progress-fill"></div>
-        </div>
-        <button id="startPauseExpandedBtn" style="display: none;"></button>
-        <button id="resetExpandedBtn" style="display: none;"></button>
-        <button id="finishExpandedBtn" style="display: none;"></button>
-      </div>
-    </div>
-
-    <!-- FULL CALENDAR PAGE -->
-    <div id="page-calendar" class="page">
-      <h2 class="section-title">Full Assignment & Event Calendar</h2>
-      <div class="calendar-header">
-        <div class="row">
-          <button id="calendarPrevBtnFull" class="button" onclick="document.getElementById('calendarPrevBtn').click()">← Previous</button>
-          <button id="calendarTodayBtnFull" class="button" onclick="document.getElementById('calendarTodayBtn').click()">Today</button>
-          <button id="calendarNextBtnFull" class="button" onclick="document.getElementById('calendarNextBtn').click()">Next →</button>
-        </div>
-        <strong id="calendarLabelFull" style="font-size: 1.5rem; font-weight: 800; color: var(--navy-primary);"></strong>
-      </div>
-      <div id="calendarGridFull" class="calendar-grid" style="margin-top: 1rem; background: transparent; border: none;"></div>
-      
-      <h3 style="margin-top: 2rem; color: var(--navy-primary);">All Upcoming Assignments</h3>
-      <div id="allAssignmentsContainer" class="calendar-all-assignments"></div>
-    </div>
-
-    <!-- NOTIFICATIONS PAGE -->
-    <div id="page-notifications" class="page">
-      <h2 class="section-title">Notifications Center</h2>
-      <div class="panel">
-        <h3>Recent Notifications</h3>
-        <div id="notificationsPanel" class="notifications-panel"></div>
-      </div>
-    </div>
-
-    <!-- CONTACT PAGE -->
-    <div id="page-contact" class="page">
-      <h2 class="section-title">Contact & Support</h2>
-      <div class="panel" style="max-width: 600px; margin: 2rem auto;">
-        <p style="color: var(--muted); margin-bottom: 1.5rem;">Have questions or feedback? Get in touch with us.</p>
-        <form class="contact-form" onsubmit="handleContactSubmit(event)">
-          <input type="text" id="contactName" placeholder="Your name" required />
-          <input type="email" id="contactEmail" placeholder="Your email" required />
-          <input type="text" id="contactSubject" placeholder="Subject" required />
-          <textarea id="contactMessage" placeholder="Your message..." required></textarea>
-          <button type="submit" class="button primary" style="font-weight: 700;">Send Message</button>
-        </form>
-        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
-          <h4 style="color: var(--navy-primary); margin-bottom: 1rem;">Support Info</h4>
-          <p style="color: var(--text-dark);">📧 Email: amehta32@eastsideprep.org (FYI this doesn't work yet)</p>
-          <p style="color: var(--text-dark);">🏫 School: Eastside Preparatory School</p>
-          <p style="color: var(--text-dark);">💻 Version: 3.1 Pro - Premium Interface</p>
-        </div>
-      </div>
-    </div>
-</div> <!-- End Shell -->
-
-<!-- Generic Prompt Modal -->
-<div id="promptModal" class="modal-backdrop" aria-hidden="true">
-  <div class="modal-card" style="max-width: 400px; padding: 2rem;">
-    <h2 id="promptTitle" style="font-size: 1.25rem;">Prompt</h2>
-    <input type="text" id="promptInput" class="field" style="margin-bottom: 1rem;" />
-    <div class="row">
-      <button id="promptConfirmBtn" class="button primary" type="button">Confirm</button>
-      <button id="promptCancelBtn" class="button" type="button">Cancel</button>
-    </div>
-  </div>
 </div>
 
 <!-- Modals -->
@@ -766,9 +701,8 @@
       <li>Set free-time windows in <b>Availability Schedule</b> so Smart Task can fit work to your day.</li>
       <li>Create <b>Courses</b> and colors, then add assignments with specific time lengths.</li>
       <li>Use the <b>Smart Suggestion</b> and <b>Focus Center</b> to auto-pick what to do next based on your schedule.</li>
-      <li>Sync your Canvas using your API token (Powered by your private Cloudflare worker). This now fetches your assignments AND schedule/events!</li>
-      <li><b>Direct Submit</b>: Upload written work back to Canvas using the built-in Text Entry push.</li>
-      <li>Upload your own images safely for custom <b>Skins</b> to personalize your workspace.</li>
+      <li>Sync your Canvas using your API token (Powered by your private Cloudflare worker).</li>
+      <li>Check the new <b>Schedule</b> and <b>Lunch Menu</b> tabs for daily updates!</li>
     </ol>
     <div class="row" style="margin-top:2rem;">
       <button id="tutorialCloseBtn" class="button primary" type="button">Get Started</button>
@@ -792,66 +726,46 @@
       <li>Keep Use private proxy bypass checked, then click Sync.</li>
     </ol>
 
-    <h3 style="margin-top:16px;">Screenshot Walkthrough</h3>
-    <div class="shot-grid">
-      <div class="shot-card">
-        <div class="shot-placeholder">Screenshot slot 1<br>Profile avatar in Canvas left nav</div>
-        <p class="shot-caption">1. Click your profile avatar (top-left area in Canvas navigation).</p>
-      </div>
-      <div class="shot-card">
-        <div class="shot-placeholder">Screenshot slot 2<br>Settings in account menu</div>
-        <p class="shot-caption">2. Select Settings from the account drawer.</p>
-      </div>
-      <div class="shot-card">
-        <div class="shot-placeholder">Screenshot slot 3<br>Approved Integrations + New Access Token</div>
-        <p class="shot-caption">3. Scroll to Approved Integrations and click + New Access Token.</p>
-      </div>
-      <div class="shot-card">
-        <div class="shot-placeholder">Screenshot slot 4<br>New Access Token dialog</div>
-        <p class="shot-caption">4. Fill Purpose/Expiration and click Generate Token.</p>
-      </div>
-      <div class="shot-card">
-        <div class="shot-placeholder">Screenshot slot 5<br>Access Token Details</div>
-        <p class="shot-caption">5. Copy the token from Access Token Details before closing.</p>
-      </div>
-      <div class="shot-card">
-        <div class="shot-placeholder">Screenshot slot 6<br>EPStudy Canvas Sync panel</div>
-        <p class="shot-caption">6. Paste token into EPStudy Canvas Sync and run sync.</p>
-      </div>
-    </div>
-
     <div class="row" style="margin-top:2rem;">
       <button id="canvasTokenCloseBtn" class="button primary" type="button">Close Guide</button>
     </div>
   </div>
 </div>
 
-<!-- NEW: Canvas Submission Modal -->
-<div id="canvasSubmitModal" class="modal-backdrop" aria-hidden="true">
-  <div class="modal-card">
-    <h2>Submit to Canvas</h2>
-    <p id="submitTaskTitle" class="helper-text" style="margin-bottom: 1rem; color: var(--navy-primary); font-weight: bold;"></p>
-    <p class="alert">Note: Currently supports Text Entry submissions. File uploads require backend storage.</p>
-    
-    <textarea id="canvasSubmissionText" class="submit-textarea" placeholder="Type your assignment response or URL here..."></textarea>
-    
-    <div class="row">
-      <button id="confirmSubmitBtn" class="button success" type="button">Push to Canvas</button>
-      <button id="cancelSubmitBtn" class="button" type="button">Cancel</button>
+<div id="canvasModal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal-card" style="width: 1100px; max-height: 90vh; display: flex; flex-direction: column; padding: 0;">
+    <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+      <h2 id="canvasModalTitle" style="margin: 0;">Canvas Style Calendar</h2>
+      <button id="canvasModalCloseBtn" class="icon-button" style="border: none; background: transparent; font-size: 1.2rem; cursor: pointer;">✕</button>
     </div>
+    <div style="overflow-y: auto; flex: 1; padding: 2rem;">
+      <table class="canvas-table">
+        <thead>
+          <tr><th>Due Date</th><th>Course</th><th>Assignment</th></tr>
+        </thead>
+        <tbody id="canvasModalBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Timer Alert Modal -->
+<div id="timerAlertModal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal-card" style="text-align: center; max-width: 450px;">
+    <h2 style="font-size: 2.2rem; color: var(--navy-primary); margin-bottom: 0.5rem;">⏰ Time's Up!</h2>
+    <p class="helper-text" style="font-size: 1.1rem; margin-bottom: 2rem;">Great job staying focused. Take a short break to recharge your brain.</p>
+    <button id="timerAlertCloseBtn" class="button primary" style="width: 100%; font-size: 1.1rem; padding: 0.8rem;">Log Session & Continue</button>
   </div>
 </div>
 
 <script>
   // STATE MANAGEMENT
-  const STORAGE_KEY = "epstudy_secure_pro_v6";
+  const STORAGE_KEY = "epstudy_secure_pro_v10";
 
   const SCHOOL_SCHEDULE = [
     { id: "P1", label: "Period 1", start: "08:30", end: "09:40" },
     { id: "P2", label: "Period 2", start: "09:55", end: "11:05" },
-    { id: "LUNCH", label: "Lunch", start: "11:05", end: "11:45" },
-    { id: "BAND", label: "Middle Band", start: "11:45", end: "12:25" },
-    { id: "P3", label: "Period 3", start: "12:25", end: "13:35" },
+    { id: "LUNCH_BAND", label: "Lunch/Band", start: "12:25", end: "13:35" },
     { id: "P4", label: "Period 4", start: "13:50", end: "15:00" }
   ];
 
@@ -867,42 +781,30 @@
   const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const LONG_DAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
+  // "Other" is now included by default!
   const DEFAULT_COURSES = [
     { id: "course-math", name: "Math", code: "MATH", color: "#2563eb" },
     { id: "course-english", name: "English", code: "ENG", color: "#ef4444" },
     { id: "course-science", name: "Science", code: "SCI", color: "#10b981" },
     { id: "course-history", name: "History", code: "HIST", color: "#f59e0b" },
-    { id: "course-other", name: "Other", code: "OTHER", color: "#64748b" }
+    { id: "course-other", name: "Other", code: "MISC", color: "#64748b" }
   ];
 
   const SKIN_LIBRARY = [
     { id: "default", label: "Professional", detail: "Default sleek look", unlock: () => true, className: "" },
     { id: "confetti", label: "Confetti Burst", detail: "Extra animations", unlock: (s) => s.sessionsCompleted >= 1, className: "" },
     { id: "coding", label: "Dark Developer", detail: "Code-blue workspace", unlock: (s) => s.focusMinutes >= 90, className: "skin-coding" },
-    { id: "hack", label: "Terminal", detail: "Sleek dark green", unlock: (s) => s.sessionsCompleted >= 8, className: "skin-hack" },
-    { id: "rainbow", label: "Pearl Glass", detail: "Elegant soft gradient", unlock: (s) => s.streakDays >= 2, className: "skin-rainbow" },
-    { id: "sparkle", label: "Midnight Slate", detail: "Deep frosted glass", unlock: (s) => s.focusMinutes >= 150, className: "skin-sparkle" },
-    { id: "beach", label: "Coastal Light", detail: "Warm neutral palette", unlock: (s) => s.tasks.filter((t) => t.completed).length >= 6, className: "skin-beach" },
-    { id: "midnight", label: "Deep Midnight", detail: "High contrast dark", unlock: (s) => s.canvasImports >= 1, className: "skin-midnight" },
-    { id: "upload", label: "Custom Upload", detail: "Your image background", unlock: (s) => s.sessionsCompleted >= 3, className: "skin-upload" },
-    { id: "forest", label: "Pine Dark", detail: "Deep earthy greens", unlock: (s) => s.focusMinutes >= 200, className: "skin-forest" },
-    { id: "sunset", label: "Dusk Warmth", detail: "Rich plum and orange", unlock: (s) => s.streakDays >= 5, className: "skin-sunset" },
-    { id: "ocean", label: "Abyss Blue", detail: "Deep marine styling", unlock: (s) => s.canvasImports >= 3, className: "skin-ocean" },
-    { id: "lavender", label: "Amethyst Dark", detail: "Elegant violet tones", unlock: (s) => s.tasks.filter((t) => t.completed).length >= 10, className: "skin-lavender" },
-    { id: "rose", label: "Rosewood", detail: "Dark blush aesthetics", unlock: (s) => s.sessionsCompleted >= 15, className: "skin-rose" },
-    { id: "nord", label: "Nord Theme", detail: "Arctic, north palettes", unlock: (s) => s.focusMinutes >= 300, className: "skin-nord" },
-    { id: "dracula", label: "Dracula Theme", detail: "Vibrant on dark", unlock: (s) => s.streakDays >= 7, className: "skin-dracula" },
-    { id: "monokai", label: "Monokai Theme", detail: "High contrast colors", unlock: (s) => s.canvasImports >= 5, className: "skin-monokai" }
+    { id: "hack", label: "Terminal Matrix", detail: "Green terminal glow", unlock: (s) => s.sessionsCompleted >= 8, className: "skin-hack" },
+    { id: "rainbow", label: "Spectrum", detail: "Rainbow header", unlock: (s) => s.streakDays >= 2, className: "skin-rainbow" },
+    { id: "sparkle", label: "Starlight", detail: "Starry background", unlock: (s) => s.focusMinutes >= 150, className: "skin-sparkle" },
+    { id: "beach", label: "Coastal Warmth", detail: "Warm beach palette", unlock: (s) => s.tasks.filter((t) => t.completed).length >= 6, className: "skin-beach" },
+    { id: "midnight", label: "Deep Midnight", detail: "Dark mode dashboard", unlock: (s) => s.canvasImports >= 1, className: "skin-midnight" },
+    { id: "upload", label: "Custom Upload", detail: "Your image background", unlock: (s) => s.sessionsCompleted >= 3, className: "skin-upload" }
   ];
 
   const MOCK_CANVAS_ITEMS = [
     { title: "MOCK: History Essay - 120 mins", due_at: new Date(Date.now() + 2 * 86400000).toISOString() },
     { title: "MOCK: Physics Worksheet - 35 mins", due_at: new Date(Date.now() + 86400000).toISOString() }
-  ];
-
-  const MOCK_TEAMSNAP_ITEMS = [
-    { title: "MOCK: Soccer Practice", start_at: new Date(Date.now() + 36 * 3600000).toISOString(), minutes: 90 },
-    { title: "MOCK: Game Review", start_at: new Date(Date.now() + 72 * 3600000).toISOString(), minutes: 45 }
   ];
 
   const MOTIVATIONAL_QUOTES = [
@@ -916,6 +818,26 @@
     { text: "Soar higher today than you did yesterday.", author: "EPS Spirit" }
   ];
 
+  const state = loadState();
+
+  let timerDurationSeconds = Math.max(1, Number(state.timerMinutes || 25)) * 60;
+  let timerRemainingSeconds = timerDurationSeconds;
+  let timerInterval = null;
+  let lastAutoFilledTaskId = null;
+
+  const fxCanvas = document.getElementById("fxCanvas");
+  const fxCtx = fxCanvas.getContext("2d");
+  let confetti = [];
+  let fxAnimationRunning = false;
+
+  let cachedDailySchedule = null;
+  let cachedDailyLunch = null;
+  let starfield = [];
+  let timePlannerDismissedTaskIds = new Set();
+  
+  // THE PROXY
+  const myProxy = "https://canvas-token.aarinikmehta.workers.dev"; 
+
   function defaultState() {
     const now = new Date();
     return {
@@ -923,16 +845,10 @@
       sessionsCompleted: 0, focusMinutes: 0, streakDays: 0, lastSessionDate: null,
       canvasImports: 0, teamsnapImports: 0, minimalist: false, tutorialSeen: false,
       selectedSkin: "default", customSkinImage: "", confettiEnabled: true,
+      canvasToken: "", teamsnapToken: "", canvasDomain: "eastsideprep.instructure.com",
       calendarYear: now.getFullYear(), calendarMonth: now.getMonth(), timerMinutes: 25,
-      availabilityByDay: { "0": [], "1": [{ start: "16:00", end: "18:00" }], "2": [{ start: "16:00", end: "18:00" }], "3": [{ start: "16:00", end: "18:00" }], "4": [{ start: "16:00", end: "18:00" }], "5": [{ start: "16:00", end: "18:00" }], "6": [] },
-      canvasEvents: [],
-      notifications: [],
-      notificationSettings: { membean: true, quizzes: true, assignments: true, overdue: true, timerdone: true },
-      currentPage: "dashboard",
-      skinChangeRestrictedToFreePeriods: true,
-      focusBlockerEnabled: true,
-      blockedSites: ["youtube.com", "music.youtube.com", "spotify.com", "poki.com", "crazygames.com"],
-      studyAudioName: ""
+      timePlannerBreaks: true,
+      availabilityByDay: { "0": [], "1": [{ start: "16:00", end: "18:00" }], "2": [{ start: "16:00", end: "18:00" }], "3": [{ start: "16:00", end: "18:00" }], "4": [{ start: "16:00", end: "18:00" }], "5": [{ start: "16:00", end: "18:00" }], "6": [] }
     };
   }
 
@@ -946,13 +862,13 @@
       merged.tasks = Array.isArray(merged.tasks) ? merged.tasks : [];
       merged.courses = Array.isArray(merged.courses) && merged.courses.length > 0 ? merged.courses : [...DEFAULT_COURSES];
       merged.grades = Array.isArray(merged.grades) ? merged.grades : [];
-      merged.canvasEvents = Array.isArray(merged.canvasEvents) ? merged.canvasEvents : [];
       merged.availabilityByDay = typeof merged.availabilityByDay === "object" && merged.availabilityByDay ? merged.availabilityByDay : base.availabilityByDay;
-      merged.notificationSettings = { ...base.notificationSettings, ...(merged.notificationSettings || {}) };
-      merged.focusBlockerEnabled = typeof merged.focusBlockerEnabled === "boolean" ? merged.focusBlockerEnabled : base.focusBlockerEnabled;
-      merged.blockedSites = Array.isArray(merged.blockedSites) && merged.blockedSites.length ? merged.blockedSites : base.blockedSites.slice();
-      merged.blockedSites = merged.blockedSites.map(normalizeDomain).filter(Boolean);
-      merged.studyAudioName = typeof merged.studyAudioName === "string" ? merged.studyAudioName : "";
+      merged.timePlannerBreaks = merged.timePlannerBreaks !== false;
+
+      // Ensure "Other" course always exists in old profiles
+      if (!merged.courses.find(c => c.code === "MISC")) {
+        merged.courses.push({ id: "course-other", name: "Other", code: "MISC", color: "#64748b" });
+      }
 
       merged.courses = merged.courses.map((c, i) => ({
         id: c?.id ? String(c.id) : `course-${i}-${Math.random().toString(16).slice(2, 6)}`,
@@ -993,82 +909,9 @@
 
   function saveState() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } 
-    catch (e) { console.error("Failed to save state. Storage might be full.", e); }
+    catch (e) { console.error("Failed to save state.", e); }
   }
 
-  const state = loadState();
-
-  let timerDurationSeconds = Math.max(1, Number(state.timerMinutes || 25)) * 60;
-  let timerRemainingSeconds = timerDurationSeconds;
-  let timerInterval = null;
-  let lastAutoFilledTaskId = null;
-  let currentSubmissionTask = null; // Used for Canvas Text Submission
-  let studyAudioObjectUrl = "";
-
-  const fxCanvas = document.getElementById("fxCanvas");
-  const fxCtx = fxCanvas.getContext("2d");
-  let confetti = [];
-  let fxAnimationRunning = false;
-
-  // Generic Prompt Logic
-  let promptCallback = null;
-  function showPrompt(message, defaultVal, callback) {
-    const pm = document.getElementById("promptModal");
-    if(!pm) return;
-    document.getElementById("promptTitle").textContent = message;
-    const input = document.getElementById("promptInput");
-    input.value = defaultVal || "";
-    promptCallback = callback;
-    pm.classList.add("open");
-    input.focus();
-  }
-
-  document.getElementById("promptConfirmBtn")?.addEventListener("click", () => {
-    document.getElementById("promptModal")?.classList.remove("open");
-    if(promptCallback) promptCallback(document.getElementById("promptInput")?.value);
-  });
-
-  document.getElementById("promptCancelBtn")?.addEventListener("click", () => {
-    document.getElementById("promptModal")?.classList.remove("open");
-    if(promptCallback) promptCallback(null);
-  });
-
-  // ROUTING VIA HISTORY API
-  function navigate(page, updateHistory = true) {
-    state.currentPage = page;
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
-    
-    const target = document.getElementById(`page-${page}`);
-    if (target) target.classList.add("active");
-    
-    const btn = document.querySelector(`[data-page="${page}"]`);
-    if (btn) btn.classList.add("active");
-    
-    if (updateHistory) {
-      try {
-        const url = new URL(window.location);
-        url.searchParams.set("page", page);
-        window.history.pushState({ page }, "", url);
-      } catch (e) {
-        // Safe fallback for iframe or blob environments where pushState throws SecurityError
-        console.warn("Skipping URL pushState update due to environment restrictions.", e);
-      }
-    }
-    saveState();
-  }
-
-  window.addEventListener("popstate", (e) => {
-    const page = e.state?.page || new URLSearchParams(window.location.search).get("page") || "dashboard";
-    navigate(page, false);
-  });
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const startPage = new URLSearchParams(window.location.search).get("page") || state.currentPage || "dashboard";
-    navigate(startPage, false);
-  });
-
-  // UTILITIES
   function isValidTime(value) { return /^([01]\d|2[0-3]):([0-5]\d)$/.test(String(value || "")); }
   function safeIsoFromDateTime(dateValue, timeValue) {
     if (!dateValue || !isValidTime(timeValue)) return null;
@@ -1091,29 +934,6 @@
   function getAvailabilityStatus(date = new Date()) {
     const day = date.getDay();
     const now = nowMinutes(date);
-    const nowTime = date.getTime();
-    
-    const activeCanvasStudy = (state.canvasEvents || []).find(e => {
-        if(!/study|free|independent|work/i.test(e.title)) return false;
-        const s = new Date(e.start_at).getTime();
-        const en = new Date(e.end_at).getTime();
-        return nowTime >= s && nowTime < en;
-    });
-
-    if (activeCanvasStudy) {
-        const dEnd = new Date(activeCanvasStudy.end_at);
-        const availableMinutes = Math.max(0, Math.floor((dEnd.getTime() - nowTime)/60000));
-        return { 
-            isFreeNow: true, 
-            currentWindow: { 
-                start: `${String(new Date(activeCanvasStudy.start_at).getHours()).padStart(2,'0')}:${String(new Date(activeCanvasStudy.start_at).getMinutes()).padStart(2,'0')}`, 
-                end: `${String(dEnd.getHours()).padStart(2,'0')}:${String(dEnd.getMinutes()).padStart(2,'0')}` 
-            }, 
-            availableMinutes, 
-            nextWindow: null 
-        };
-    }
-
     const windows = getDayWindows(day);
     const active = windows.find(w => now >= toMinutes(w.start) && now < toMinutes(w.end));
     
@@ -1124,20 +944,6 @@
 
   function getScheduleStatus(date = new Date()) {
     const now = nowMinutes(date);
-    const nowTime = date.getTime();
-    
-    const activeCanvasStudy = (state.canvasEvents || []).find(e => {
-        if(!/study|free|independent|work/i.test(e.title)) return false;
-        const s = new Date(e.start_at).getTime();
-        const en = new Date(e.end_at).getTime();
-        return nowTime >= s && nowTime < en;
-    });
-
-    if (activeCanvasStudy) {
-        const dEnd = new Date(activeCanvasStudy.end_at);
-        return { inClass: false, isStudyHall: true, currentBlock: null, freeMinutes: Math.max(0, Math.floor((dEnd.getTime() - nowTime)/60000)), progress: 100 };
-    }
-
     const currentBlock = SCHOOL_SCHEDULE.find(b => now >= toMinutes(b.start) && now < toMinutes(b.end));
     if (currentBlock) {
       const s = toMinutes(currentBlock.start), e = toMinutes(currentBlock.end);
@@ -1172,7 +978,7 @@
 
   function pickSmartTask(ref = new Date()) {
     const classStatus = getScheduleStatus(ref);
-    if (classStatus.inClass && !classStatus.isStudyHall) return { message: `You are currently in ${classStatus.currentBlock.label}. Focus on class.`, task: null };
+    if (classStatus.inClass) return { message: `You are currently in ${classStatus.currentBlock.label}. Focus on class.`, task: null };
     
     const pending = openTasksSorted(ref);
     if (pending.length === 0) return { message: "Queue empty. Add a task to get started.", task: null };
@@ -1203,80 +1009,136 @@
 
   function escapeHtml(str) { return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])); }
   function getCourseById(id) { return state.courses.find(c => c.id === id) || null; }
-  function normalizeDomain(value) {
-    return String(value || "").trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/$/, "");
-  }
 
-  function isBlockedUrl(url) {
-    if (!state.focusBlockerEnabled) return false;
-    const hostname = normalizeDomain(new URL(url, window.location.origin).hostname);
-    return state.blockedSites.some(site => hostname === normalizeDomain(site) || hostname.endsWith(`.${normalizeDomain(site)}`));
-  }
+  /* API FETCHERS (SCHEDULE & LUNCH) */
 
-  function openLinkWithBlocker(url) {
-    if (isBlockedUrl(url)) {
-      addNotification(`Focus Shield blocked ${url}`, "warning", 4000);
-      const status = document.getElementById("blockerStatus");
-      if (status) status.textContent = `Blocked: ${url}`;
-      return;
+  async function fetchLunchForDate(date) {
+    if (date.getDay() === 0 || date.getDay() === 6) return { summary: "Weekend", description: "No lunch service on weekends." };
+    
+    const targetDateStr = date.getFullYear() + String(date.getMonth() + 1).padStart(2, '0') + String(date.getDate()).padStart(2, '0');
+    const url = `http://www.eastsideprep.org/?post_type=tribe_events&ical=1&eventDisplay=list&tribe_events_cat=lunch`;
+    const proxyUrl = `${myProxy}/?url=${encodeURIComponent(url)}`;
+    
+    try {
+      const res = await fetch(proxyUrl);
+      if (!res.ok) throw new Error("Failed to fetch ICS");
+      const text = await res.text();
+      
+      const unfolded = text.replace(/\r\n /g, '');
+      const events = unfolded.split('BEGIN:VEVENT');
+      
+      for(let i=1; i<events.length; i++) {
+        if (events[i].includes(`DTSTART;TZID=America/Los_Angeles:${targetDateStr}`) || events[i].includes(`DTSTART;VALUE=DATE:${targetDateStr}`)) {
+          const sMatch = events[i].match(/SUMMARY:(.*)/);
+          const dMatch = events[i].match(/DESCRIPTION:(.*)/);
+          return {
+            summary: sMatch ? sMatch[1].trim() : 'Lunch Details',
+            description: dMatch ? dMatch[1].trim().replace(/\\n/g, '<br>').replace(/\\,/g, ',') : 'No description provided.'
+          };
+        }
+      }
+      return { summary: "No Menu Found", description: "Could not find lunch menu for today in the calendar." };
+    } catch (e) {
+      return { summary: "Error", description: "Unable to load lunch menu." };
     }
-    window.open(url, "_blank", "noopener,noreferrer");
   }
 
-  function renderBlocklist() {
-    const list = document.getElementById("blockSiteList");
-    if (!list) return;
-    const items = state.blockedSites.map(site => `
-      <div class="blocklist-item">
-        <span class="blocklist-domain">${escapeHtml(site)}</span>
-        <button class="icon-button" data-action="remove-block" data-domain="${site}">✕</button>
-      </div>
-    `).join("");
-    list.innerHTML = items || "<p class='empty'>No blocked sites yet.</p>";
-  }
-
-  function setStudyAudio(file) {
-    const player = document.getElementById("studyAudioPlayer");
-    const meta = document.getElementById("studyAudioMeta");
-    if (!player || !meta) return;
-    if (studyAudioObjectUrl) URL.revokeObjectURL(studyAudioObjectUrl);
-    if (!file) {
-      player.removeAttribute("src");
-      player.load();
-      meta.textContent = "";
-      state.studyAudioName = "";
-      saveState();
-      return;
+  async function fetchScheduleForDate(date) {
+    if (date.getDay() === 0 || date.getDay() === 6) return null;
+    
+    const dateStr = date.toISOString().slice(0, 10);
+    const url = `https://four11.eastsideprep.org/epsnet/schedule_for_date?date=${dateStr}`;
+    const proxyUrl = `${myProxy}/?url=${encodeURIComponent(url)}`;
+    
+    try {
+      const res = await fetch(proxyUrl);
+      if (!res.ok) throw new Error("Failed to fetch schedule");
+      const data = await res.json();
+      return data;
+    } catch(e) {
+      return null;
     }
-    studyAudioObjectUrl = URL.createObjectURL(file);
-    player.src = studyAudioObjectUrl;
-    state.studyAudioName = file.name || "Local audio";
-    meta.textContent = `Loaded: ${state.studyAudioName}`;
-    saveState();
   }
 
-  // UI RENDERERS
+  async function loadDailyInfo() {
+    const today = new Date();
+    document.getElementById("schedulePageDate").textContent = `Schedule: ${today.toLocaleDateString()}`;
+    document.getElementById("lunchPageDate").textContent = `Menu: ${today.toLocaleDateString()}`;
+    
+    cachedDailyLunch = await fetchLunchForDate(today);
+    cachedDailySchedule = await fetchScheduleForDate(today);
+    renderDailyPages();
+  }
+
+  /* RENDERERS */
+
+  function renderDailyPages() {
+    // Render Lunch
+    const lunchDiv = document.getElementById("lunchMenuContainer");
+    if (cachedDailyLunch) {
+      lunchDiv.innerHTML = `<div style="background: #ffffff; padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+        <h3 style="margin-top:0; color: var(--navy-primary); font-size: 1.5rem;">${escapeHtml(cachedDailyLunch.summary)}</h3>
+        <div style="color: var(--text-main); font-size: 1.1rem; line-height: 1.8;">${cachedDailyLunch.description}</div>
+      </div>`;
+    }
+
+    // Render Schedule
+    const schedDiv = document.getElementById("dailyScheduleContainer");
+    if (!cachedDailySchedule || (!Array.isArray(cachedDailySchedule) && !cachedDailySchedule.classes)) {
+      schedDiv.innerHTML = "<p class='empty'>No active schedule for today (or it's the weekend).</p>";
+    } else {
+      const list = Array.isArray(cachedDailySchedule) ? cachedDailySchedule : (cachedDailySchedule.classes || []);
+      if(list.length > 0) {
+        let html = '<div class="stack">';
+        list.forEach(item => {
+            const periodName = item.period ? `Period ${item.period}` : (item.name || 'Block');
+            // Try to match period to Canvas course
+            const cMatch = state.courses.find(c => c.name.includes(periodName) || c.code.includes(periodName));
+            const cPill = cMatch ? `<span class='pill' style='background:${cMatch.color}15;color:${cMatch.color};border-color:${cMatch.color}40'>${escapeHtml(cMatch.name)}</span>` : "";
+
+            html += `<div class="timeline-item" style="padding: 1rem; font-size: 1rem;">
+                <strong style="min-width: 150px; color: var(--navy-primary);">${escapeHtml(periodName)}</strong> 
+                <span class="timeline-time" style="margin-right: 15px;">${escapeHtml(item.start_time || '')} - ${escapeHtml(item.end_time || '')}</span>
+                ${cPill}
+              </div>`;
+        });
+        html += '</div>';
+        schedDiv.innerHTML = html;
+      } else {
+        schedDiv.innerHTML = "<p class='empty'>No classes scheduled today.</p>";
+      }
+    }
+  }
+
   function renderHeaderStats() {
-    const hs = document.getElementById("heroSessions"); if (hs) hs.textContent = String(state.sessionsCompleted);
-    const hm = document.getElementById("heroMinutes"); if (hm) hm.textContent = String(state.focusMinutes);
-    const hstr = document.getElementById("heroStreak"); if (hstr) hstr.textContent = `${state.streakDays}`;
-    const cd = document.getElementById("clearDoneBtn"); if (cd) cd.textContent = `Clear Done (${state.tasks.filter(t => t.completed).length})`;
+    document.getElementById("heroSessions").textContent = String(state.sessionsCompleted);
+    document.getElementById("heroMinutes").textContent = String(state.focusMinutes);
+    document.getElementById("heroStreak").textContent = `${state.streakDays}`;
+    document.getElementById("clearDoneBtn").textContent = `Clear Done (${state.tasks.filter(t => t.completed).length})`;
   }
 
   function renderScheduleCard() {
-    const status = getScheduleStatus(), avail = getAvailabilityStatus();
-    const chip = document.getElementById("scheduleChip"), prim = document.getElementById("schedulePrimary"), prog = document.getElementById("scheduleProgress"), timeline = document.getElementById("scheduleTimeline");
-    if (!chip || !prim || !prog || !timeline) return;
+    const today = new Date();
+    const isWeekend = today.getDay() === 0 || today.getDay() === 6;
     
-    if (status.inClass && !status.isStudyHall) {
+    const status = getScheduleStatus(today), avail = getAvailabilityStatus(today);
+    const chip = document.getElementById("scheduleChip"), prim = document.getElementById("schedulePrimary"), prog = document.getElementById("scheduleProgress"), timeline = document.getElementById("scheduleTimeline");
+    
+    // Failsafe: Prevent crashes if the DOM isn't fully loaded
+    if (!chip || !prim || !prog) return; 
+
+    if (isWeekend) {
+      chip.className = "status-chip free"; 
+      chip.textContent = "FREE";
+      prim.textContent = "It's the weekend! Enjoy your free time.";
+      prog.style.width = "100%";
+    } else if (status.inClass) {
       chip.className = "status-chip class"; chip.textContent = "In Class";
       prim.textContent = `${status.currentBlock.label} ends in ${status.minutesLeft}m`;
       prog.style.width = `${status.progress}%`;
     } else {
       chip.className = "status-chip free"; chip.textContent = "Free Block";
-      if (status.isStudyHall) {
-        prim.textContent = `Study Hall active! ${status.freeMinutes}m left.`;
-      } else if (avail.isFreeNow && avail.currentWindow) {
+      if (avail.isFreeNow && avail.currentWindow) {
         prim.textContent = `Study Window: ${toTimeLabel(avail.currentWindow.start)}-${toTimeLabel(avail.currentWindow.end)}`;
       } else if (avail.nextWindow) {
         prim.textContent = `Next block: ${toTimeLabel(avail.nextWindow.start)}-${toTimeLabel(avail.nextWindow.end)}`;
@@ -1288,63 +1150,45 @@
       prog.style.width = "100%";
     }
 
-    const now = nowMinutes(new Date());
-    const todayStr = new Date().toISOString().slice(0, 10);
-    const todaysEvents = (state.canvasEvents || []).filter(e => e.start_at && e.start_at.startsWith(todayStr)).map(e => {
-        const dStart = new Date(e.start_at);
-        const dEnd = new Date(e.end_at);
-        return {
-            id: `evt-${e.id}`,
-            label: e.title,
-            start: `${String(dStart.getHours()).padStart(2, '0')}:${String(dStart.getMinutes()).padStart(2, '0')}`,
-            end: `${String(dEnd.getHours()).padStart(2, '0')}:${String(dEnd.getMinutes()).padStart(2, '0')}`,
-            isCanvas: true
-        };
-    });
-
-    const combinedSchedule = [...SCHOOL_SCHEDULE, ...todaysEvents].sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
-
-    timeline.innerHTML = combinedSchedule.map(block => {
-      const start = toMinutes(block.start);
-      const end = toMinutes(block.end);
-      let stateClass = "";
-      
-      if (now >= end) stateClass = "past";
-      else if (now >= start && now < end) stateClass = "active";
-      
-      const labelText = block.isCanvas ? `📅 ${escapeHtml(block.label)}` : escapeHtml(block.label);
-
-      return `<div class="timeline-item ${stateClass}">
-        <span class="timeline-time">${toTimeLabel(block.start)}</span>
-        <span class="timeline-name">${labelText}</span>
-      </div>`;
-    }).join("");
+    if (timeline) {
+      if (isWeekend) {
+        timeline.innerHTML = "<p class='empty'>No classes today. Enjoy your weekend!</p>";
+      } else {
+        const now = nowMinutes(today);
+        timeline.innerHTML = SCHOOL_SCHEDULE.map(block => {
+          const start = toMinutes(block.start);
+          const end = toMinutes(block.end);
+          let stateClass = "";
+          
+          if (now >= end) stateClass = "past";
+          else if (now >= start && now < end) stateClass = "active";
+          
+          return `<div class="timeline-item ${stateClass}">
+            <span class="timeline-time">${toTimeLabel(block.start)}</span>
+            <span class="timeline-name">${block.label}</span>
+          </div>`;
+        }).join("");
+      }
+    }
   }
 
   function renderTaskList() {
     const container = document.getElementById("taskList");
-    if (!container) return;
     if (!state.tasks.length) return container.innerHTML = "<p class='empty'>No tasks found. Add a task to build your queue.</p>";
     
     const sorted = [...state.tasks].sort((a, b) => a.completed !== b.completed ? (a.completed ? 1 : -1) : new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     container.innerHTML = sorted.map(t => {
       const sel = t.id === state.selectedTaskId, od = !t.completed && isOverdue(t);
       const c = getCourseById(t.courseId);
-      const isCanvas = t.source === "canvas";
-      
       const cPill = c ? `<span class='pill' style='background:${c.color}15;color:${c.color};border-color:${c.color}40'>${escapeHtml(c.code || c.name)}</span>` : "";
-      const sPill = isCanvas ? "<span class='pill canvas'>Canvas</span>" : (t.source === "teamsnap" ? "<span class='pill teamsnap'>TeamSnap</span>" : "");
+      const sPill = t.source === "canvas" ? "<span class='pill canvas'>Canvas</span>" : (t.source === "teamsnap" ? "<span class='pill teamsnap'>TeamSnap</span>" : "");
       
-      // Don't show submit button for Calendar Events (identified by 📅)
-      const canSubmit = isCanvas && !t.completed && !t.title.includes("📅");
-
       return `<div class="task-item ${sel ? "selected" : ""} ${t.completed ? "completed" : ""}">
         <div class="task-main">
           <div class="task-title">${escapeHtml(t.title)}</div>
           <div class="task-meta"><span>${t.estimatedMinutes}m</span><span>&bull;</span><span>${normalizeDueDate(t.dueDate)}</span>${cPill}${od ? "<span class='pill overdue'>Overdue</span>" : ""}${sPill}</div>
         </div>
         <div class="task-actions">
-          ${canSubmit ? `<button class="submit-btn" data-action="submit" data-id="${t.id}">Upload</button>` : ""}
           <button class="icon-button" data-action="select" data-id="${t.id}" title="Select Task">🎯</button>
           <button class="icon-button" data-action="edit" data-id="${t.id}" title="Edit Time">⏱️</button>
           <button class="icon-button" data-action="toggle" data-id="${t.id}" title="Toggle Done">${t.completed ? "↺" : "✓"}</button>
@@ -1356,11 +1200,38 @@
 
   function renderSmartCard() {
     const smart = pickSmartTask(), msg = document.getElementById("smartMessage"), meta = document.getElementById("smartTaskMeta");
-    if (!msg || !meta) return;
     msg.textContent = smart.message;
     if (!smart.task) { meta.textContent = ""; return maybeAutofillTimer(null); }
     meta.textContent = `${smart.task.title} (${smart.task.estimatedMinutes}m)`;
     maybeAutofillTimer(state.tasks.find(t => t.id === state.selectedTaskId) || smart.task);
+  }
+
+  function renderCourseAnalytics() {
+    const container = document.getElementById("courseAnalytics");
+    if(!container) return;
+    const completed = state.tasks.filter(t => t.completed);
+    if(completed.length === 0) {
+        container.innerHTML = "<p class='empty'>Complete some tasks to see your analytics here.</p>";
+        return;
+    }
+    const courseMins = {};
+    completed.forEach(t => {
+        courseMins[t.courseId] = (courseMins[t.courseId] || 0) + t.estimatedMinutes;
+    });
+    const maxMins = Math.max(...Object.values(courseMins), 1);
+    let html = "";
+    for (const [cId, mins] of Object.entries(courseMins)) {
+        const c = getCourseById(cId) || { name: 'Unknown', color: '#64748b' };
+        const pct = (mins / maxMins) * 100;
+        html += `<div class="analytics-row">
+            <span class="analytics-label" title="${escapeHtml(c.name)}">${escapeHtml(c.name)}</span>
+            <div class="analytics-bar-bg">
+                <div class="analytics-bar-fill" style="width: ${pct}%; background: ${c.color}"></div>
+            </div>
+            <span class="analytics-val">${mins}m</span>
+        </div>`;
+    }
+    container.innerHTML = html;
   }
 
   function maybeAutofillTimer(task) {
@@ -1372,54 +1243,61 @@
   function updateTimerUi() {
     const total = Math.max(1, timerDurationSeconds);
     const pct = Math.min(100, Math.max(0, ((total - timerRemainingSeconds) / total) * 100));
-    const timeStr = `${String(Math.floor(timerRemainingSeconds / 60)).padStart(2, "0")}:${String(timerRemainingSeconds % 60).padStart(2, "0")}`;
-    
-    const td = document.getElementById("timerDisplay"); if (td) td.textContent = timeStr;
-    const tp = document.getElementById("timerProgress"); if (tp) tp.style.width = `${pct}%`;
-    
-    const ted = document.getElementById("timerExpandedDisplay"); if (ted) ted.textContent = timeStr;
-    const tep = document.getElementById("timerExpandedProgress"); if (tep) tep.style.width = `${pct}%`;
+    document.getElementById("timerDisplay").textContent = `${String(Math.floor(timerRemainingSeconds / 60)).padStart(2, "0")}:${String(timerRemainingSeconds % 60).padStart(2, "0")}`;
+    document.getElementById("timerProgress").style.width = `${pct}%`;
   }
 
   function setTimerFromMinutes(mins, silent = false) {
     const m = Math.max(1, Number(mins) || 25);
     state.timerMinutes = m; timerDurationSeconds = m * 60; timerRemainingSeconds = timerDurationSeconds;
-    const ti = document.getElementById("timerInput"); if (ti) ti.value = String(m);
+    document.getElementById("timerInput").value = String(m);
     updateTimerUi();
-    const th = document.getElementById("timerHint"); if (th && !silent) th.textContent = `Timer set to ${m} minutes.`;
+    if (!silent) document.getElementById("timerHint").textContent = `Timer set to ${m} minutes.`;
     saveState();
   }
 
+  function requestNotificationPermission() {
+    if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+      Notification.requestPermission();
+    }
+  }
+
   function toggleTimer() {
+    requestNotificationPermission(); // Ask permission if not yet granted
     const btn = document.getElementById("startPauseBtn");
-    const th = document.getElementById("timerHint");
     if (timerInterval) {
-      clearInterval(timerInterval); timerInterval = null; 
-      if (btn) btn.textContent = "Resume Focus";
-      if (th) th.textContent = "Timer paused.";
+      clearInterval(timerInterval); timerInterval = null; btn.textContent = "Resume Focus";
+      document.getElementById("timerHint").textContent = "Timer paused.";
     } else {
       if (timerRemainingSeconds <= 0) timerRemainingSeconds = timerDurationSeconds;
       timerInterval = window.setInterval(() => {
         timerRemainingSeconds--; updateTimerUi();
-        if (timerRemainingSeconds <= 0) { timerRemainingSeconds = 0; updateTimerUi(); completeSession(); }
+        if (timerRemainingSeconds <= 0) { 
+          timerRemainingSeconds = 0; 
+          updateTimerUi(); 
+          triggerTimerFinish(); // Trigger popup/notification
+        }
       }, 1000);
-      if (btn) btn.textContent = "Pause Timer"; 
-      if (th) th.textContent = "Focus session active.";
+      btn.textContent = "Pause Timer"; document.getElementById("timerHint").textContent = "Focus session active.";
     }
   }
 
-  function notifyTimerFinished(doneTask) {
-    if (!state.notificationSettings.timerdone) return;
-    const msg = doneTask ? `Focus timer finished. "${doneTask.title}" marked complete.` : "Focus timer finished. Session logged.";
-    addNotification(msg, "info", 8000);
-    if (!("Notification" in window)) return;
-    if (Notification.permission === "granted") {
-      new Notification("Focus timer complete", { body: msg });
+  function triggerTimerFinish() {
+    clearInterval(timerInterval); timerInterval = null;
+    
+    // Show UI Modal Pop-up
+    document.getElementById("timerAlertModal").classList.add("open");
+
+    // Show Browser Notification if permitted
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification("⏰ Time's Up!", { 
+        body: "Great job staying focused. Take a short break.",
+        icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Apple_podcasts_logo.svg/1200px-Apple_podcasts_logo.svg.png" 
+      });
     }
   }
 
   function completeSession(overrideMins = null) {
-    clearInterval(timerInterval); timerInterval = null;
     state.sessionsCompleted++;
     state.focusMinutes += (overrideMins === null ? Math.max(1, Math.round(timerDurationSeconds / 60)) : Math.max(1, Number(overrideMins)));
     
@@ -1430,6 +1308,7 @@
     } else if (!state.lastSessionDate) state.streakDays = 1;
     state.lastSessionDate = today;
 
+    // Mark task done
     let doneTask = state.tasks.find(t => t.id === state.selectedTaskId && !t.completed);
     if (!doneTask) {
       const smart = pickSmartTask().task;
@@ -1438,20 +1317,15 @@
     if (doneTask) doneTask.completed = true;
 
     emitConfetti(100);
-    const th = document.getElementById("timerHint");
-    if (th) th.textContent = doneTask ? `Done! "${doneTask.title}" marked complete.` : "Session logged. Great focus!";
-    notifyTimerFinished(doneTask);
+    document.getElementById("timerHint").textContent = doneTask ? `Done! "${doneTask.title}" marked complete.` : "Session logged. Great focus!";
     setTimerFromMinutes(state.timerMinutes, true);
-    
-    const btn = document.getElementById("startPauseBtn");
-    if (btn) btn.textContent = "Start Focus";
+    document.getElementById("startPauseBtn").textContent = "Start Focus";
     saveState(); renderAll();
   }
 
   function renderCalendar() {
-    const grid = document.getElementById("calendarGrid"); if (!grid) return;
-    const y = state.calendarYear, m = state.calendarMonth;
-    const cl = document.getElementById("calendarLabel"); if (cl) cl.textContent = new Date(y, m, 1).toLocaleDateString([], { month: "long", year: "numeric" });
+    const grid = document.getElementById("calendarGrid"), y = state.calendarYear, m = state.calendarMonth;
+    document.getElementById("calendarLabel").textContent = new Date(y, m, 1).toLocaleDateString([], { month: "long", year: "numeric" });
     
     const offset = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate(), prevDays = new Date(y, m, 0).getDate();
     
@@ -1480,50 +1354,19 @@
     grid.innerHTML = html;
   }
 
-  function renderFullCalendar() {
-    const grid = document.getElementById("calendarGridFull");
-    if (!grid) return;
+  function openCanvasModal() {
+    const tbody = document.getElementById("canvasModalBody");
+    const openTasks = state.tasks.filter(t => !t.completed).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
     
-    const y = state.calendarYear, m = state.calendarMonth;
-    const clf = document.getElementById("calendarLabelFull");
-    if (clf) clf.textContent = new Date(y, m, 1).toLocaleDateString([], { month: "long", year: "numeric" });
+    tbody.innerHTML = openTasks.length ? openTasks.map(t => {
+      const c = getCourseById(t.courseId);
+      const cName = c ? `${c.name}${c.code ? ` (${c.code})` : ""}` : "General";
+      const color = c ? c.color : "#0f172a";
+      return `<tr><td>${normalizeDueDate(t.dueDate)}</td><td><span class="course-dot" style="background:${color};"></span><span style="font-weight:600;color:var(--navy-primary)">${escapeHtml(cName)}</span></td><td>${escapeHtml(t.title)}</td></tr>`;
+    }).join("") : `<tr><td colspan="3" style="text-align:center; color:#64748b; padding: 2rem;">No active assignments. Enjoy your free time!</td></tr>`;
     
-    const offset = new Date(y, m, 1).getDay();
-    const days = new Date(y, m + 1, 0).getDate();
-    
-    const map = state.tasks.reduce((acc, t) => {
-      const k = localDateKey(t.dueDate);
-      if (k) { acc[k] = acc[k] || []; acc[k].push(t); }
-      return acc;
-    }, {});
-
-    let html = DAY_LABELS.map(d => `<div class="day-header">${d}</div>`).join("");
-    
-    // Fill empty days
-    for (let i = 0; i < offset; i++) html += `<div class="full-calendar-cell" style="background:var(--bg-gray)"></div>`;
-    
-    const todayK = localDateKey(new Date().toISOString());
-    for (let d = 1; d <= days; d++) {
-      const k = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-      const tks = map[k] || [];
-      
-      // Map ALL assignments in this view (Canvas style)
-      const thtml = tks.map(t => {
-        const c = getCourseById(t.courseId);
-        const bg = c ? c.color : 'var(--navy-primary)';
-        const opacity = t.completed ? '0.5' : '1';
-        const textDecoration = t.completed ? 'line-through' : 'none';
-        return `<div class="calendar-task" style="background:${bg}; opacity:${opacity}; text-decoration:${textDecoration}; margin-bottom:4px; font-size:0.75rem; padding:4px;">
-                  ${escapeHtml(t.title)}
-                </div>`;
-      }).join("");
-      
-      html += `<div class="full-calendar-cell ${k === todayK ? "today" : ""}">
-                 <span class="day-number" style="${k === todayK ? 'background:var(--gold);color:var(--text-dark)' : ''}">${d}</span>
-                 <div style="margin-top:8px;">${thtml}</div>
-               </div>`;
-    }
-    grid.innerHTML = html;
+    document.getElementById("canvasModalTitle").textContent = `Detailed Agenda - ${new Date(state.calendarYear, state.calendarMonth, 1).toLocaleDateString([], {month: "long", year: "numeric"})}`;
+    document.getElementById("canvasModal").classList.add("open");
   }
 
   // --- SECURE MULTI-PROXY SYNC API --- //
@@ -1557,13 +1400,12 @@
     return newCourse.id;
   }
 
-  async function fetchCanvasPages(initialUrl, token, useProxy) {
+  async function fetchCanvasPages(initialUrl, token) {
     const rows = [];
     let nextUrl = initialUrl;
-    const myProxy = "https://canvas-token.aarinikmehta.workers.dev"; // Private Worker
 
     while (nextUrl) {
-      const requestUrl = useProxy ? `${myProxy}/?url=${encodeURIComponent(nextUrl)}` : nextUrl;
+      const requestUrl = `${myProxy}/?url=${encodeURIComponent(nextUrl)}`;
       const res = await fetch(requestUrl, { headers: { Authorization: `Bearer ${token}` } });
       
       if (!res.ok) {
@@ -1585,13 +1427,13 @@
     const imported = [];
 
     for (const item of assignments) {
-      const dueRaw = item?.due_at || item?.lock_at || item?.unlock_at || item?.start_at; // Includes start_at for calendar events
+      const dueRaw = item?.due_at || item?.lock_at || item?.unlock_at;
       if (!dueRaw) continue;
       const dueDate = new Date(dueRaw);
       if (Number.isNaN(dueDate.getTime()) || dueDate.getTime() < windowStart.getTime()) continue;
 
-      const title = String(item?.name || item?.title || "Canvas Item").trim();
-      const courseIdRaw = String(item?.course_id || item?.context_code?.replace('course_', '') || "");
+      const title = String(item?.name || item?.title || "Canvas Assignment").trim();
+      const courseIdRaw = String(item?.course_id || "");
       const courseId = canvasCoursesById.get(courseIdRaw) ? ensureCanvasCourse(canvasCoursesById.get(courseIdRaw), courseIdRaw) : fallbackCourseId;
       const estimatedMinutes = Math.max(10, Math.min(180, Number(item?.points_possible) ? Math.round(Number(item.points_possible) * 1.5) : 30));
 
@@ -1615,265 +1457,212 @@
   }
   
   async function syncCanvas() {
-    const domain = document.getElementById("canvasDomain")?.value.trim();
-    const token = document.getElementById("canvasToken")?.value.trim();
-    const useProxy = document.getElementById("canvasUseProxy")?.checked;
+    const domain = document.getElementById("canvasDomain").value.trim();
+    const token = document.getElementById("canvasToken").value.trim();
     const msg = document.getElementById("canvasMessage");
     
-    if (!domain || !token) { if (msg) msg.textContent = "Domain and token required."; return; }
-    if (msg) msg.textContent = "Syncing Canvas assignments & schedule via Private Worker...";
+    if (!domain || !token) return msg.textContent = "Domain and token required.";
+    msg.textContent = "Syncing Canvas assignments via Private Worker...";
 
     const cleanUrl = domain.startsWith("http") ? domain.replace(/\/$/, "") : `https://${domain.replace(/\/$/, "")}`;
 
     try {
       const courseUrl = `${cleanUrl}/api/v1/courses?enrollment_state=active&per_page=100`;
-      const courses = await fetchCanvasPages(courseUrl, token, useProxy);
+      const courses = await fetchCanvasPages(courseUrl, token);
       
-      state.tasks = state.tasks.filter(t => !String(t.title || "").includes("MOCK:"));
+      state.tasks = state.tasks.filter(t => !String(t.title || "").includes("MOCK:")); // Scrub mocks
       
       const validCourses = courses.filter(c => c && c.id && !c.access_restricted_by_date);
       const canvasCoursesById = new Map(validCourses.map(c => [String(c.id), c]));
 
-      let payload = [];
-      
+      let assignments = [];
       for (const c of validCourses) {
-        const assignUrl = `${cleanUrl}/api/v1/courses/${c.id}/assignments?per_page=100`;
-        const rows = await fetchCanvasPages(assignUrl, token, useProxy);
-        payload = payload.concat(rows.map(r => ({ ...r, course_id: r.course_id || c.id })));
+        const assignUrl = `${cleanUrl}/api/v1/courses/${encodeURIComponent(c.id)}/assignments?per_page=100&order_by=due_at`;
+        const rows = await fetchCanvasPages(assignUrl, token);
+        assignments = assignments.concat(rows.map(r => ({ ...r, course_id: r.course_id || c.id })));
       }
-
-      // Fetch Calendar Events (Schedule)
-      const eventUrl = `${cleanUrl}/api/v1/calendar_events?type=event&per_page=100`;
-      const events = await fetchCanvasPages(eventUrl, token, useProxy);
       
-      state.canvasEvents = events.filter(e => e.start_at && e.end_at).map(e => ({
-          id: String(e.id),
-          title: String(e.title || "Event"),
-          start_at: e.start_at,
-          end_at: e.end_at
-      }));
-
-      events.forEach(e => {
-        if(e.start_at) {
-          payload.push({
-            id: `evt-${e.id}`, name: `📅 ${e.title}`,
-            due_at: e.start_at, course_id: e.context_code?.replace('course_', ''),
-            points_possible: 0 
-          });
-        }
-      });
-
-      const res = importCanvasAssignments(payload, canvasCoursesById);
-      addNotification(`Canvas Synced: ${res.added} new, ${res.updated} updated.`, "info");
-      if (msg) msg.textContent = `Canvas synced! +${res.added} new, ${res.updated} updated.`;
+      const res = importCanvasAssignments(assignments.filter(a => !a?.has_submitted_submissions), canvasCoursesById);
+      msg.textContent = `Canvas synced! +${res.added} new, ${res.updated} updated.`;
     } catch (err) {
       console.warn("Canvas sync error:", err);
+      // Fallback Demo Mocks
       const imported = MOCK_CANVAS_ITEMS.map(i => ({ title: i.title, dueDate: i.due_at, source: "canvas", estimatedMinutes: 30, courseId: state.courses[0]?.id }));
       state.tasks = [...imported, ...state.tasks.filter(t => !t.title.includes("MOCK:"))];
       saveState(); renderAll();
-      if (msg) msg.textContent = `Error: ${err.message}. Loaded mock data for demo.`;
+      msg.textContent = `Error: ${err.message}. Loaded mock data for demo.`;
     }
   }
 
-  // Canvas Submission Push
-  async function pushTextSubmissionToCanvas(taskId, text) {
-    const task = state.tasks.find(t => t.id === taskId);
-    if (!task || !task.externalKey) { addNotification("Invalid task for submission.", "danger"); return; }
-    
-    const parts = task.externalKey.split(":");
-    if(parts.length !== 3) { addNotification("Could not parse Canvas IDs for this assignment.", "danger"); return; }
-    
-    const courseId = parts[1];
-    const assignmentId = parts[2];
-    const domain = document.getElementById("canvasDomain")?.value.trim();
-    const token = document.getElementById("canvasToken")?.value.trim();
-    const useProxy = document.getElementById("canvasUseProxy")?.checked;
-    
-    if (!domain || !token) { addNotification("Canvas token/domain missing in Settings.", "warning"); return; }
-
-    const cleanUrl = domain.startsWith("http") ? domain.replace(/\/$/, "") : `https://${domain.replace(/\/$/, "")}`;
-    const endpoint = `${cleanUrl}/api/v1/courses/${courseId}/assignments/${assignmentId}/submissions`;
-    const myProxy = "https://canvas-token.aarinikmehta.workers.dev";
-    
-    const requestUrl = useProxy ? `${myProxy}/?url=${encodeURIComponent(endpoint)}` : endpoint;
-
-    try {
-      const res = await fetch(requestUrl, {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ submission: { submission_type: "online_text_entry", body: text } })
-      });
-
-      if (!res.ok) throw new Error("Submission failed. Ensure the assignment accepts Online Text Entry.");
-      
-      task.completed = true;
-      saveState(); renderAll();
-      addNotification("Successfully submitted to Canvas!", "info");
-      document.getElementById("canvasSubmitModal")?.classList.remove("open");
-
-    } catch (err) {
-      addNotification(err.message, "danger");
-    }
-  }
-
+  // OTHER UI RENDERERS
   function applySkin() {
     SKIN_LIBRARY.forEach(s => s.className && document.body.classList.remove(s.className));
     const curr = SKIN_LIBRARY.find(s => s.id === state.selectedSkin) || SKIN_LIBRARY[0];
     if (curr.className) document.body.classList.add(curr.className);
     document.body.style.backgroundImage = (state.selectedSkin === "upload" && state.customSkinImage) ? `url(${state.customSkinImage})` : "";
+    refreshFxAnimation();
   }
 
-  function canChangeSkin() {
-    if (!state.skinChangeRestrictedToFreePeriods) return true;
-    const avail = getAvailabilityStatus();
-    const sched = getScheduleStatus();
-    return avail.isFreeNow || !sched.inClass || sched.isStudyHall;
+  function switchTab(targetId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    
+    document.getElementById(targetId).classList.add('active');
+    document.querySelector(`[data-target="${targetId}"]`).classList.add('active');
   }
 
   function renderAll() {
     document.body.classList.toggle("minimalist", Boolean(state.minimalist));
-    const mt = document.getElementById("minimalToggle"); if (mt) mt.textContent = `Minimalist: ${state.minimalist ? "On" : "Off"}`;
+    document.getElementById("minimalToggle").textContent = `Minimalist: ${state.minimalist ? "On" : "Off"}`;
     
+    // Auto-fill tokens if saved
+    if(state.canvasToken) document.getElementById("canvasToken").value = state.canvasToken;
+    if(state.teamsnapToken) document.getElementById("teamSnapToken").value = state.teamsnapToken;
+    if(state.canvasDomain) document.getElementById("canvasDomain").value = state.canvasDomain;
+    if(document.getElementById("timePlannerBreaks")) document.getElementById("timePlannerBreaks").checked = state.timePlannerBreaks !== false;
+
+    // Skins
     const skinS = document.getElementById("skinSelect"), skinL = document.getElementById("skinList"), unl = new Set(SKIN_LIBRARY.filter(s=>s.unlock(state)).map(s=>s.id));
-    if (skinS) {
-        skinS.innerHTML = SKIN_LIBRARY.map(s => `<option value="${s.id}">${s.label}${unl.has(s.id)?"":" (locked)"}</option>`).join("");
-        skinS.value = state.selectedSkin;
-    }
-    if (skinL) skinL.innerHTML = SKIN_LIBRARY.map(s => `<div class="skin-row"><span>${s.label} - ${s.detail}</span><span class="pill ${unl.has(s.id)?"":"overdue"}">${unl.has(s.id)?"Unlocked":"Locked"}</span></div>`).join("");
-    
-    const ce = document.getElementById("confettiEnabled"); if (ce) ce.checked = Boolean(state.confettiEnabled);
+    skinS.innerHTML = SKIN_LIBRARY.map(s => `<option value="${s.id}">${s.label}${unl.has(s.id)?"":" (locked)"}</option>`).join("");
+    skinS.value = state.selectedSkin;
+    skinL.innerHTML = SKIN_LIBRARY.map(s => `<div class="skin-row"><span>${s.label} - ${s.detail}</span><span class="pill ${unl.has(s.id)?"":"overdue"}">${unl.has(s.id)?"Unlocked":"Locked"}</span></div>`).join("");
+    document.getElementById("confettiEnabled").checked = Boolean(state.confettiEnabled);
     applySkin();
 
+    // Courses & Grades
     const coHtml = state.courses.map(c => `<option value="${c.id}">${escapeHtml(c.name)}${c.code?` (${escapeHtml(c.code)})`:""}</option>`).join("");
-    const tc = document.getElementById("taskCourse"); if (tc) tc.innerHTML = coHtml;
-    const gc = document.getElementById("gradeCourse"); if (gc) gc.innerHTML = coHtml;
+    document.getElementById("taskCourse").innerHTML = coHtml; document.getElementById("gradeCourse").innerHTML = coHtml;
     
-    const clist = document.getElementById("courseList");
-    if (clist) clist.innerHTML = state.courses.length ? state.courses.map(c => `<div class="course-row"><span><span class="course-dot" style="background:${c.color};"></span><span style="font-weight:600">${escapeHtml(c.name)}</span> ${c.code?`<span class="mini-text">(${escapeHtml(c.code)})</span>`:""}</span><button class="icon-button" data-action="delete-course" data-id="${c.id}">✕</button></div>`).join("") : "<p class='empty'>No courses added.</p>";
+    document.getElementById("courseList").innerHTML = state.courses.length ? state.courses.map(c => `<div class="course-row"><span><span class="course-dot" style="background:${c.color};"></span><span style="font-weight:600">${escapeHtml(c.name)}</span> ${c.code?`<span class="mini-text">(${escapeHtml(c.code)})</span>`:""}</span><button class="icon-button" data-action="delete-course" data-id="${c.id}">✕</button></div>`).join("") : "<p class='empty'>No courses added.</p>";
     
     const gradesHtml = state.courses.map(c => {
       const e = state.grades.filter(g => g.courseId === c.id);
       if(!e.length) return null;
       return `<div class="grade-row"><span><span class="course-dot" style="background:${c.color};"></span><span style="font-weight:600">${escapeHtml(c.name)}</span> avg: <strong>${Math.round(e.reduce((s,i)=>s+i.score,0)/e.length)}%</strong></span><span class="mini-text">${e.length} items</span></div>`;
     }).filter(Boolean).join("");
-    const gl = document.getElementById("gradeList"); if (gl) gl.innerHTML = gradesHtml || "<p class='empty'>No grades recorded.</p>";
+    document.getElementById("gradeList").innerHTML = gradesHtml || "<p class='empty'>No grades recorded.</p>";
 
-    const sd = document.getElementById("scheduleDay");
-    if (sd) {
-        const d = Number(sd.value);
-        const ws = getDayWindows(d);
-        const ssl = document.getElementById("scheduleSetList");
-        if (ssl) ssl.innerHTML = ws.length ? ws.map((w,i) => `<div class="schedule-item"><span><strong style="color:var(--navy-primary)">${LONG_DAY_LABELS[d]}</strong>: ${toTimeLabel(w.start)} - ${toTimeLabel(w.end)}</span><button class="icon-button" data-action="delete-window" data-day="${d}" data-index="${i}">✕</button></div>`).join("") : "<p class='empty'>No free windows set for this day.</p>";
-    }
+    // Schedules
+    const d = Number(document.getElementById("scheduleDay").value);
+    const ws = getDayWindows(d);
+    document.getElementById("scheduleSetList").innerHTML = ws.length ? ws.map((w,i) => `<div class="schedule-item"><span><strong style="color:var(--navy-primary)">${LONG_DAY_LABELS[d]}</strong>: ${toTimeLabel(w.start)} - ${toTimeLabel(w.end)}</span><button class="icon-button" data-action="delete-window" data-day="${d}" data-index="${i}">✕</button></div>`).join("") : "<p class='empty'>No free windows set for this day.</p>";
 
-    const fbe = document.getElementById("focusBlockerEnabled");
-    if (fbe) fbe.checked = Boolean(state.focusBlockerEnabled);
-    const bs = document.getElementById("blockerStatus");
-    if (bs) bs.textContent = state.focusBlockerEnabled ? "Focus Shield active." : "Focus Shield is off.";
-    renderBlocklist();
+    // Achievements
+    document.getElementById("achievementGrid").innerHTML = ACHIEVEMENTS.map(a => `<div class="achievement ${a.test(state)?"unlocked":""}"><strong>${a.title}</strong><span class="mini-text">${a.detail}</span></div>`).join("");
+    document.getElementById("achievementSummary").textContent = `${ACHIEVEMENTS.filter(a=>a.test(state)).length}/${ACHIEVEMENTS.length} achievements unlocked.`;
 
-    const sm = document.getElementById("studyAudioMeta");
-    if (sm) sm.textContent = state.studyAudioName ? `Loaded: ${state.studyAudioName} (re-upload after refresh)` : "Upload an audio file to play.";
-
-    const ag = document.getElementById("achievementGrid"); if (ag) ag.innerHTML = ACHIEVEMENTS.map(a => `<div class="achievement ${a.test(state)?"unlocked":""}"><strong>${a.title}</strong><span class="mini-text">${a.detail}</span></div>`).join("");
-    const as = document.getElementById("achievementSummary"); if (as) as.textContent = `${ACHIEVEMENTS.filter(a=>a.test(state)).length}/${ACHIEVEMENTS.length} achievements unlocked.`;
-
+    // Keep It Up Quotes
     const quoteObj = MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)];
-    const mq = document.getElementById("motivationalQuote"); if (mq) mq.textContent = `"${quoteObj.text}"`;
-    const qa = document.getElementById("quoteAuthor"); if (qa) qa.textContent = `- ${quoteObj.author}`;
+    document.getElementById("motivationalQuote").textContent = `"${quoteObj.text}"`;
+    document.getElementById("quoteAuthor").textContent = `- ${quoteObj.author}`;
 
-    renderHeaderStats(); renderScheduleCard(); renderTaskList(); renderSmartCard(); renderCalendar(); updateTimerUi();
-    renderFullCalendar();
-    renderNotifications(); updateAllAssignmentsDisplay(); initPageSettings();
+    renderHeaderStats(); renderScheduleCard(); renderTaskList(); renderSmartCard(); renderTimePlanner(); renderCalendar(); updateTimerUi(); renderCourseAnalytics();
   }
 
-  function addNotification(message, type = "info", duration = 5000) {
-    const notif = { id: `notif-${Date.now()}`, message, type, timestamp: new Date(), read: false };
-    state.notifications.unshift(notif);
-    if (state.notifications.length > 10) state.notifications = state.notifications.slice(0, 10);
-    saveState();
-    renderNotifications();
-    if (duration > 0) setTimeout(() => removeNotification(notif.id), duration);
-  }
-  
-  function removeNotification(id) {
-    state.notifications = state.notifications.filter(n => n.id !== id);
-    saveState();
-    renderNotifications();
-  }
-  
-  function renderNotifications() {
-    const badge = document.getElementById("notificationBadge");
-    const panel = document.getElementById("notificationsPanel");
-    if (!badge || !panel) return;
-    
-    const count = state.notifications.length;
-    badge.textContent = count; badge.style.display = count > 0 ? "grid" : "none";
-    panel.innerHTML = state.notifications.length ? state.notifications.map(n => `
-      <div class="notification-item ${n.type}">
-        <div class="notification-item-content"><span>${escapeHtml(n.message)}</span><span class="notif-time">${new Date(n.timestamp).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span></div>
-        <span class="notification-item-close" onclick="removeNotification('${n.id}')">✕</span>
-      </div>
-    `).join("") : "<div class='notification-item info'><span>No notifications</span></div>";
-  }
-  
-  function handleContactSubmit(event) {
-    event.preventDefault();
-    const email = document.getElementById("contactEmail")?.value;
-    addNotification(`✉️ Message sent! We'll respond to ${email} soon.`, "info", 3000);
-    document.querySelector(".contact-form")?.reset();
-  }
-  
-  function initPageSettings() {
-    const els = {
-      notifMembean: state.notificationSettings.membean,
-      notifQuizzes: state.notificationSettings.quizzes,
-      notifAssignments: state.notificationSettings.assignments,
-      notifOverdue: state.notificationSettings.overdue,
-      notifTimerDone: state.notificationSettings.timerdone,
-      skinLockCheckbox: state.skinChangeRestrictedToFreePeriods,
-      confettiEnabled: state.confettiEnabled
-    };
-    for (const [id, val] of Object.entries(els)) {
-      const el = document.getElementById(id);
-      if (el) el.checked = Boolean(val);
+  function renderTimePlanner() {
+    const input = document.getElementById("timeBudgetInput");
+    const breaksToggle = document.getElementById("timePlannerBreaks");
+    const summary = document.getElementById("timePlanSummary");
+    const output = document.getElementById("timePlanOutput");
+    if (!input || !summary || !output) return;
+
+    const minutes = Math.max(0, Number(input.value) || 0);
+    const focusLength = Math.max(15, Number(state.timerMinutes) || 25);
+    const tasks = openTasksSorted().filter(task => !timePlannerDismissedTaskIds.has(task.id));
+    const includeBreaks = breaksToggle ? breaksToggle.checked : true;
+
+    if (minutes < 5) {
+      summary.textContent = "Add at least 5 minutes to build a plan.";
+      output.innerHTML = "";
+      return;
     }
-  }
-  
-  function updateAllAssignmentsDisplay() {
-    const container = document.getElementById("allAssignmentsContainer");
-    if (!container) return;
-    
-    const sorted = state.tasks.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
-    container.innerHTML = sorted.map(t => {
-      const course = getCourseById(t.courseId);
-      const isDone = t.completed;
-      const isOverdueStat = !isDone && isOverdue(t);
-      
-      return `
-        <div class="assignment-card" style="opacity: ${isDone ? 0.6 : 1};">
-          <div class="assignment-card-header">
-            <div class="assignment-card-title">${escapeHtml(t.title)}</div>
-            <div class="assignment-card-due">${normalizeDueDate(t.dueDate)}</div>
-          </div>
-          <div class="assignment-card-course" style="background: ${course ? course.color : '#003d7a'};">
-            ${course ? escapeHtml(course.name) : "Course"}
-          </div>
-          <div class="assignment-card-status">
-            ${isDone ? "✓ Completed" : isOverdueStat ? "⚠️ Overdue" : `📝 ${t.estimatedMinutes} min`}
-          </div>
+
+    const fullWorkBlocks = Math.max(1, Math.floor(minutes / focusLength));
+    const plan = [];
+    let remaining = minutes;
+    let taskIndex = 0;
+
+    while (remaining > 0) {
+      const workMinutes = Math.min(focusLength, remaining);
+      const task = tasks[taskIndex] || tasks[0] || null;
+      plan.push({ type: "focus", minutes: workMinutes, label: task ? task.title : "Pick your next task", detail: task ? `${task.estimatedMinutes} min due ${normalizeDueDate(task.dueDate)}` : "Use this block to get started.", taskId: task ? task.id : null });
+      remaining -= workMinutes;
+      taskIndex += 1;
+      if (remaining <= 0) break;
+
+      if (!includeBreaks) continue;
+
+      const breakMinutes = Math.min(5, remaining);
+      plan.push({ type: "break", minutes: breakMinutes, label: breakMinutes === 5 ? "Reset break" : "Wrap up" , detail: breakMinutes === 5 ? "Stand up, stretch, and breathe." : "Use the last few minutes to transition." });
+      remaining -= breakMinutes;
+    }
+
+    summary.textContent = `${minutes} minutes gives you ${fullWorkBlocks} focus block${fullWorkBlocks === 1 ? "" : "s"} at ${focusLength} minutes each.`;
+    output.innerHTML = plan.map(step => `
+      <div class="time-plan-step ${step.type}">
+        <div>
+          <strong style="display:block; color: var(--text-dark);">${escapeHtml(step.label)}</strong>
+          <span class="mini-text">${escapeHtml(step.detail)}</span>
         </div>
-      `;
-    }).join("");
+        <div class="step-actions">
+          <span class="pill ${step.type === "focus" ? "" : "overdue"}">${step.minutes} min</span>
+          ${step.type === "focus" && step.taskId ? `<button class="task-skip-btn" type="button" data-action="skip-task" data-task-id="${step.taskId}" title="Remove this task from the queue">✕</button>` : ""}
+        </div>
+      </div>
+    `).join("");
   }
 
+  // EVENT LISTENERS
   function registerEvents() {
-    document.getElementById("taskForm")?.addEventListener("submit", e => {
+    // TABS
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        switchTab(e.target.getAttribute('data-target'));
+      });
+    });
+
+    // API TOKENS AUTO-SAVE
+    document.getElementById("canvasDomain").addEventListener("input", (e) => {
+      state.canvasDomain = e.target.value.trim();
+      saveState();
+    });
+    document.getElementById("canvasToken").addEventListener("input", (e) => {
+      state.canvasToken = e.target.value.trim();
+      saveState();
+    });
+    document.getElementById("teamSnapToken").addEventListener("input", (e) => {
+      state.teamsnapToken = e.target.value.trim();
+      saveState();
+    });
+
+    document.getElementById("timeBudgetInput").addEventListener("input", () => renderTimePlanner());
+    document.getElementById("timePlannerBreaks").addEventListener("change", () => { state.timePlannerBreaks = document.getElementById("timePlannerBreaks").checked; saveState(); renderTimePlanner(); });
+    document.getElementById("buildTimePlanBtn").addEventListener("click", () => { timePlannerDismissedTaskIds = new Set(); renderTimePlanner(); });
+    document.querySelectorAll("[data-time-minutes]").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        document.getElementById("timeBudgetInput").value = e.currentTarget.dataset.timeMinutes;
+        renderTimePlanner();
+      });
+    });
+
+    // AUDIO PLAYER
+    document.getElementById("musicUpload").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        const player = document.getElementById("audioPlayer");
+        player.src = url;
+        player.style.display = "block";
+        player.play();
+      }
+    });
+
+    // TASK FORM
+    document.getElementById("taskForm").addEventListener("submit", e => {
       e.preventDefault();
       const t = document.getElementById("taskTitle").value.trim(), m = Number(document.getElementById("taskMinutes").value || 25), d = document.getElementById("taskDueDate").value, time = document.getElementById("taskDueTime").value || "23:59";
       if (!t || !d || !m) return;
-      const iso = safeIsoFromDateTime(d, time); 
-      if (!iso) { addNotification("Invalid date.", "warning"); return; }
+      const iso = safeIsoFromDateTime(d, time); if (!iso) return alert("Invalid date.");
       state.tasks.unshift({ id: `${Date.now()}-${Math.random().toString(16)}`, title: t, estimatedMinutes: m, dueDate: iso, source: "manual", courseId: document.getElementById("taskCourse").value, completed: false });
       state.selectedTaskId = state.tasks[0].id;
       saveState();
@@ -1884,87 +1673,70 @@
       renderAll();
     });
 
-    document.getElementById("taskList")?.addEventListener("click", e => {
+    document.getElementById("taskList").addEventListener("click", e => {
       const btn = e.target.closest("button"); if (!btn) return;
       const act = btn.dataset.action, id = btn.dataset.id;
-      if (act === "select") { state.selectedTaskId = id; saveState(); renderAll(); }
-      if (act === "delete") { state.tasks = state.tasks.filter(t => t.id !== id); if(state.selectedTaskId===id) state.selectedTaskId=null; saveState(); renderAll(); }
-      if (act === "toggle") { const t=state.tasks.find(x=>x.id===id); if(t) { t.completed=!t.completed; if(t.completed) emitConfetti(28); } saveState(); renderAll(); }
+      if (act === "select") state.selectedTaskId = id;
+      if (act === "delete") { state.tasks = state.tasks.filter(t => t.id !== id); if(state.selectedTaskId===id) state.selectedTaskId=null; }
+      if (act === "toggle") { const t=state.tasks.find(x=>x.id===id); if(t) { t.completed=!t.completed; if(t.completed) emitConfetti(28); } }
       if (act === "edit") {
          const t=state.tasks.find(x=>x.id===id); if(!t) return;
-         showPrompt("Update estimated minutes:", t.estimatedMinutes, (nm) => {
-             if(!nm || isNaN(nm)) return;
-             t.estimatedMinutes = Math.max(1, Number(nm));
-             saveState(); renderAll();
-         });
-         return; // We don't saveState right away, we let the callback do it
+         const nm = prompt("Update estimated minutes:", t.estimatedMinutes); if(!nm || isNaN(nm)) return;
+         t.estimatedMinutes = Math.max(1, Number(nm));
       }
-      if (act === "submit") {
-        currentSubmissionTask = id;
-        const task = state.tasks.find(t => t.id === currentSubmissionTask);
-        const stt = document.getElementById("submitTaskTitle"); if (stt) stt.textContent = task.title;
-        const cst = document.getElementById("canvasSubmissionText"); if (cst) cst.value = "";
-        document.getElementById("canvasSubmitModal")?.classList.add("open");
-        saveState(); renderAll();
-      }
+      saveState(); renderAll();
     });
 
-    document.getElementById("cancelSubmitBtn")?.addEventListener("click", () => {
-       document.getElementById("canvasSubmitModal")?.classList.remove("open");
+    document.getElementById("timePlanOutput").addEventListener("click", e => {
+      const btn = e.target.closest("button[data-action='skip-task']");
+      if (!btn) return;
+      const taskId = btn.dataset.taskId;
+      timePlannerDismissedTaskIds.add(taskId);
+      renderTimePlanner();
     });
 
-    document.getElementById("confirmSubmitBtn")?.addEventListener("click", () => {
-       const text = document.getElementById("canvasSubmissionText")?.value.trim();
-       if(!text) { addNotification("Submission cannot be empty.", "warning"); return; }
-       const cBtn = document.getElementById("confirmSubmitBtn");
-       if(cBtn) cBtn.textContent = "Sending...";
-       pushTextSubmissionToCanvas(currentSubmissionTask, text).finally(() => {
-           if(cBtn) cBtn.textContent = "Push to Canvas";
-       });
-    });
-
-    document.getElementById("scheduleSetForm")?.addEventListener("submit", e => {
+    document.getElementById("scheduleSetForm").addEventListener("submit", e => {
       e.preventDefault();
       const d = Number(document.getElementById("scheduleDay").value), s = document.getElementById("scheduleStart").value, en = document.getElementById("scheduleEnd").value;
-      if(toMinutes(en) <= toMinutes(s)) { addNotification("End must be after start.", "warning"); return; }
+      if(toMinutes(en) <= toMinutes(s)) return alert("End must be after start.");
       state.availabilityByDay[d].push({start:s, end:en}); state.availabilityByDay[d].sort((a,b)=>toMinutes(a.start)-toMinutes(b.start));
       saveState(); renderAll();
     });
 
-    document.getElementById("scheduleSetList")?.addEventListener("click", e => {
+    document.getElementById("scheduleSetList").addEventListener("click", e => {
       const btn = e.target.closest("button"); if(!btn) return;
       state.availabilityByDay[btn.dataset.day].splice(btn.dataset.index, 1); saveState(); renderAll();
     });
     
-    document.getElementById("weekdayCopyBtn")?.addEventListener("click", () => {
+    document.getElementById("weekdayCopyBtn").addEventListener("click", () => {
       const s = document.getElementById("scheduleStart").value, en = document.getElementById("scheduleEnd").value;
       if(!s || !en || toMinutes(en)<=toMinutes(s)) return;
       for(let i=1;i<=5;i++) state.availabilityByDay[i] = [{start:s, end:en}]; saveState(); renderAll();
     });
 
-    document.getElementById("scheduleDay")?.addEventListener("change", renderAll);
+    document.getElementById("scheduleDay").addEventListener("change", renderAll);
     
-    document.getElementById("courseForm")?.addEventListener("submit", e => {
+    document.getElementById("courseForm").addEventListener("submit", e => {
       e.preventDefault();
       state.courses.push({ id:`c-${Date.now()}`, name: document.getElementById("courseName").value, code: document.getElementById("courseCode").value, color: document.getElementById("courseColor").value });
       saveState(); e.target.reset(); renderAll();
     });
 
-    document.getElementById("courseList")?.addEventListener("click", e => {
+    document.getElementById("courseList").addEventListener("click", e => {
       const btn = e.target.closest("button"); if(!btn || state.courses.length<=1) return;
       state.courses = state.courses.filter(c => c.id !== btn.dataset.id);
       const fb = state.courses[0].id; state.tasks.forEach(t => { if(t.courseId===btn.dataset.id) t.courseId = fb; });
       saveState(); renderAll();
     });
 
-    document.getElementById("gradeForm")?.addEventListener("submit", e => {
+    document.getElementById("gradeForm").addEventListener("submit", e => {
       e.preventDefault();
       state.grades.unshift({ id:`g-${Date.now()}`, courseId: document.getElementById("gradeCourse").value, name: document.getElementById("gradeName").value, score: Number(document.getElementById("gradeScore").value) });
       saveState(); e.target.reset(); renderAll();
     });
 
-    document.getElementById("uploadSkinBtn")?.addEventListener("click", () => document.getElementById("uploadSkinInput")?.click());
-    document.getElementById("uploadSkinInput")?.addEventListener("change", e => {
+    document.getElementById("uploadSkinBtn").addEventListener("click", () => document.getElementById("uploadSkinInput").click());
+    document.getElementById("uploadSkinInput").addEventListener("change", e => {
       const file = e.target.files[0]; if (!file) return;
       const reader = new FileReader();
       reader.onload = (re) => {
@@ -1982,165 +1754,157 @@
       reader.readAsDataURL(file);
     });
 
-    document.getElementById("applySkinBtn")?.addEventListener("click", () => {
-      if (!canChangeSkin()) { addNotification("Skins can only be changed during free periods.", "warning", 3000); return; }
+    document.getElementById("applySkinBtn").addEventListener("click", () => {
       const v = document.getElementById("skinSelect").value;
-      if (!SKIN_LIBRARY.find(s=>s.id===v).unlock(state)) { addNotification("Skin locked! Complete more tasks/sessions to unlock.", "warning"); return; }
+      if (!SKIN_LIBRARY.find(s=>s.id===v).unlock(state)) return alert("Skin locked! Complete more tasks/sessions to unlock.");
       state.selectedSkin = v; saveState(); renderAll();
-      addNotification(`✨ Skin changed to "${SKIN_LIBRARY.find(s=>s.id===v).label}"`, "info", 2000);
-    });
-    
-    document.getElementById("startPauseBtn")?.addEventListener("click", toggleTimer);
-    document.getElementById("resetBtn")?.addEventListener("click", () => { clearInterval(timerInterval); timerInterval=null; setTimerFromMinutes(state.timerMinutes, true); const b = document.getElementById("startPauseBtn"); if(b) b.textContent="Start Focus"; });
-    document.getElementById("finishBtn")?.addEventListener("click", () => completeSession());
-    document.getElementById("timerInput")?.addEventListener("change", e => setTimerFromMinutes(e.target.value));
-    
-    // Expanded timer page buttons
-    document.getElementById("startPauseExpandedBtn")?.addEventListener("click", toggleTimer);
-    document.getElementById("resetExpandedBtn")?.addEventListener("click", () => { clearInterval(timerInterval); timerInterval=null; setTimerFromMinutes(state.timerMinutes, true); const b = document.getElementById("startPauseExpandedBtn"); if(b) b.textContent="Start Focus"; });
-    document.getElementById("finishExpandedBtn")?.addEventListener("click", () => completeSession());
-    document.getElementById("timerExpandedInput")?.addEventListener("change", e => setTimerFromMinutes(e.target.value));
-    
-    document.getElementById("useSmartTaskBtn")?.addEventListener("click", () => { const s = pickSmartTask(); if(s.task) { state.selectedTaskId = s.task.id; saveState(); renderAll(); } });
-    document.getElementById("clearDoneBtn")?.addEventListener("click", () => { state.tasks = state.tasks.filter(t=>!t.completed); saveState(); renderAll(); });
-    document.getElementById("minimalToggle")?.addEventListener("click", () => { state.minimalist = !state.minimalist; saveState(); renderAll(); });
-
-    document.getElementById("studyLinkGrid")?.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-open-link]");
-      if (!btn) return;
-      openLinkWithBlocker(btn.dataset.openLink);
     });
 
-    document.getElementById("focusBlockerEnabled")?.addEventListener("change", (e) => {
-      state.focusBlockerEnabled = e.target.checked;
-      saveState(); renderAll();
-    });
-
-    document.getElementById("blockSiteAddBtn")?.addEventListener("click", () => {
-      const input = document.getElementById("blockSiteInput");
-      const raw = input?.value;
-      const domain = normalizeDomain(raw);
-      if (!domain) return;
-      if (!state.blockedSites.includes(domain)) state.blockedSites.unshift(domain);
-      if (input) input.value = "";
-      saveState(); renderAll();
-    });
-
-    document.getElementById("blockSiteList")?.addEventListener("click", (e) => {
-      const btn = e.target.closest("button");
-      if (!btn || btn.dataset.action !== "remove-block") return;
-      state.blockedSites = state.blockedSites.filter(site => site !== btn.dataset.domain);
-      saveState(); renderAll();
-    });
-
-    document.getElementById("studyAudioInput")?.addEventListener("change", (e) => {
-      const file = e.target.files?.[0];
-      setStudyAudio(file || null);
-    });
+    document.getElementById("confettiEnabled").addEventListener("change", e => { state.confettiEnabled = e.target.checked; saveState(); });
     
-    document.getElementById("resetAllBtn")?.addEventListener("click", () => { 
-      showPrompt("Type RESET to wipe all data", "", (val) => {
-          if(val === "RESET") { localStorage.removeItem(STORAGE_KEY); location.reload(); }
-      });
+    document.getElementById("startPauseBtn").addEventListener("click", toggleTimer);
+    document.getElementById("resetBtn").addEventListener("click", () => { clearInterval(timerInterval); timerInterval=null; setTimerFromMinutes(state.timerMinutes, true); document.getElementById("startPauseBtn").textContent="Start Focus"; });
+    document.getElementById("finishBtn").addEventListener("click", () => completeSession());
+    document.getElementById("timerAlertCloseBtn").addEventListener("click", () => {
+        document.getElementById("timerAlertModal").classList.remove("open");
+        completeSession(); 
     });
+    document.getElementById("timerInput").addEventListener("change", e => setTimerFromMinutes(e.target.value));
     
-    document.getElementById("calendarPrevBtn")?.addEventListener("click", () => { state.calendarMonth--; if(state.calendarMonth<0){state.calendarMonth=11; state.calendarYear--;} saveState(); renderAll(); });
-    document.getElementById("calendarNextBtn")?.addEventListener("click", () => { state.calendarMonth++; if(state.calendarMonth>11){state.calendarMonth=0; state.calendarYear++;} saveState(); renderAll(); });
-    document.getElementById("calendarTodayBtn")?.addEventListener("click", () => { const d=new Date(); state.calendarYear=d.getFullYear(); state.calendarMonth=d.getMonth(); saveState(); renderAll(); });
+    document.getElementById("useSmartTaskBtn").addEventListener("click", () => { const s = pickSmartTask(); if(s.task) { state.selectedTaskId = s.task.id; saveState(); renderAll(); } });
+    document.getElementById("clearDoneBtn").addEventListener("click", () => { state.tasks = state.tasks.filter(t=>!t.completed); saveState(); renderAll(); });
+    document.getElementById("minimalToggle").addEventListener("click", () => { state.minimalist = !state.minimalist; saveState(); renderAll(); });
+    document.getElementById("resetAllBtn").addEventListener("click", () => { if(prompt("Type RESET to wipe all data")==="RESET") { localStorage.removeItem(STORAGE_KEY); location.reload(); } });
     
-    document.getElementById("canvasSyncBtn")?.addEventListener("click", syncCanvas);
+    document.getElementById("calendarPrevBtn").addEventListener("click", () => { state.calendarMonth--; if(state.calendarMonth<0){state.calendarMonth=11; state.calendarYear--;} saveState(); renderCalendar(); });
+    document.getElementById("calendarNextBtn").addEventListener("click", () => { state.calendarMonth++; if(state.calendarMonth>11){state.calendarMonth=0; state.calendarYear++;} saveState(); renderCalendar(); });
+    document.getElementById("calendarTodayBtn").addEventListener("click", () => { const d=new Date(); state.calendarYear=d.getFullYear(); state.calendarMonth=d.getMonth(); saveState(); renderCalendar(); });
+    
+    document.getElementById("canvasSyncBtn").addEventListener("click", syncCanvas);
 
-    document.getElementById("teamSnapSyncBtn")?.addEventListener("click", async () => {
-      const id = document.getElementById("teamSnapTeamId")?.value.trim();
-      const tkn = document.getElementById("teamSnapToken")?.value.trim();
-      const useProxy = document.getElementById("teamSnapUseProxy")?.checked;
+    document.getElementById("teamSnapSyncBtn").addEventListener("click", async () => {
+      const id = document.getElementById("teamSnapTeamId").value.trim();
+      const tkn = document.getElementById("teamSnapToken").value.trim();
       const msg = document.getElementById("teamSnapMessage");
       
-      if(!id || !tkn) { if(msg) msg.textContent = "Team ID and token required."; return; }
-      if(msg) msg.textContent = "Syncing TeamSnap via private worker...";
+      if(!id || !tkn) return msg.textContent = "Team ID and token required.";
+      msg.textContent = "Syncing TeamSnap via private worker...";
 
-      const myProxy = "https://canvas-token.aarinikmehta.workers.dev";
       const endpoint = `https://api.teamsnap.com/v3/teams/${encodeURIComponent(id)}/events`;
-      const requestUrl = useProxy ? `${myProxy}/?url=${encodeURIComponent(endpoint)}` : endpoint;
+      const requestUrl = `${myProxy}/?url=${encodeURIComponent(endpoint)}`;
 
       try {
         const res = await fetch(requestUrl, { headers: { Authorization: `Bearer ${tkn}` } });
         if (!res.ok) throw new Error(`Access Denied (${res.status})`);
         const json = await res.json();
         
-        state.tasks = state.tasks.filter(t => !String(t.title || "").includes("MOCK:"));
+        state.tasks = state.tasks.filter(t => !String(t.title || "").includes("MOCK:")); // Scrub mocks
         const items = Array.isArray(json.collection?.items) ? json.collection.items : [];
         
         const imported = items.map(i => ({ title: `TeamSnap: ${i.title || i.name || 'Event'}`, dueDate: i.start_at || i.startDate || new Date().toISOString(), source: "teamsnap", estimatedMinutes: 60, courseId: state.courses[0]?.id }));
         state.tasks = [...imported, ...state.tasks];
         saveState(); renderAll();
 
-        if(msg) msg.textContent = "Successfully imported TeamSnap items.";
+        msg.textContent = "Successfully imported TeamSnap items.";
       } catch (err) {
-        if(msg) msg.textContent = `Sync failed: ${err.message}. Loaded mock data.`;
+        msg.textContent = `Sync failed: ${err.message}. Loaded mock data.`;
         const imported = MOCK_TEAMSNAP_ITEMS.map(i => ({ title: i.title, dueDate: i.start_at, source: "teamsnap", estimatedMinutes: 60, courseId: state.courses[0]?.id }));
         state.tasks = [...imported, ...state.tasks.filter(t => !t.title.includes("MOCK:"))];
         saveState(); renderAll();
       }
     });
 
-    ["notifMembean", "notifQuizzes", "notifAssignments", "notifOverdue", "notifTimerDone"].forEach(id => {
-      document.getElementById(id)?.addEventListener("change", e => {
-        state.notificationSettings[id.replace("notif", "").toLowerCase()] = e.target.checked;
-        if (id === "notifTimerDone" && e.target.checked && ("Notification" in window) && Notification.permission === "default") {
-          Notification.requestPermission();
-        }
-        saveState();
-      });
-    });
-
-    document.getElementById("skinLockCheckbox")?.addEventListener("change", e => {
-      state.skinChangeRestrictedToFreePeriods = e.target.checked;
-      saveState();
-      addNotification(e.target.checked ? "✓ Skin changes restricted to free periods" : "✓ Skins can be changed anytime", "info", 2000);
-    });
-
-    document.getElementById("confettiEnabled")?.addEventListener("change", e => {
-      state.confettiEnabled = e.target.checked;
-      saveState();
-    });
-
     // Modals
-    document.getElementById("tutorialBtn")?.addEventListener("click", () => document.getElementById("tutorialModal")?.classList.add("open"));
-    document.getElementById("tutorialCloseBtn")?.addEventListener("click", () => { state.tutorialSeen=true; saveState(); document.getElementById("tutorialModal")?.classList.remove("open"); });
-    document.getElementById("canvasTokenGuideBtn")?.addEventListener("click", () => document.getElementById("canvasTokenModal")?.classList.add("open"));
-    document.getElementById("canvasTokenCloseBtn")?.addEventListener("click", () => document.getElementById("canvasTokenModal")?.classList.remove("open"));
+    document.getElementById("tutorialBtn").addEventListener("click", () => document.getElementById("tutorialModal").classList.add("open"));
+    document.getElementById("tutorialCloseBtn").addEventListener("click", () => { state.tutorialSeen=true; saveState(); document.getElementById("tutorialModal").classList.remove("open"); });
+    document.getElementById("canvasTokenGuideBtn").addEventListener("click", () => document.getElementById("canvasTokenModal").classList.add("open"));
+    document.getElementById("canvasTokenCloseBtn").addEventListener("click", () => document.getElementById("canvasTokenModal").classList.remove("open"));
+    document.getElementById("openCalendarWindowBtn").addEventListener("click", openCanvasModal);
+    document.getElementById("canvasModalCloseBtn").addEventListener("click", () => document.getElementById("canvasModal").classList.remove("open"));
   }
 
   // SYSTEM START
-  function resizeFxCanvas() { fxCanvas.width = window.innerWidth; fxCanvas.height = window.innerHeight; }
+  function resizeFxCanvas() { fxCanvas.width = window.innerWidth; fxCanvas.height = window.innerHeight; if (isMidnightSkinActive()) seedStarfield(); }
   window.addEventListener("resize", resizeFxCanvas);
   
   // Set Current Year in Footer
-  const cy = document.getElementById("currentYear");
-  if (cy) cy.textContent = new Date().getFullYear();
+  document.getElementById("currentYear").textContent = new Date().getFullYear();
 
   function emitConfetti(count) {
     if (!state.confettiEnabled) return;
     for (let i = 0; i < count; i++) confetti.push({ x: window.innerWidth * (0.2 + Math.random() * 0.6), y: window.innerHeight * 0.3, vx: (Math.random() - 0.5) * 8, vy: -Math.random() * 7 - 2, life: 90, size: Math.random() * 4 + 2, hue: Math.random() * 120 + 150 });
     if (!fxAnimationRunning) { fxAnimationRunning = true; requestAnimationFrame(animateFx); }
   }
-  
+
+  function isMidnightSkinActive() {
+    return document.body.classList.contains("skin-midnight");
+  }
+
+  function seedStarfield() {
+    const count = Math.max(90, Math.floor((window.innerWidth * window.innerHeight) / 18000));
+    starfield = Array.from({ length: count }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.8 + 0.4,
+      vx: Math.random() * 0.12 + 0.015,
+      vy: Math.random() * 0.03 - 0.015,
+      twinkle: Math.random() * Math.PI * 2,
+      depth: Math.random()
+    }));
+  }
+
+  function refreshFxAnimation() {
+    if (isMidnightSkinActive()) {
+      seedStarfield();
+      if (!fxAnimationRunning) {
+        fxAnimationRunning = true;
+        requestAnimationFrame(animateFx);
+      }
+    } else if (!confetti.length) {
+      starfield = [];
+      fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+    }
+  }
+
   function animateFx() {
     fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+    if (isMidnightSkinActive()) {
+      const now = performance.now() / 1000;
+      starfield.forEach((star, index) => {
+        star.twinkle += 0.008 + star.depth * 0.012;
+        star.x -= star.vx * (0.8 + star.depth);
+        star.y += star.vy;
+        if (star.x < -10) {
+          star.x = fxCanvas.width + 10;
+          star.y = Math.random() * fxCanvas.height;
+        }
+        if (star.y > fxCanvas.height + 10) star.y = -10;
+        if (star.y < -10) star.y = fxCanvas.height + 10;
+
+        const glow = 0.5 + star.depth * 1.4;
+        const alpha = 0.18 + Math.max(0, Math.sin(now + star.twinkle)) * 0.45;
+        fxCtx.beginPath();
+        fxCtx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        fxCtx.arc(star.x, star.y, star.r * glow, 0, Math.PI * 2);
+        fxCtx.fill();
+        if (index % 5 === 0) {
+          fxCtx.fillStyle = `rgba(125, 211, 252, ${alpha * 0.35})`;
+          fxCtx.fillRect(star.x - 0.5, star.y - 0.5, 1, 1);
+        }
+      });
+    }
     confetti = confetti.filter(p => p.life > 0);
     confetti.forEach(p => { p.vy += 0.11; p.x += p.vx; p.y += p.vy; p.life--; fxCtx.fillStyle = `hsla(${p.hue}, 95%, 70%, ${p.life/90})`; fxCtx.fillRect(p.x, p.y, p.size, p.size * 1.6); });
-    if (confetti.length) requestAnimationFrame(animateFx); else fxAnimationRunning = false;
+    if (confetti.length || isMidnightSkinActive()) requestAnimationFrame(animateFx); else fxAnimationRunning = false;
   }
 
   registerEvents();
   resizeFxCanvas();
-  if(!state.tutorialSeen) document.getElementById("tutorialModal")?.classList.add("open");
-  
-  const tdd = document.getElementById("taskDueDate");
-  if(tdd && !tdd.value) tdd.value = new Date().toISOString().slice(0, 10);
+  if(!state.tutorialSeen) document.getElementById("tutorialModal").classList.add("open");
+  if(!document.getElementById("taskDueDate").value) document.getElementById("taskDueDate").value = new Date().toISOString().slice(0, 10);
   
   renderAll();
+  loadDailyInfo(); // Fetch Lunch and Schedule on boot
   
   window.setInterval(() => { renderScheduleCard(); renderSmartCard(); }, 30000);
 </script>
