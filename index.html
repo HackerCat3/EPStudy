@@ -89,6 +89,8 @@
 	.canvas-cal-date { font-size: 0.85rem; color: var(--text-main); text-align: right; margin-bottom: 4px; padding-right: 4px; font-weight: 500; }
   .canvas-cal-event { font-size: 0.74rem; padding: 5px 8px; margin-bottom: 3px; border-radius: 6px; white-space: normal; overflow: hidden; cursor: pointer; border-left: 4px solid transparent; display: flex; align-items: flex-start; gap: 6px; font-weight: 600; color: var(--text-dark); box-shadow: var(--shadow-sm); line-height: 1.25; min-width: 0; }
 	.canvas-cal-event:hover { filter: brightness(0.95); transform: translateY(-1px); }
+  .canvas-cal-event.completed { opacity: 0.6; }
+  .canvas-cal-event.completed .canvas-cal-event-body { text-decoration: line-through; }
   .canvas-cal-event-body { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
   .canvas-cal-source-pill { display: inline-flex; align-items: center; width: fit-content; border-radius: 999px; padding: 2px 7px; font-size: 0.62rem; letter-spacing: 0.05em; font-weight: 800; text-transform: uppercase; border: 1px solid transparent; }
   .canvas-cal-source-pill.app { background: rgba(15, 23, 42, 0.08); color: var(--navy-primary); border-color: rgba(15, 23, 42, 0.12); }
@@ -445,6 +447,12 @@
         <p class="mini-text" style="margin-bottom: 8px;">Your courses act as calendars. Each one can be color-coded for clarity.</p>
         <div id="courseList" class="stack" style="max-height: 150px; overflow-y: auto; padding-right: 5px;"></div>
       </article>
+
+      <article class="panel col-4">
+        <h2>Reset Data</h2>
+        <p class="mini-text" style="margin-bottom: 0.75rem;">Clears tasks, courses, settings, and Canvas data stored on this device.</p>
+        <button id="resetDataBtn" class="button" type="button" style="width: 100%; background: #fff3f3; border-color: #fecaca; color: #b91c1c;">Reset All Data</button>
+      </article>
       
       <article class="panel col-4">
         <h2>Study Resources</h2>
@@ -620,6 +628,41 @@
     catch (e) { console.error("Failed to save state.", e); }
   }
 
+  function resetAllData() {
+    const fresh = defaultState();
+    Object.keys(state).forEach(key => { delete state[key]; });
+    Object.assign(state, fresh);
+
+    clearInterval(timerInterval);
+    timerInterval = null;
+    timerDurationSeconds = Math.max(1, Number(state.timerMinutes || 25)) * 60;
+    timerRemainingSeconds = timerDurationSeconds;
+    lastAutoFilledTaskId = null;
+
+    cachedDailySchedule = null;
+    cachedDailyLunch = null;
+    lastDailyInfoDateKey = "";
+
+    confetti = [];
+    starfield = [];
+    fxAnimationRunning = false;
+
+    const domainInput = document.getElementById("canvasDomain");
+    if (domainInput) domainInput.value = state.canvasDomain || "";
+    const tokenInput = document.getElementById("canvasToken");
+    if (tokenInput) tokenInput.value = state.canvasToken || "";
+
+    const startBtn = document.getElementById("startPauseBtn");
+    if (startBtn) startBtn.textContent = "Start Focus";
+    const timerHint = document.getElementById("timerHint");
+    if (timerHint) timerHint.textContent = "Ready to begin.";
+
+    saveState();
+    renderAll();
+    renderCanvasCalendar();
+    loadDailyInfo(true);
+  }
+
   function isValidTime(value) { return /^([01]\d|2[0-3]):([0-5]\d)$/.test(String(value || "")); }
   function safeIsoFromDateTime(dateValue, timeValue) {
     if (!dateValue || !isValidTime(timeValue)) return null;
@@ -695,6 +738,11 @@
   function getSchoolDateCompact(date = new Date()) { const parts = getSchoolZonedParts(date); return `${parts.year}${parts.month}${parts.day}`; }
   function getSchoolDayIndex(date = new Date()) { const parts = getSchoolZonedParts(date); return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(parts.weekday); }
   function getSchoolDateLabel(date = new Date()) { return new Intl.DateTimeFormat([], { timeZone: SCHOOL_TIMEZONE, month: "numeric", day: "numeric", year: "numeric" }).format(date); }
+  function formatSchoolTime(isoString) {
+    const d = new Date(isoString);
+    if (Number.isNaN(d.getTime())) return "";
+    return new Intl.DateTimeFormat([], { timeZone: SCHOOL_TIMEZONE, hour: "numeric", minute: "2-digit" }).format(d).toLowerCase();
+  }
 
   function getIcsField(block, fieldName) {
     const re = new RegExp(`^${fieldName}(?:;[^:]*)?:(.*)$`, "mi");
@@ -915,7 +963,7 @@
   function renderHeaderStats() {
     document.getElementById("heroSessions").textContent = String(state.sessionsCompleted);
     document.getElementById("heroMinutes").textContent = String(state.focusMinutes);
-    document.getElementById("clearDoneBtn").textContent = `Clear Done (${state.tasks.filter(t => t.completed).length})`;
+    document.getElementById("clearDoneBtn").textContent = `Clear Done (${state.tasks.filter(t => t.completed && t.source !== "canvas").length})`;
   }
 
   function renderTaskList() {
@@ -1013,7 +1061,9 @@
     const taskMap = state.tasks.reduce((acc, t) => {
       if (sourceFilter === "app" && t.source === "canvas") return acc;
       if (sourceFilter === "canvas" && t.source !== "canvas") return acc;
-      const k = t.dueDate.split("T")[0];
+      const dueDate = new Date(t.dueDate);
+      if (Number.isNaN(dueDate.getTime())) return acc;
+      const k = getSchoolDateKey(dueDate);
       if (!acc[k]) acc[k] = [];
       acc[k].push(t);
       return acc;
@@ -1025,7 +1075,7 @@
     }
     
     // Current Month
-    const todayStr = new Date().toISOString().split("T")[0];
+    const todayStr = getSchoolDateKey(new Date());
     for (let d = 1; d <= daysInMonth; d++) {
       const currentStr = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
       const isToday = currentStr === todayStr;
@@ -1034,9 +1084,12 @@
       const tasksHtml = dayTasks.map(t => {
         const c = getCourseById(t.courseId) || { color: '#64748b' };
         const sourceLabel = t.source === "canvas" ? "Canvas" : "App";
-        return `<div class="canvas-cal-event" data-task-id="${t.id}" style="background: ${c.color}25; border-left-color: ${c.color};" title="${escapeHtml(t.title)}">
+        const timeLabel = t.allDay ? "All day" : (formatSchoolTime(t.dueDate) || "Time TBA");
+        const completedClass = t.completed ? " completed" : "";
+        const titleSuffix = t.completed ? " (completed)" : "";
+        return `<div class="canvas-cal-event${completedClass}" data-task-id="${t.id}" style="background: ${c.color}25; border-left-color: ${c.color};" title="${escapeHtml(t.title)}${titleSuffix}">
           <span style="color: ${c.color}; font-weight: 800; font-size: 0.8rem;">📝</span>
-          <span class="canvas-cal-event-body"><span class="canvas-cal-source-pill ${t.source === "canvas" ? "canvas" : "app"}">${sourceLabel}</span><span><strong>${new Date(t.dueDate).toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'}).toLowerCase()}</strong> ${escapeHtml(t.title)}</span></span>
+          <span class="canvas-cal-event-body"><span class="canvas-cal-source-pill ${t.source === "canvas" ? "canvas" : "app"}">${sourceLabel}</span><span><strong>${timeLabel}</strong> ${escapeHtml(t.title)}</span></span>
         </div>`;
       }).join("");
 
@@ -1253,26 +1306,128 @@
     return rows;
   }
 
+  function normalizeCanvasDate(rawValue) {
+    if (!rawValue) return null;
+    const raw = String(rawValue).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+      return safeIsoFromDateTime(raw, "12:00");
+    }
+    const parsed = new Date(raw);
+    return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+  }
+
+  function pickCanvasDateInfo(item) {
+    const allDates = Array.isArray(item?.all_dates) ? item.all_dates : [];
+    const allDatesRaw = allDates
+      .map(d => d?.due_at || d?.start_at || d?.unlock_at || d?.lock_at)
+      .filter(Boolean)
+      .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())[0];
+
+    const candidates = [
+      { raw: item?.due_at, rank: 9 },
+      { raw: item?.start_at, rank: 8 },
+      { raw: item?.plannable_date, rank: 7 },
+      { raw: item?.todo_date, rank: 6 },
+      { raw: item?.all_day_date, rank: 6 },
+      { raw: allDatesRaw, rank: 5 },
+      { raw: item?.lock_at, rank: 4 },
+      { raw: item?.unlock_at, rank: 3 },
+      { raw: item?.published_at, rank: 2 },
+      { raw: item?.created_at, rank: 1 },
+      { raw: item?.updated_at, rank: 1 }
+    ];
+
+    for (const c of candidates) {
+      const iso = normalizeCanvasDate(c.raw);
+      if (iso) {
+        const rawStr = String(c.raw || "").trim();
+        const isAllDay = Boolean(item?.all_day || item?.all_day_date || /^\d{4}-\d{2}-\d{2}$/.test(rawStr));
+        return { dueIso: iso, dateRank: c.rank, allDay: isAllDay };
+      }
+    }
+
+    return { dueIso: null, dateRank: -1, allDay: Boolean(item?.all_day || item?.all_day_date) };
+  }
+
+  function extractCourseIdFromContext(contextCode) {
+    const match = String(contextCode || "").match(/^course_(\d+)$/);
+    return match ? match[1] : "";
+  }
+
+  function mapPlannerItemToCanvasRow(item) {
+    if (!item) return null;
+    const plannable = item?.plannable || {};
+    const type = String(item?.plannable_type || "").toLowerCase();
+    const rawId = plannable?.id || item?.plannable_id || item?.id;
+    if (!rawId) return null;
+    const id = ["assignment", "discussion_topic", "quiz", "calendar_event"].includes(type) ? rawId : `${type || "planner"}-${rawId}`;
+    const submissionState = String(item?.submission_state || "");
+    const completed = Boolean(item?.completed || plannable?.completed || ["submitted", "graded", "complete", "completed"].includes(submissionState.toLowerCase()));
+
+    return {
+      id,
+      _canvasKind: type || "planner",
+      course_id: extractCourseIdFromContext(item?.context_code),
+      name: plannable?.name || plannable?.title || item?.plannable_title || item?.title,
+      title: plannable?.title || item?.plannable_title || item?.title,
+      description: plannable?.description || item?.description,
+      context_code: item?.context_code,
+      context_name: item?.context_name,
+      course_name: item?.context_name || item?.course_name,
+      course_code: item?.course_code || plannable?.course_code,
+      points_possible: plannable?.points_possible || item?.points_possible,
+      due_at: plannable?.due_at || item?.due_at,
+      start_at: plannable?.start_at || item?.start_at,
+      lock_at: plannable?.lock_at,
+      unlock_at: plannable?.unlock_at,
+      published_at: plannable?.published_at,
+      created_at: plannable?.created_at,
+      updated_at: plannable?.updated_at,
+      plannable_date: item?.plannable_date || item?.todo_date || plannable?.plannable_date,
+      todo_date: item?.todo_date,
+      all_day: Boolean(item?.all_day || plannable?.all_day || item?.all_day_date || plannable?.all_day_date),
+      all_day_date: item?.all_day_date || plannable?.all_day_date,
+      has_submitted_submissions: Boolean(plannable?.has_submitted_submissions || completed),
+      submission_state: submissionState,
+      workflow_state: plannable?.workflow_state || item?.workflow_state,
+      completed
+    };
+  }
+
   function importCanvasAssignments(assignments, canvasCoursesById) {
     const imported = [];
 
     for (const item of assignments) {
-      // FIX: Added item?.start_at so Calendar Events get the correct date
-      const dueRaw = item?.due_at || item?.start_at || item?.lock_at || item?.unlock_at || item?.published_at || item?.created_at || item?.updated_at;
       const fallbackIso = safeIsoFromDateTime(getSchoolDateKey(new Date()), "23:59") || new Date().toISOString();
-      const dueDate = new Date(dueRaw);
-      const dueIso = Number.isNaN(dueDate.getTime()) ? fallbackIso : dueDate.toISOString();
+      const dateInfo = pickCanvasDateInfo(item);
+      const dueIso = dateInfo.dueIso || fallbackIso;
 
       const title = String(item?.name || item?.title || "Canvas Assignment").trim();
       const description = String(item?.description || "").trim();
       const courseIdRaw = String(item?.course_id || "");
-      const courseId = canvasCoursesById.get(courseIdRaw) ? ensureCanvasCourse(canvasCoursesById.get(courseIdRaw), courseIdRaw) : "";
+      const itemKind = String(item?._canvasKind || item?.plannable_type || item?.type || "assignment").toLowerCase();
+      const keyBase = `canvas:${item.course_id||"x"}:${item.id}`;
+      const externalKey = itemKind && itemKind !== "assignment" ? `${keyBase}:${itemKind}` : keyBase;
+      const legacyKey = keyBase;
+      let courseId = "";
+      if (courseIdRaw && canvasCoursesById.get(courseIdRaw)) {
+        courseId = ensureCanvasCourse(canvasCoursesById.get(courseIdRaw), courseIdRaw);
+      } else if (courseIdRaw) {
+        const fallbackCourse = {
+          id: courseIdRaw,
+          name: item?.course_name || item?.context_name || `Canvas ${courseIdRaw}`,
+          course_code: item?.course_code || ""
+        };
+        courseId = ensureCanvasCourse(fallbackCourse, courseIdRaw);
+      }
+      const allDay = Boolean(dateInfo.allDay);
       
       // Events often don't have points, so we give them a default of 30 mins
       const estimatedMinutes = Math.max(10, Math.min(180, Number(item?.points_possible) ? Math.round(Number(item.points_possible) * 1.5) : 30));
-      const completed = Boolean(item?.has_submitted_submissions || ["submitted", "complete", "graded"].includes(String(item?.workflow_state || "").toLowerCase()));
+      const submissionState = String(item?.submission_state || "");
+      const completed = Boolean(item?.has_submitted_submissions || item?.completed || ["submitted", "complete", "graded", "completed"].includes(String(item?.workflow_state || "").toLowerCase()) || ["submitted", "complete", "graded", "completed"].includes(submissionState.toLowerCase()));
 
-      imported.push({ id: `canvas-${item.course_id||"x"}-${item.id}`, title, description, estimatedMinutes, dueDate: dueIso, source: "canvas", courseId, completed, externalKey: `canvas:${item.course_id||"x"}:${item.id}` });
+      imported.push({ id: `canvas-${item.course_id||"x"}-${item.id}`, title, description, estimatedMinutes, dueDate: dueIso, source: "canvas", courseId, completed, allDay, canvasDateRank: dateInfo.dateRank, canvasKind: itemKind, externalKey, legacyKey });
     }
 
     let added = 0, updated = 0;
@@ -1280,9 +1435,31 @@
     state.tasks.forEach((t, idx) => existingByKey.set(t.externalKey || `${t.source||"m"}:${t.id}`, { task: t, index: idx }));
 
     for (const inc of imported) {
-      const found = existingByKey.get(inc.externalKey);
-      if (!found) { state.tasks.push(inc); added++; } 
-      else { state.tasks[found.index] = { ...found.task, title: inc.title, description: inc.description, dueDate: inc.dueDate, estimatedMinutes: inc.estimatedMinutes, source: "canvas", courseId: inc.courseId, externalKey: inc.externalKey, completed: Boolean(inc.completed || found.task.completed) }; updated++; }
+      const found = existingByKey.get(inc.externalKey) || (inc.legacyKey ? existingByKey.get(inc.legacyKey) : null);
+      const incomingRank = Number.isFinite(inc.canvasDateRank) ? inc.canvasDateRank : -1;
+      if (!found) {
+        const { legacyKey, ...taskData } = inc;
+        state.tasks.push(taskData);
+        added++;
+      } else {
+        const existingRank = Number.isFinite(found.task.canvasDateRank) ? found.task.canvasDateRank : -1;
+        const useIncomingDate = incomingRank >= existingRank;
+        state.tasks[found.index] = {
+          ...found.task,
+          title: inc.title,
+          description: inc.description,
+          estimatedMinutes: inc.estimatedMinutes,
+          source: "canvas",
+          courseId: inc.courseId,
+          externalKey: inc.externalKey,
+          completed: Boolean(inc.completed || found.task.completed),
+          canvasKind: inc.canvasKind || found.task.canvasKind,
+          canvasDateRank: Math.max(existingRank, incomingRank),
+          dueDate: useIncomingDate ? inc.dueDate : found.task.dueDate,
+          allDay: useIncomingDate ? Boolean(inc.allDay) : Boolean(found.task.allDay)
+        };
+        updated++;
+      }
     }
 
     state.tasks.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
@@ -1315,22 +1492,34 @@
       const defaultIds = ["course-math", "course-english", "course-science", "course-history", "course-other"];
       state.courses = state.courses.filter(c => !defaultIds.includes(c.id));
       
-      const validCourses = courses.filter(c => c && c.id && !c.access_restricted_by_date && c.workflow_state !== "deleted");
+      const validCourses = courses.filter(c => c && c.id && c.workflow_state !== "deleted");
       const canvasCoursesById = new Map(validCourses.map(c => [String(c.id), c]));
 
+      const rangeStart = new Date();
+      rangeStart.setDate(rangeStart.getDate() - 180);
+      const rangeEnd = new Date();
+      rangeEnd.setDate(rangeEnd.getDate() + 180);
+      const startIso = safeIsoFromDateTime(getSchoolDateKey(rangeStart), "00:00") || rangeStart.toISOString();
+      const endIso = safeIsoFromDateTime(getSchoolDateKey(rangeEnd), "23:59") || rangeEnd.toISOString();
+
       let assignments = [];
+      try {
+        const plannerUrl = `${cleanUrl}/api/v1/planner/items?per_page=100&start_date=${encodeURIComponent(startIso)}&end_date=${encodeURIComponent(endIso)}&include[]=submission`;
+        const plannerItems = await fetchCanvasPages(plannerUrl, token);
+        assignments = plannerItems.map(mapPlannerItemToCanvasRow).filter(Boolean);
+      } catch (plannerErr) {
+        console.warn("Planner sync failed; continuing with course assignments and events.", plannerErr);
+      }
+
       for (const c of validCourses) {
         try {
-          // 1. Fetch Standard Assignments & Graded Discussions
           const assignUrl = `${cleanUrl}/api/v1/courses/${encodeURIComponent(c.id)}/assignments?per_page=100&include[]=submission`;
           const assignRows = await fetchCanvasPages(assignUrl, token);
-          assignments = assignments.concat(assignRows.map(r => ({ ...r, course_id: r.course_id || c.id })));
+          assignments = assignments.concat(assignRows.map(r => ({ ...r, course_id: r.course_id || c.id, _canvasKind: "assignment" })));
           
-          // 2. FIX: Fetch Calendar Events (e.g., "LPC Clean Up")
           const eventUrl = `${cleanUrl}/api/v1/calendar_events?context_codes[]=course_${encodeURIComponent(c.id)}&per_page=100`;
           const eventRows = await fetchCanvasPages(eventUrl, token);
-          assignments = assignments.concat(eventRows.map(r => ({ ...r, course_id: c.id })));
-
+          assignments = assignments.concat(eventRows.map(r => ({ ...r, course_id: c.id, _canvasKind: "calendar_event" })));
         } catch (courseErr) {
           console.warn(`Skipping course ${c.name || c.id} due to access error.`, courseErr);
         }
@@ -1376,7 +1565,11 @@
     document.getElementById("resetBtn").addEventListener("click", () => { clearInterval(timerInterval); timerInterval=null; setTimerFromMinutes(state.timerMinutes, true); document.getElementById("startPauseBtn").textContent="Start Focus"; });
     document.getElementById("finishBtn").addEventListener("click", () => completeSession());
     document.getElementById("timerInput").addEventListener("change", e => setTimerFromMinutes(e.target.value));
-    document.getElementById("clearDoneBtn").addEventListener("click", () => { state.tasks = state.tasks.filter(t=>!t.completed); saveState(); renderAll(); });
+    document.getElementById("clearDoneBtn").addEventListener("click", () => { state.tasks = state.tasks.filter(t => !(t.completed && t.source !== "canvas")); saveState(); renderAll(); });
+    document.getElementById("resetDataBtn")?.addEventListener("click", () => {
+      if (!confirm("Reset all app data on this device? This clears tasks, courses, settings, and Canvas sync data.")) return;
+      resetAllData();
+    });
     
     // Skins Interactions
     const skinSelect = document.getElementById("applySkinBtn");
