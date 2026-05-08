@@ -449,6 +449,32 @@
       </article>
 
       <article class="panel col-4">
+        <h2>Membean Reminders</h2>
+        <label class="mini-text" style="display:flex; align-items:center; gap: 8px; margin-bottom: 10px;">
+          <input id="membeanReminderEnabled" type="checkbox" /> Enable reminders
+        </label>
+        <label class="mini-text" style="display:flex; align-items:center; gap: 8px; margin-bottom: 10px;">
+          Reminder time
+          <input id="membeanReminderTime" class="field" type="time" value="20:00" style="max-width: 140px;" />
+        </label>
+        <p id="membeanReminderStatus" class="mini-text" style="margin-bottom: 10px;"></p>
+        <button id="membeanLogBtn" class="button" type="button" style="width: 100%;">Log 10-minute session</button>
+      </article>
+
+      <article class="panel col-4">
+        <h2>Daily Reminders</h2>
+        <div class="stack" style="gap: 8px;">
+          <input id="dailyReminderMessage" class="field" type="text" placeholder="Reminder message (e.g., Do Membean)" />
+          <div class="row" style="align-items: center;">
+            <input id="dailyReminderTime" class="field" type="time" value="20:00" style="max-width: 140px;" />
+            <button id="dailyReminderAddBtn" class="button primary" type="button">Add Reminder</button>
+          </div>
+        </div>
+        <div id="dailyReminderList" class="stack" style="margin-top: 10px;"></div>
+        <p id="dailyReminderStatus" class="mini-text" style="margin-top: 10px;"></p>
+      </article>
+
+      <article class="panel col-4">
         <h2>Reset Data</h2>
         <p class="mini-text" style="margin-bottom: 0.75rem;">Clears tasks, courses, settings, and Canvas data stored on this device.</p>
         <button id="resetDataBtn" class="button" type="button" style="width: 100%; background: #fff3f3; border-color: #fecaca; color: #b91c1c;">Reset All Data</button>
@@ -605,7 +631,9 @@
       tasks: [], courses: [...DEFAULT_COURSES], grades: [], selectedTaskId: null,
       sessionsCompleted: 0, focusMinutes: 0, streakDays: 0, lastSessionDate: null,
       tutorialSeen: false, timerMinutes: 25,
-      selectedSkin: "default", confettiEnabled: true, calendarSourceFilter: "all",
+      selectedSkin: "default", confettiEnabled: true, calendarSourceFilter: "all", calendarYear: now.getFullYear(), calendarMonth: now.getMonth(),
+      membeanReminderEnabled: false, membeanReminderTime: "20:00", membeanSessions: [], membeanWeekKey: "", membeanLastReminderDate: "",
+      dailyReminders: [],
       canvasToken: "", teamsnapToken: "", canvasDomain: "eastsideprep.instructure.com",
     };
   }
@@ -619,6 +647,28 @@
       merged.tasks = Array.isArray(merged.tasks) ? merged.tasks : [];
       merged.courses = Array.isArray(merged.courses) && merged.courses.length > 0 ? merged.courses : [...DEFAULT_COURSES];
       merged.calendarSourceFilter = ["all", "app", "canvas"].includes(merged.calendarSourceFilter) ? merged.calendarSourceFilter : "all";
+      merged.calendarYear = Number.isFinite(merged.calendarYear) ? merged.calendarYear : base.calendarYear;
+      merged.calendarMonth = Number.isFinite(merged.calendarMonth) ? merged.calendarMonth : base.calendarMonth;
+      if (merged.calendarMonth < 0 || merged.calendarMonth > 11) merged.calendarMonth = base.calendarMonth;
+      merged.membeanReminderEnabled = Boolean(merged.membeanReminderEnabled);
+      merged.membeanReminderTime = isValidTime(merged.membeanReminderTime) ? merged.membeanReminderTime : "20:00";
+      merged.membeanSessions = Array.isArray(merged.membeanSessions) ? merged.membeanSessions : [];
+      merged.membeanWeekKey = typeof merged.membeanWeekKey === "string" ? merged.membeanWeekKey : "";
+      merged.membeanLastReminderDate = typeof merged.membeanLastReminderDate === "string" ? merged.membeanLastReminderDate : "";
+      merged.dailyReminders = Array.isArray(merged.dailyReminders) ? merged.dailyReminders : [];
+      merged.dailyReminders = merged.dailyReminders.map(rem => ({
+        id: String(rem?.id || `rem-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+        time: isValidTime(rem?.time) ? rem.time : "20:00",
+        message: String(rem?.message || "").trim(),
+        enabled: rem?.enabled !== false,
+        lastFiredDate: typeof rem?.lastFiredDate === "string" ? rem.lastFiredDate : ""
+      })).filter(rem => rem.message);
+      const currentWeekKey = getWeekKey(new Date());
+      if (!merged.membeanWeekKey || merged.membeanWeekKey !== currentWeekKey) {
+        merged.membeanWeekKey = currentWeekKey;
+        merged.membeanSessions = [];
+        merged.membeanLastReminderDate = "";
+      }
       return merged;
     } catch { return base; }
   }
@@ -742,6 +792,78 @@
     const d = new Date(isoString);
     if (Number.isNaN(d.getTime())) return "";
     return new Intl.DateTimeFormat([], { timeZone: SCHOOL_TIMEZONE, hour: "numeric", minute: "2-digit" }).format(d).toLowerCase();
+  }
+
+  function getWeekStart(date = new Date()) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = (day + 6) % 7;
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - diff);
+    return d;
+  }
+
+  function getWeekKey(date = new Date()) {
+    return getSchoolDateKey(getWeekStart(date));
+  }
+
+  function getUpcomingSaturdayMorning(date = new Date()) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = (6 - day + 7) % 7;
+    d.setDate(d.getDate() + diff);
+    d.setHours(10, 0, 0, 0);
+    return d;
+  }
+
+  function normalizeMembeanSessions() {
+    const currentWeekKey = getWeekKey(new Date());
+    if (state.membeanWeekKey !== currentWeekKey) {
+      state.membeanWeekKey = currentWeekKey;
+      state.membeanSessions = [];
+      state.membeanLastReminderDate = "";
+      return true;
+    }
+
+    const weekStart = getWeekStart(new Date());
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    const seen = new Set();
+    const filtered = (Array.isArray(state.membeanSessions) ? state.membeanSessions : []).filter(key => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) return false;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      const dt = new Date(`${key}T12:00:00`);
+      return dt >= weekStart && dt <= weekEnd;
+    });
+    const changed = filtered.length !== state.membeanSessions.length;
+    state.membeanSessions = filtered;
+    return changed;
+  }
+
+  function getMembeanStatus(date = new Date()) {
+    normalizeMembeanSessions();
+    const count = state.membeanSessions.length;
+    const remaining = Math.max(0, 3 - count);
+    const due = getUpcomingSaturdayMorning(date);
+    return { count, remaining, due };
+  }
+
+  function requestNotificationPermission() {
+    if (!("Notification" in window)) return Promise.resolve("unsupported");
+    if (Notification.permission === "granted") return Promise.resolve("granted");
+    if (Notification.permission === "denied") return Promise.resolve("denied");
+    return Notification.requestPermission();
+  }
+
+  function fireReminder(title, message) {
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification(title, { body: message });
+      return true;
+    }
+    const status = document.getElementById("dailyReminderStatus");
+    if (status) status.textContent = `${title}: ${message}`;
+    return false;
   }
 
   function getIcsField(block, fieldName) {
@@ -898,16 +1020,13 @@
   async function loadDailyInfo(force = false) {
     const now = new Date();
     let lunchTargetDate = new Date();
-    let isTomorrow = false;
+    let isTomorrow = true;
 
-    // Fetch tomorrow's lunch after 2:00 PM (14:00)
-    if (now.getHours() >= 14) {
-      lunchTargetDate.setDate(lunchTargetDate.getDate() + 1);
-      isTomorrow = true;
-      // Skip weekends to jump to Monday
-      if (lunchTargetDate.getDay() === 6) lunchTargetDate.setDate(lunchTargetDate.getDate() + 2); // Saturday -> Monday
-      if (lunchTargetDate.getDay() === 0) lunchTargetDate.setDate(lunchTargetDate.getDate() + 1); // Sunday -> Monday
-    }
+    // Always show tomorrow's lunch
+    lunchTargetDate.setDate(lunchTargetDate.getDate() + 1);
+    // Skip weekends to jump to Monday
+    if (lunchTargetDate.getDay() === 6) lunchTargetDate.setDate(lunchTargetDate.getDate() + 2); // Saturday -> Monday
+    if (lunchTargetDate.getDay() === 0) lunchTargetDate.setDate(lunchTargetDate.getDate() + 1); // Sunday -> Monday
 
     const todayKey = getSchoolDateKey(now);
     if (!force && lastDailyInfoDateKey === todayKey && cachedDailyLunch && cachedDailySchedule !== null) return;
@@ -957,6 +1076,85 @@
           schedDiv.innerHTML = "<p class='alert col-12'>No classes scheduled today.</p>";
         }
       }
+    }
+  }
+
+  function logMembeanSession() {
+    normalizeMembeanSessions();
+    const todayKey = getSchoolDateKey(new Date());
+    if (!state.membeanSessions.includes(todayKey)) state.membeanSessions.push(todayKey);
+    saveState();
+    renderReminderSettings();
+  }
+
+  function renderReminderSettings() {
+    const memChanged = normalizeMembeanSessions();
+    if (memChanged) saveState();
+
+    const memToggle = document.getElementById("membeanReminderEnabled");
+    if (memToggle) memToggle.checked = Boolean(state.membeanReminderEnabled);
+    const memTime = document.getElementById("membeanReminderTime");
+    if (memTime) memTime.value = isValidTime(state.membeanReminderTime) ? state.membeanReminderTime : "20:00";
+    const memStatus = document.getElementById("membeanReminderStatus");
+    if (memStatus) {
+      const info = getMembeanStatus();
+      const dueLabel = info.due.toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+      memStatus.textContent = `Sessions this week: ${info.count}/3. Due ${dueLabel}.`;
+    }
+
+    const list = document.getElementById("dailyReminderList");
+    if (list) {
+      list.innerHTML = state.dailyReminders.length ? state.dailyReminders.map(rem => `
+        <div class="skin-row">
+          <span class="course-list-left">
+            <input type="checkbox" class="daily-reminder-toggle" data-id="${rem.id}" ${rem.enabled ? "checked" : ""} />
+            <span style="font-weight: 600;">${escapeHtml(rem.time)}</span>
+            <span class="mini-text">${escapeHtml(rem.message)}</span>
+          </span>
+          <button class="icon-button" data-action="delete-reminder" data-id="${rem.id}" style="width:28px;height:28px;font-size:0.75rem;">✕</button>
+        </div>
+      `).join("") : "<p class='empty'>No reminders yet.</p>";
+    }
+
+    const dailyStatus = document.getElementById("dailyReminderStatus");
+    if (dailyStatus) {
+      if (!("Notification" in window)) dailyStatus.textContent = "Browser notifications are not supported.";
+      else if (Notification.permission === "denied") dailyStatus.textContent = "Notifications are blocked in this browser.";
+      else if (Notification.permission === "default") dailyStatus.textContent = "Enable notifications to see popups.";
+      else dailyStatus.textContent = "Notifications are enabled.";
+    }
+  }
+
+  function checkReminders(now = new Date()) {
+    let changed = normalizeMembeanSessions();
+    const nowKey = getSchoolDateKey(now);
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+    if (state.membeanReminderEnabled && isValidTime(state.membeanReminderTime)) {
+      const info = getMembeanStatus(now);
+      const due = info.due;
+      const reminderMinutes = toMinutes(state.membeanReminderTime);
+      if (info.remaining > 0 && now.getTime() < due.getTime() && nowMinutes >= reminderMinutes && nowMinutes < reminderMinutes + 2 && state.membeanLastReminderDate !== nowKey) {
+        fireReminder("Membean reminder", `${info.remaining} session${info.remaining === 1 ? "" : "s"} left this week. Due Saturday morning.`);
+        state.membeanLastReminderDate = nowKey;
+        changed = true;
+      }
+    }
+
+    for (const rem of state.dailyReminders) {
+      if (!rem.enabled || !isValidTime(rem.time)) continue;
+      if (rem.lastFiredDate === nowKey) continue;
+      const remMinutes = toMinutes(rem.time);
+      if (nowMinutes >= remMinutes && nowMinutes < remMinutes + 2) {
+        fireReminder("Reminder", rem.message);
+        rem.lastFiredDate = nowKey;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      saveState();
+      renderReminderSettings();
     }
   }
 
@@ -1168,6 +1366,10 @@
     }
     const confToggle = document.getElementById("confettiEnabled");
     if (confToggle) confToggle.checked = Boolean(state.confettiEnabled);
+    const domainInput = document.getElementById("canvasDomain");
+    if (domainInput) domainInput.value = state.canvasDomain || "";
+    const tokenInput = document.getElementById("canvasToken");
+    if (tokenInput) tokenInput.value = state.canvasToken || "";
     
     // Course List Render
     const clist = document.getElementById("courseList");
@@ -1206,7 +1408,7 @@
       }
     }
 
-    renderHeaderStats(); renderTaskList(); renderSmartCard(); updateTimerUi();
+    renderHeaderStats(); renderTaskList(); renderSmartCard(); updateTimerUi(); renderReminderSettings();
   }
 
   function switchTab(targetId) {
@@ -1255,6 +1457,34 @@
   }
 
   // --- CANVAS SYNC FUNCTIONS ---
+  function parseCanvasDate(value) {
+    if (!value) return null;
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+
+  function isCourseInCurrentTrimester(course, now = new Date()) {
+    const term = course?.term || course?.enrollment_term || {};
+    const start = parseCanvasDate(term?.start_at || course?.start_at);
+    const end = parseCanvasDate(term?.end_at || course?.end_at);
+    if (start || end) return (!start || now >= start) && (!end || now <= end);
+    const stateVal = String(course?.workflow_state || "").toLowerCase();
+    return stateVal !== "completed" && stateVal !== "deleted";
+  }
+
+  function isHomeworkTitle(title) {
+    const t = String(title || "").trim();
+    if (!t) return false;
+    if (/\bMA\b/i.test(t) || /\bQA\b/i.test(t)) return false;
+    return /\bHW\b/i.test(t) || /\bCW\/HW\b/i.test(t) || /homework/i.test(t);
+  }
+
+  function isCanvasCourseIdInSet(courseId, validCourseIds) {
+    if (!courseId) return false;
+    const raw = String(courseId).replace("canvas-course-", "");
+    return validCourseIds.has(raw);
+  }
+
   function parseLinkHeader(linkHeader) {
     if (!linkHeader) return null;
     for (const part of String(linkHeader).split(",")) {
@@ -1403,6 +1633,7 @@
       const dueIso = dateInfo.dueIso || fallbackIso;
 
       const title = String(item?.name || item?.title || "Canvas Assignment").trim();
+      if (!isHomeworkTitle(title)) continue;
       const description = String(item?.description || "").trim();
       const courseIdRaw = String(item?.course_id || "");
       const itemKind = String(item?._canvasKind || item?.plannable_type || item?.type || "assignment").toLowerCase();
@@ -1473,6 +1704,9 @@
     const domain = document.getElementById("canvasDomain").value.trim();
     const token = document.getElementById("canvasToken").value.trim();
     const msg = document.getElementById("canvasMessage");
+    state.canvasDomain = domain;
+    state.canvasToken = token;
+    saveState();
     
     if (!domain || !token) {
       if (!silent) msg.textContent = "Domain and token required.";
@@ -1485,14 +1719,21 @@
     const cleanUrl = domain.startsWith("http") ? domain.replace(/\/$/, "") : `https://${domain.replace(/\/$/, "")}`;
 
     try {
-      const courseUrl = `${cleanUrl}/api/v1/courses?per_page=100`;
+      const courseUrl = `${cleanUrl}/api/v1/courses?enrollment_state=active&per_page=100&include[]=term`;
       const courses = await fetchCanvasPages(courseUrl, token);
       
       state.tasks = state.tasks.filter(t => !String(t.title || "").includes("MOCK:")); 
       const defaultIds = ["course-math", "course-english", "course-science", "course-history", "course-other"];
       state.courses = state.courses.filter(c => !defaultIds.includes(c.id));
       
-      const validCourses = courses.filter(c => c && c.id && c.workflow_state !== "deleted");
+      const validCourses = courses.filter(c => c && c.id && c.workflow_state !== "deleted" && isCourseInCurrentTrimester(c));
+      const validCourseIds = new Set(validCourses.map(c => String(c.id)));
+      state.courses = state.courses.filter(c => !String(c.id || "").startsWith("canvas-course-") || isCanvasCourseIdInSet(c.id, validCourseIds));
+      state.tasks = state.tasks.filter(t => {
+        if (t.source !== "canvas") return true;
+        if (!isHomeworkTitle(t.title)) return false;
+        return isCanvasCourseIdInSet(t.courseId, validCourseIds);
+      });
       const canvasCoursesById = new Map(validCourses.map(c => [String(c.id), c]));
 
       const rangeStart = new Date();
@@ -1525,6 +1766,7 @@
         }
       }
       
+      assignments = assignments.filter(item => validCourseIds.has(String(item.course_id || "")));
       const res = importCanvasAssignments(assignments, canvasCoursesById);
       if (!silent) msg.textContent = `Canvas synced! +${res.added} new, ${res.updated} updated.`;
     } catch (err) {
@@ -1569,6 +1811,56 @@
     document.getElementById("resetDataBtn")?.addEventListener("click", () => {
       if (!confirm("Reset all app data on this device? This clears tasks, courses, settings, and Canvas sync data.")) return;
       resetAllData();
+    });
+    document.getElementById("canvasDomain")?.addEventListener("change", e => {
+      state.canvasDomain = e.target.value.trim();
+      saveState();
+    });
+    document.getElementById("canvasToken")?.addEventListener("change", e => {
+      state.canvasToken = e.target.value.trim();
+      saveState();
+    });
+    document.getElementById("membeanReminderEnabled")?.addEventListener("change", e => {
+      state.membeanReminderEnabled = e.target.checked;
+      if (state.membeanReminderEnabled) requestNotificationPermission();
+      saveState();
+      renderReminderSettings();
+    });
+    document.getElementById("membeanReminderTime")?.addEventListener("change", e => {
+      state.membeanReminderTime = e.target.value;
+      saveState();
+      renderReminderSettings();
+    });
+    document.getElementById("membeanLogBtn")?.addEventListener("click", () => {
+      logMembeanSession();
+    });
+    document.getElementById("dailyReminderAddBtn")?.addEventListener("click", () => {
+      const time = document.getElementById("dailyReminderTime")?.value || "";
+      const message = String(document.getElementById("dailyReminderMessage")?.value || "").trim();
+      if (!isValidTime(time) || !message) return alert("Reminder needs a time and message.");
+      state.dailyReminders.push({ id: `rem-${Date.now()}-${Math.random().toString(16).slice(2)}`, time, message, enabled: true, lastFiredDate: "" });
+      requestNotificationPermission();
+      const msgInput = document.getElementById("dailyReminderMessage");
+      if (msgInput) msgInput.value = "";
+      saveState();
+      renderReminderSettings();
+    });
+    document.getElementById("dailyReminderList")?.addEventListener("change", e => {
+      if (!e.target.classList.contains("daily-reminder-toggle")) return;
+      const rem = state.dailyReminders.find(r => r.id === e.target.dataset.id);
+      if (rem) {
+        rem.enabled = e.target.checked;
+        rem.lastFiredDate = "";
+        saveState();
+        renderReminderSettings();
+      }
+    });
+    document.getElementById("dailyReminderList")?.addEventListener("click", e => {
+      const btn = e.target.closest("button");
+      if (!btn || btn.dataset.action !== "delete-reminder") return;
+      state.dailyReminders = state.dailyReminders.filter(r => r.id !== btn.dataset.id);
+      saveState();
+      renderReminderSettings();
     });
     
     // Skins Interactions
@@ -1691,6 +1983,8 @@
   renderAll();
   renderCanvasCalendar();
   loadDailyInfo(true); 
+  checkReminders();
+  setInterval(checkReminders, 60000);
 </script>
 </body>
 </html>
