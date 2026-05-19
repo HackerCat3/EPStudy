@@ -950,17 +950,7 @@
           <p style="font-size: 0.85rem; margin-top: 8px;">Built for Eastside Preparatory School.</p>
           <button id="privacyGuideBtn" class="button" type="button" style="margin-top: 10px;">How We Store Your Info</button>
         </div>
-        <div class="settings-card col-6">
-          <h3>Developer / Progress Set</h3>
-          <p class="helper-text">For testing: set your focus minutes, completed sessions, and streak days.</p>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <label style="flex:1; min-width:120px;">Minutes<input id="devSetMinutes" class="field" type="number" min="0" /></label>
-            <label style="flex:1; min-width:120px;">Sessions<input id="devSetSessions" class="field" type="number" min="0" /></label>
-            <label style="flex:1; min-width:120px;">Streak Days<input id="devSetStreak" class="field" type="number" min="0" /></label>
-            <button id="devApplyBtn" class="button primary" type="button">Apply</button>
-            <button id="devUnlockAllBtn" class="button" type="button" style="background:linear-gradient(90deg,#111827,#0b1220); color:#fff;">Unlock All</button>
-          </div>
-        </div>
+        <!-- Developer progress controls removed for production -->
       </div>
     </div>
 
@@ -4479,30 +4469,7 @@
     
     document.getElementById("resetAllBtn")?.addEventListener("click", () => { resetEverything(false); });
     
-      // Developer: allow setting progress (streak/sessions/minutes)
-      document.getElementById("devApplyBtn")?.addEventListener("click", () => {
-        const mins = Number(document.getElementById("devSetMinutes")?.value || 0);
-        const sess = Number(document.getElementById("devSetSessions")?.value || 0);
-        const strk = Number(document.getElementById("devSetStreak")?.value || 0);
-        state.focusMinutes = Math.max(0, Math.floor(mins));
-        state.sessionsCompleted = Math.max(0, Math.floor(sess));
-        state.streakDays = Math.max(0, Math.floor(strk));
-        saveState(); renderAll();
-        addNotification(`Progress set: ${state.focusMinutes} minutes, ${state.sessionsCompleted} sessions, ${state.streakDays}-day streak.`, "info", 4000);
-      });
-
-      // Unlock all skins/achievements for testing
-      document.getElementById("devUnlockAllBtn")?.addEventListener("click", () => {
-        try {
-          state.unlockedSkins = Array.from(new Set(SKIN_IDS.slice()));
-          state.unlockedAchievements = ACHIEVEMENTS.map(a => a.id);
-          state.proAccessUnlocked = true;
-          state.megaAccessUnlocked = true;
-          state.dominionAccessUnlocked = true;
-          saveState(); renderAll();
-          addNotification('All skins and achievements unlocked for testing.', 'info', 7000);
-        } catch (e) { console.warn(e); addNotification('Unlock all failed.', 'error', 4000); }
-      });
+      // Developer progress and unlock handlers removed
 
       document.getElementById("trailEnabled")?.addEventListener("change", e => {
         state.trailEnabled = Boolean(e.target.checked);
