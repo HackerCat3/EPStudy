@@ -103,13 +103,17 @@
   .settings-card h3 { margin: 0 0 10px; color: var(--text-dark); font-size: 0.92rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 800; }
   .settings-card p { margin: 0 0 12px; color: var(--muted); font-size: 0.9rem; }
 
-  /* Compact dev controls styling */
-  #devControlsPanel .settings-card { padding: 12px; display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
-  #devControlsPanel label { margin: 0; color: var(--text-dark); font-size: 0.85rem; display: flex; flex-direction: column; gap: 6px; }
-  #devControlsPanel .field { padding: 10px 12px; border-radius: 8px; min-width: 72px; width: 120px; }
-  #devControlsPanel .button { padding: 8px 10px; font-size: 0.9rem; border-radius: 8px; }
-  #devControlsPanel .button.primary { background: var(--navy-primary); color: #fff; }
-  @media (max-width: 720px) { #devControlsPanel .settings-card { flex-direction: column; } }
+  /* Clean, compact dev controls */
+  #devControlsPanel .settings-card { padding: 14px; border-radius: var(--radius-lg); background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent); box-shadow: var(--shadow-sm); }
+  .dev-grid { display: grid; grid-template-columns: repeat(3, minmax(120px, 1fr)); gap: 12px; align-items: start; }
+  .dev-field { display: flex; flex-direction: column; gap: 6px; }
+  .dev-field label { font-size: 0.85rem; color: var(--text-dark); font-weight: 700; }
+  .dev-field input { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel); color: var(--text-dark); width: 100%; box-sizing: border-box; }
+  .dev-actions { display: flex; gap: 8px; margin-top: 8px; grid-column: 1 / -1; }
+  .button.small { padding: 6px 10px; font-size: 0.9rem; border-radius: 8px; }
+  .button.ghost { background: transparent; border: 1px solid var(--border); color: var(--text-dark); }
+  .button.warn { background: #e4572e; color: #fff; border: none; }
+  @media (max-width: 720px) { .dev-grid { grid-template-columns: 1fr; } .dev-actions { flex-direction: row; justify-content: stretch; } .dev-actions .button { flex: 1; } }
 
   /* TIMER PAGE */
   .timer-expanded { font-size: clamp(3rem, 7vw, 5.5rem); font-weight: 800; color: var(--navy-primary); text-align: center; margin: 0; font-family: "Inter", sans-serif; font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: 0; }
@@ -933,31 +937,31 @@
           <p style="font-size: 0.85rem; margin-top: 8px;">Built for Eastside Preparatory School.</p>
           <button id="privacyGuideBtn" class="button" type="button" style="margin-top: 10px;">How We Store Your Info</button>
         </div>
-        <!-- Developer progress controls (set progress) - hidden by default -->
+        <!-- Developer progress controls (hidden by default) -->
         <div id="devControlsPanel" style="display:none">
-        <div class="settings-card col-12" style="background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);">
-          <h3>Set Progress (dev)</h3>
-          <p class="helper-text" style="margin-top:0;">Quickly set your progress counters for testing. Changes are saved to local storage.</p>
-          <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:8px;">
-            <label style="display:flex; flex-direction:column; font-size:0.85rem; color:var(--text-dark);">
-              Sessions Completed
-              <input id="devSessionsCompleted" type="number" class="field" min="0" style="width:120px;" />
-            </label>
-            <label style="display:flex; flex-direction:column; font-size:0.85rem; color:var(--text-dark);">
-              Focus Minutes
-              <input id="devFocusMinutes" type="number" class="field" min="0" style="width:120px;" />
-            </label>
-            <label style="display:flex; flex-direction:column; font-size:0.85rem; color:var(--text-dark);">
-              Streak Days
-              <input id="devStreakDays" type="number" class="field" min="0" style="width:120px;" />
-            </label>
-            <div style="display:flex; gap:8px; align-items:center;">
-              <button id="devSetProgressBtn" class="button primary" type="button">Set Progress</button>
-              <button id="devClearProgressBtn" class="button" type="button">Reset To Zero</button>
-              <button id="devUnlockAllBtn" class="button" type="button">Unlock All</button>
+          <div class="settings-card col-12 dev-card">
+            <h3>Developer Tools</h3>
+            <p class="helper-text" style="margin-top:0;">Quickly set progress for testing. Changes are saved to local storage.</p>
+            <div class="dev-grid" style="margin-top:8px;">
+              <div class="dev-field">
+                <label for="devSessionsCompleted">Sessions Completed</label>
+                <input id="devSessionsCompleted" type="number" min="0" class="field dev-input" />
+              </div>
+              <div class="dev-field">
+                <label for="devFocusMinutes">Focus Minutes</label>
+                <input id="devFocusMinutes" type="number" min="0" class="field dev-input" />
+              </div>
+              <div class="dev-field">
+                <label for="devStreakDays">Streak Days</label>
+                <input id="devStreakDays" type="number" min="0" class="field dev-input" />
+              </div>
+              <div class="dev-actions">
+                <button id="devSetProgressBtn" class="button primary small" type="button">Set</button>
+                <button id="devClearProgressBtn" class="button small ghost" type="button">Reset</button>
+                <button id="devUnlockAllBtn" class="button warn small" type="button">Unlock All</button>
+              </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
     </div>
