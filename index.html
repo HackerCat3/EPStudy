@@ -148,9 +148,10 @@
   .dashboard-section.is-hidden { display: none !important; }
   .dashboard-section.dashboard-collapsed { display: none !important; }
   .dashboard-section .panel, .dashboard-section.panel { border-top: 3px solid color-mix(in srgb, var(--navy-primary) 65%, var(--gold)); }
-  .dashboard-row { display: grid; grid-template-columns: repeat(var(--dashboard-visible-count, 1), minmax(0, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+  .dashboard-row { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1rem; align-items: stretch; }
   .dashboard-row[data-visible-count="0"] { display: none; }
-  .dashboard-row > .dashboard-section, .dashboard-row > .dashboard-expander { min-width: 0; grid-column: auto; }
+  .dashboard-row > .dashboard-section { min-width: 0; grid-column: span var(--dashboard-span, 4); }
+  .dashboard-row > .dashboard-expander { min-width: 0; grid-column: 1 / -1; }
   .dashboard-expander { display: none; width: 100%; align-items: center; justify-content: space-between; gap: 12px; text-align: left; padding: 0.85rem 1rem; border-radius: var(--radius-lg); border: 1px solid var(--border); background: var(--panel); color: var(--text-dark); box-shadow: var(--shadow-sm); font-weight: 800; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s; }
   .dashboard-expander.visible { display: flex; }
   .dashboard-expander:hover { border-color: color-mix(in srgb, var(--navy-primary) 22%, var(--border)); box-shadow: var(--shadow-md); transform: translateY(-1px); }
@@ -166,6 +167,15 @@
   #page-dashboard .hero-stats { gap: 0.65rem; margin-top: 1rem; }
   #page-dashboard .stat-chip { padding: 0.7rem; }
   #page-dashboard .stat-chip strong { font-size: 1.25rem; }
+  /* Layout edit mode styles */
+  .dashboard-row.edit-mode { grid-template-columns: repeat(12, minmax(0, 1fr)) !important; align-items: stretch; }
+  .dashboard-row.edit-mode > .dashboard-section { grid-column: span var(--dashboard-span, 4) !important; }
+  .dashboard-section.editing { outline: 2px dashed color-mix(in srgb, var(--navy-primary) 30%, transparent); position: relative; }
+  .dashboard-section .resize-handle { position: absolute; top: 0; right: 0; width: 18px; height: 100%; cursor: ew-resize; border-radius: 0 var(--radius-lg) var(--radius-lg) 0; background: linear-gradient(90deg, transparent, rgba(0,0,0,0.05)); display: none; align-items: center; justify-content: center; z-index: 4; touch-action: none; }
+  .dashboard-row.edit-mode .dashboard-section .resize-handle { display: flex; }
+  .dashboard-section .resize-handle::after { content: ""; width: 4px; height: 28px; border-radius: 999px; background: color-mix(in srgb, var(--navy-primary) 35%, transparent); box-shadow: 0 0 0 1px rgba(255,255,255,0.25); }
+  .dashboard-section .resize-indicator { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.06); color: var(--text-dark); font-size: 0.75rem; padding: 2px 6px; border-radius: 6px; display: none; z-index: 4; }
+  .dashboard-row.edit-mode .dashboard-section .resize-indicator { display: inline-block; }
   #page-dashboard .schedule-timeline { margin-top: 0.75rem; gap: 6px; }
   #page-dashboard .timer-container { padding: 0.6rem 0 0; }
   #page-dashboard .timer { font-size: clamp(2.6rem, 4.6vw, 3.8rem); margin-bottom: 0.6rem; letter-spacing: 0; }
@@ -284,16 +294,40 @@
   .music-controls input[type="range"] { accent-color: var(--navy-primary); }
   .music-file-row { display: grid; gap: 6px; }
   .music-file-row input[type="file"] { width: 100%; color: var(--muted); font-size: 0.82rem; }
-  .smart-list { display: grid; gap: 8px; margin-top: 12px; }
-  .smart-item { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto auto; gap: 10px; align-items: center; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--panel); }
-  .smart-dismiss { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.78rem; font-weight: 700; cursor: pointer; }
+  .smart-list { display: grid; gap: 6px; margin-top: 8px; }
+  .smart-item { display: grid; grid-template-columns: 24px 1fr auto; gap: 8px; align-items: center; padding: 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--panel); }
+  /* Put dismiss + buttons into a vertical actions column on the right */
+  .smart-item > .smart-dismiss,
+  .smart-item > button[data-smart-info],
+  .smart-item > button[data-smart-select] {
+    grid-column: 3;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .smart-item > .smart-dismiss { color: var(--muted); font-size: 0.78rem; font-weight: 700; margin-right: 8px; }
+  .smart-item > button[data-smart-info], .smart-item > button[data-smart-select] { padding: 6px 8px; font-size: 0.78rem; min-width: 44px; border-radius: 6px; }
   .smart-dismiss input { width: 16px; height: 16px; accent-color: var(--navy-primary); }
   .smart-item.qa, .task-item.qa { border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15), var(--shadow-sm); }
   .smart-item.ma, .task-item.ma { border: 3px solid #dc2626; box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.16), 0 14px 24px rgba(220, 38, 38, 0.16); background: linear-gradient(180deg, rgba(254, 242, 242, 0.9), var(--panel)); }
   .smart-item.ma .smart-rank { background: #dc2626; color: #ffffff; }
-  .smart-rank { width: 28px; height: 28px; border-radius: 999px; display: grid; place-items: center; background: var(--navy-primary); color: var(--primary-content); font-size: 0.8rem; font-weight: 800; }
-  .smart-title { color: var(--text-dark); font-weight: 700; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; line-height: 1.3; }
-  .smart-meta { color: var(--muted); font-size: 0.78rem; }
+  .smart-rank { width: 22px; height: 22px; border-radius: 999px; display: grid; place-items: center; background: var(--navy-primary); color: var(--primary-content); font-size: 0.72rem; font-weight: 800; }
+  .smart-title { color: var(--text-dark); font-weight: 700; word-wrap: break-word; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 0.95rem; line-height: 1.1; }
+  .smart-meta { color: var(--muted); font-size: 0.72rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+  @media (max-width: 720px) {
+    .smart-item { grid-template-columns: 20px 1fr auto; padding: 8px; }
+    .smart-item > .smart-dismiss,
+    .smart-item > button[data-smart-info],
+    .smart-item > button[data-smart-select] { grid-column: 3; justify-content: flex-end; }
+    .smart-title, .smart-meta { white-space: normal; }
+    .smart-meta { font-size: 0.75rem; }
+  }
+  /* Actions hidden by default, revealed when expanded */
+  .smart-actions { display: none; gap: 8px; margin-top: 6px; }
+  .smart-toggle { background: transparent; border: none; font-size: 0.9rem; color: var(--muted); padding: 4px; cursor: pointer; }
+  .smart-item.expanded { grid-template-columns: 24px 1fr auto; align-items: start; }
+  .smart-item.expanded .smart-actions { display: flex; }
+  .smart-item .smart-main { min-width: 0; }
   .dashboard-toggle-list { display: grid; gap: 8px; }
   .dashboard-toggle-list label { display: flex; align-items: center; gap: 8px; color: var(--text-dark); }
 
@@ -626,6 +660,8 @@
   <!-- Dashboard Workflow Area -->
   <h2 class="section-title">Daily Workflow 
     <span style="font-size: 0.85rem; font-weight: 500; color: var(--muted); border: none;">Focus on what matters.</span>
+    <button id="toggleLayoutEdit" class="button" type="button" style="margin-left:12px;">Edit Layout</button>
+    <button id="resetLayoutNormal" class="button ghost" type="button" style="margin-left:8px;">Reset to Normal</button>
   </h2>
   
   <section class="dashboard-row" data-dashboard-row>
@@ -938,7 +974,7 @@
           <button id="privacyGuideBtn" class="button" type="button" style="margin-top: 10px;">How We Store Your Info</button>
         </div>
         <!-- Developer progress controls (hidden by default) -->
-        <div id="devControlsPanel" style="display:none">
+        <div id="devControlsPanel" style="display:block">
           <div class="settings-card col-12 dev-card">
             <h3>Developer Tools</h3>
             <p class="helper-text" style="margin-top:0;">Quickly set progress for testing. Changes are saved to local storage.</p>
@@ -1467,6 +1503,7 @@
       importedMusicPlaylist: [], importedMusicIndex: null,
       membeanEnabled: false,
       devControlsVisible: false,
+      layoutEditMode: false,
       calendarYear: now.getFullYear(), calendarMonth: now.getMonth(), calendarDay: now.getDate(), timerMinutes: 25,
 	      calendarView: "month",
 	      schoolDivision: "us",
@@ -1496,7 +1533,8 @@
       extensionSync: { lastSyncAt: null, sources: {} },
       dashboardSections: { ...DEFAULT_DASHBOARD_SECTIONS },
       dashboardExpansionSections: {},
-      dashboardExpandedSections: {}
+      dashboardExpandedSections: {},
+      dashboardLayout: {}
     };
   }
 
@@ -1544,6 +1582,8 @@
       merged.dashboardSections = typeof merged.dashboardSections === "object" && merged.dashboardSections ? { ...DEFAULT_DASHBOARD_SECTIONS, ...merged.dashboardSections } : { ...DEFAULT_DASHBOARD_SECTIONS };
       merged.dashboardExpansionSections = typeof merged.dashboardExpansionSections === "object" && merged.dashboardExpansionSections ? merged.dashboardExpansionSections : {};
       merged.dashboardExpandedSections = typeof merged.dashboardExpandedSections === "object" && merged.dashboardExpandedSections ? merged.dashboardExpandedSections : {};
+      merged.dashboardLayout = typeof merged.dashboardLayout === "object" && merged.dashboardLayout ? merged.dashboardLayout : {};
+      merged.layoutEditMode = Boolean(merged.layoutEditMode);
       Object.keys(DEFAULT_DASHBOARD_SECTIONS).forEach(key => {
         merged.dashboardExpansionSections[key] = Boolean(merged.dashboardExpansionSections[key]);
         if (!merged.dashboardExpansionSections[key]) delete merged.dashboardExpandedSections[key];
@@ -2539,6 +2579,15 @@
       collapse.classList.toggle("visible", visible && startsCollapsed && expanded);
       section.classList.toggle("is-hidden", !visible);
       section.classList.toggle("dashboard-collapsed", visible && startsCollapsed && !expanded);
+      const row = section.closest("[data-dashboard-row]");
+      const visibleCount = row
+        ? Array.from(row.querySelectorAll("[data-dashboard-section]")).filter(s => isDashboardSectionVisible(s.dataset.dashboardSection)).length
+        : 1;
+      const layout = state.dashboardLayout || {};
+      const savedSpan = Number(layout[key]);
+      const defaultSpan = Math.max(3, Math.floor(12 / Math.max(1, visibleCount)));
+      const editSpan = Number.isFinite(savedSpan) && savedSpan > 0 ? savedSpan : defaultSpan;
+      section.style.setProperty("--dashboard-span", String(Math.min(12, Math.max(1, editSpan))));
     });
     document.querySelectorAll("[data-dashboard-toggle]").forEach(input => {
       input.checked = state.dashboardSections[input.dataset.dashboardToggle] !== false;
@@ -2706,16 +2755,18 @@
       const course = getCourseById(task.courseId);
       const type = getTaskType(task);
       const label = taskTypeLabel(type);
-      return `<div class="smart-item ${type}">
+      return `<div class="smart-item ${type}" data-task-id="${task.id}">
         <span class="smart-rank">${index + 1}</span>
-        <div>
+        <div class="smart-main">
           <div class="smart-title">${escapeHtml(task.title)}</div>
-          <div class="smart-meta">${label ? `${label} &bull; ` : ""}${task.estimatedMinutes}m &bull; ${normalizeDueDate(task.dueDate)}${course ? ` &bull; ${escapeHtml(course.code || course.name)}` : ""}</div>
-          <div class="smart-meta">${escapeHtml(task.smartReason || "Good next task.")}</div>
+          <div class="smart-meta">${label ? `${label} • ` : ""}${task.estimatedMinutes}m • ${normalizeDueDate(task.dueDate)}${course ? ` • ${escapeHtml(course.code || course.name)}` : ""}${task.smartReason ? ` • ${escapeHtml(task.smartReason)}` : ""}</div>
+          <div class="smart-actions">
+            <label class="smart-dismiss" title="Hide this task from Smart Suggestion" data-smart-dismiss="${task.id}"><input type="checkbox" data-smart-dismiss="${task.id}" /> Dismiss</label>
+            <button class="button" type="button" data-smart-info="${task.id}">More</button>
+            <button class="button" type="button" data-smart-select="${task.id}">Load</button>
+          </div>
         </div>
-        <label class="smart-dismiss" title="Hide this task from Smart Suggestion" data-smart-dismiss="${task.id}"><input type="checkbox" data-smart-dismiss="${task.id}" /> Dismiss</label>
-        <button class="button" type="button" data-smart-info="${task.id}">More Info</button>
-        <button class="button" type="button" data-smart-select="${task.id}">Load</button>
+        <button class="smart-toggle" type="button" data-smart-toggle aria-expanded="false">▾</button>
       </div>`;
     }).join("");
     updateTimerUi();
@@ -2947,7 +2998,13 @@
 
   function getCalendarTaskMap() {
     cleanupCalendarOverlaps(true);
-    return getUniqueCalendarTasks().reduce((acc, t) => {
+    const tasksForCalendar = getUniqueCalendarTasks();
+    const eventItems = (state.canvasEvents || []).map(e => {
+      const due = e.start_at || e.due_at || e.start || null;
+      return due ? { title: e.title, dueDate: due, courseId: e.courseId || "", completed: Boolean(e.crossed), source: "canvas-event", externalKey: e.externalKey || `canvas-event:${e.id}` } : null;
+    }).filter(Boolean);
+    const all = [...tasksForCalendar, ...eventItems];
+    return all.reduce((acc, t) => {
       const k = localDateKey(t.dueDate);
       if (k) { acc[k] = acc[k] || []; acc[k].push(t); }
       return acc;
@@ -3667,8 +3724,17 @@
   function importCanvasAssignments(assignments, canvasCoursesById) {
     const windowStart = new Date(); windowStart.setMonth(windowStart.getMonth() - 1);
     const imported = [];
+    const importedKeys = new Set();
+
+    function isCanvasSubmittedItem(item) {
+      const submission = item?.submission || item?.submissions || null;
+      const workflowState = String(submission?.workflow_state || submission?.state || item?.submission_state || item?.workflow_state || "").toLowerCase();
+      const submittedAt = submission?.submitted_at || item?.submitted_at || null;
+      return item?.has_submitted_submissions === true || workflowState === "submitted" || workflowState === "graded" || workflowState === "pending_review" || Boolean(submittedAt);
+    }
 
     for (const item of assignments) {
+      if (isCanvasSubmittedItem(item)) continue;
       const dueRaw = item?.due_at || item?.lock_at || item?.unlock_at || item?.start_at; // Includes start_at for calendar events
       if (!dueRaw) continue;
       const dueDate = new Date(dueRaw);
@@ -3687,10 +3753,13 @@
       if (!hasRealCourseForCourses({ courseId }, state.courses)) continue;
       const estimatedMinutes = Math.max(10, Math.min(180, Number(item?.points_possible) ? Math.round(Number(item.points_possible) * 1.5) : 30));
 
-      imported.push({ id: `canvas-${courseIdRaw}-${item.id}`, title, estimatedMinutes, dueDate: dueDate.toISOString(), source: "canvas", courseId, completed: false, externalKey: item.externalKey || `canvas:${courseIdRaw}:${item.id}` });
+      const externalKey = item.externalKey || `canvas:${courseIdRaw}:${item.id}`;
+      importedKeys.add(externalKey);
+      imported.push({ id: `canvas-${courseIdRaw}-${item.id}`, title, estimatedMinutes, dueDate: dueDate.toISOString(), source: "canvas", courseId, completed: false, externalKey });
     }
 
     let added = 0, updated = 0;
+    state.tasks = state.tasks.filter(t => t.source !== "canvas" || importedKeys.has(t.externalKey || ""));
     const existingByKey = new Map();
     state.tasks.forEach((t, idx) => existingByKey.set(t.externalKey || `${t.source||"m"}:${t.id}`, { task: t, index: idx }));
 
@@ -3729,11 +3798,27 @@
       const canvasCoursesById = new Map(validCourses.map(c => [String(c.id), c]));
 
       let payload = [];
+      const submittedAssignments = [];
       
       for (const c of validCourses) {
-        const assignUrl = `${cleanUrl}/api/v1/courses/${c.id}/assignments?per_page=100`;
+        const assignUrl = `${cleanUrl}/api/v1/courses/${c.id}/assignments?per_page=100&include[]=submission&student_ids[]=self`;
         const rows = await fetchCanvasPages(assignUrl, token, useProxy);
-        payload = payload.concat(rows.map(r => ({ ...r, course_id: r.course_id !== null && r.course_id !== undefined ? r.course_id : c.id })));
+        const pendingRows = rows.filter(r => {
+          const submission = r?.submission || null;
+          const workflowState = String(submission?.workflow_state || submission?.state || r?.submission_state || "").toLowerCase();
+          const submittedAt = submission?.submitted_at || r?.submitted_at || null;
+          const hasSubmitted = r?.has_submitted_submissions === true || workflowState === "submitted" || workflowState === "graded" || Boolean(submittedAt);
+          return !hasSubmitted;
+        });
+        const justSubmitted = rows.filter(r => {
+          const submission = r?.submission || null;
+          const workflowState = String(submission?.workflow_state || submission?.state || r?.submission_state || "").toLowerCase();
+          const submittedAt = submission?.submitted_at || r?.submitted_at || null;
+          const hasSubmitted = r?.has_submitted_submissions === true || workflowState === "submitted" || workflowState === "graded" || Boolean(submittedAt);
+          return hasSubmitted;
+        }).map(r => ({ ...r, course_id: r.course_id !== null && r.course_id !== undefined ? r.course_id : c.id }));
+        submittedAssignments.push(...justSubmitted);
+        payload = payload.concat(pendingRows.map(r => ({ ...r, course_id: r.course_id !== null && r.course_id !== undefined ? r.course_id : c.id })));
       }
 
       // Fetch Calendar Events (Schedule)
@@ -3746,6 +3831,24 @@
           start_at: e.start_at,
           end_at: e.end_at
       }));
+
+      // Add submitted assignments to calendar as crossed-out events (not tasks)
+      try {
+        const submittedEvents = submittedAssignments.map(item => {
+          const due = item?.due_at || item?.assignment?.due_at || item?.start_at || item?.unlock_at || item?.lock_at || null;
+          if (!due) return null;
+          const start = new Date(due).toISOString();
+          const end = new Date(new Date(due).getTime() + 60 * 60 * 1000).toISOString();
+          const rawTitle = (item?.assignment && item.assignment.name) || item?.name || item?.title || item?.assignment?.title || "";
+          const title = String((rawTitle && String(rawTitle).trim()) ? String(rawTitle).trim() : (item?.html_url ? decodeURIComponent(String(item.html_url).split('/').pop() || '') : "Submitted Assignment"));
+          const courseIdRaw = String(item?.course_id || item?.course_id || item?.assignment?.course_id || "");
+          let courseId = "";
+          try { if (courseIdRaw && canvasCoursesById && canvasCoursesById.has(courseIdRaw)) courseId = ensureCanvasCourse(canvasCoursesById.get(courseIdRaw), courseIdRaw); }
+          catch (e) { courseId = courseIdRaw; }
+          return { id: `submitted-${item.id}`, title, start_at: start, end_at: end, crossed: true, externalKey: item.externalKey || `canvas:${courseIdRaw || ''}:${item.id}`, courseId };
+        }).filter(Boolean);
+        if (submittedEvents.length) state.canvasEvents = state.canvasEvents.concat(submittedEvents);
+      } catch (e) { }
 
       events.forEach(e => {
         if(e.start_at) {
@@ -3806,6 +3909,7 @@
       saveState(); renderAll();
       addNotification("Successfully submitted to Canvas!", "info");
       document.getElementById("canvasSubmitModal")?.classList.remove("open");
+      await syncCanvas();
 
     } catch (err) {
       addNotification(err.message, "danger");
@@ -4306,6 +4410,14 @@
     });
 
     document.getElementById("smartTaskMeta")?.addEventListener("click", (e) => {
+      const toggleBtn = e.target.closest("[data-smart-toggle]");
+      if (toggleBtn) {
+        const item = toggleBtn.closest('.smart-item');
+        if (!item) return;
+        const expanded = item.classList.toggle('expanded');
+        toggleBtn.setAttribute('aria-expanded', String(expanded));
+        return;
+      }
       if (e.target.closest("[data-smart-clear-dismissed]")) {
         state.smartDismissedTaskIds = [];
         saveState(); renderAll();
@@ -4507,6 +4619,109 @@
         addNotification("All skins, achievements and tiers unlocked.", "info", 0);
       } catch (e) { addNotification("Unlock all failed: " + (e && e.message ? e.message : String(e)), "error", 0); }
     });
+
+    // Dashboard layout edit mode
+    let _dashboardDrag = null;
+    function updateDashboardEditHandles() {
+      const rows = document.querySelectorAll('[data-dashboard-row]');
+      rows.forEach(row => {
+        row.classList.toggle('edit-mode', Boolean(state.layoutEditMode));
+        row.querySelectorAll('[data-dashboard-section]').forEach(section => {
+          if (!section.querySelector('.resize-handle')) {
+            const handle = document.createElement('div');
+            handle.className = 'resize-handle';
+            handle.title = 'Drag to resize';
+            section.appendChild(handle);
+            handle.addEventListener('pointerdown', startDashboardDrag);
+          }
+          if (!section.querySelector('.resize-indicator')) {
+            const ind = document.createElement('div');
+            ind.className = 'resize-indicator';
+            section.appendChild(ind);
+          }
+          section.classList.toggle('editing', Boolean(state.layoutEditMode));
+          const ind = section.querySelector('.resize-indicator');
+          if (ind && !state.layoutEditMode) ind.textContent = '';
+        });
+      });
+      const btn = document.getElementById('toggleLayoutEdit');
+      if (btn) btn.textContent = state.layoutEditMode ? 'Exit Edit' : 'Edit Layout';
+    }
+
+    function startDashboardDrag(e) {
+      e.preventDefault();
+      const handle = e.currentTarget;
+      const section = handle.closest('[data-dashboard-section]');
+      if (!section) return;
+      const row = section.closest('[data-dashboard-row]');
+      const container = row || section.parentElement;
+      const containerRect = container.getBoundingClientRect();
+      const colWidth = containerRect.width / 12;
+      const currentSpan = Number(getComputedStyle(section).getPropertyValue('--dashboard-span')) || Math.round(section.getBoundingClientRect().width / colWidth) || 3;
+      const startX = e.clientX;
+      const startWidth = section.getBoundingClientRect().width;
+      _dashboardDrag = { section, container, colWidth, startX, startWidth, currentSpan };
+      document.addEventListener('pointermove', onDashboardDrag);
+      document.addEventListener('pointerup', endDashboardDrag);
+      document.addEventListener('pointercancel', endDashboardDrag);
+      handle.setPointerCapture?.(e.pointerId);
+    }
+
+    function onDashboardDrag(e) {
+      if (!_dashboardDrag) return;
+      const info = _dashboardDrag;
+      const dx = e.clientX - info.startX;
+      const newWidth = Math.max(40, info.startWidth + dx);
+      const newSpan = Math.min(12, Math.max(1, Math.round(newWidth / info.colWidth)));
+      info.section.style.setProperty('--dashboard-span', String(newSpan));
+      const ind = info.section.querySelector('.resize-indicator');
+      if (ind) ind.textContent = `${newSpan}/12`;
+    }
+
+    function endDashboardDrag(e) {
+      if (!_dashboardDrag) return;
+      const info = _dashboardDrag;
+      // compute final span
+      const rect = info.section.getBoundingClientRect();
+      const finalSpan = Math.min(12, Math.max(1, Math.round(rect.width / info.colWidth)));
+      const key = info.section.dataset.dashboardSection;
+      state.dashboardLayout = state.dashboardLayout || {};
+      // keep cards looking balanced after resize
+      const minByKey = { mission: 3, quote: 3, schedule: 4, timer: 4, calendar: 6 };
+      const maxByKey = { mission: 7, quote: 5, schedule: 6, timer: 8, calendar: 12 };
+      const minSpan = minByKey[key] || 2;
+      const maxSpan = maxByKey[key] || 12;
+      state.dashboardLayout[key] = Math.min(maxSpan, Math.max(minSpan, finalSpan));
+      info.section.style.setProperty('--dashboard-span', String(state.dashboardLayout[key]));
+      saveState();
+      // cleanup
+      try { info.section.releasePointerCapture?.(e.pointerId); } catch {}
+      document.removeEventListener('pointermove', onDashboardDrag);
+      document.removeEventListener('pointerup', endDashboardDrag);
+      document.removeEventListener('pointercancel', endDashboardDrag);
+      _dashboardDrag = null;
+      renderAll();
+      updateDashboardEditHandles();
+    }
+
+    document.getElementById('toggleLayoutEdit')?.addEventListener('click', () => {
+      state.layoutEditMode = !state.layoutEditMode;
+      saveState();
+      renderAll();
+      updateDashboardEditHandles();
+    });
+
+    document.getElementById('resetLayoutNormal')?.addEventListener('click', () => {
+      state.dashboardLayout = {};
+      state.layoutEditMode = false;
+      saveState();
+      renderAll();
+      updateDashboardEditHandles();
+      addNotification('Dashboard layout reset to normal.', 'info', 1800);
+    });
+
+    // initialize handles when rendering
+    updateDashboardEditHandles();
 
     // TeamSnap enable control removed
 
