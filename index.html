@@ -50,7 +50,7 @@
   /* Modern Header */
   .topbar { background: var(--panel); border: 1px solid var(--border); box-shadow: var(--shadow-sm); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; transition: all 0.3s ease; }
   .brand { display: flex; align-items: center; gap: 1rem; }
-  .brand-badge { width: 48px; height: 48px; border-radius: var(--radius-md); display: grid; place-items: center; font-weight: 800; font-size: 1.1rem; background: var(--navy-primary); color: var(--primary-content); box-shadow: var(--shadow-md); transition: all 0.3s ease; }
+  .brand-badge { width: 48px; height: 48px; border-radius: var(--radius-md); display: grid; place-items: center; font-weight: 800; font-size: 1.1rem; background: #1E6FB8; color: var(--primary-content); box-shadow: var(--shadow-md); transition: all 0.3s ease; }
   .brand-logo { width: 100%; height: 100%; object-fit: contain; border-radius: inherit; display: block; }
   .eyebrow { margin: 0; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.75rem; font-weight: 600; color: var(--muted); }
   h1 { margin: 0; font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.02em; font-weight: 800; color: var(--text-dark); }
@@ -102,6 +102,14 @@
   .settings-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; box-shadow: var(--shadow-sm); }
   .settings-card h3 { margin: 0 0 10px; color: var(--text-dark); font-size: 0.92rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 800; }
   .settings-card p { margin: 0 0 12px; color: var(--muted); font-size: 0.9rem; }
+
+  /* Compact dev controls styling */
+  #devControlsPanel .settings-card { padding: 12px; display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+  #devControlsPanel label { margin: 0; color: var(--text-dark); font-size: 0.85rem; display: flex; flex-direction: column; gap: 6px; }
+  #devControlsPanel .field { padding: 10px 12px; border-radius: 8px; min-width: 72px; width: 120px; }
+  #devControlsPanel .button { padding: 8px 10px; font-size: 0.9rem; border-radius: 8px; }
+  #devControlsPanel .button.primary { background: var(--navy-primary); color: #fff; }
+  @media (max-width: 720px) { #devControlsPanel .settings-card { flex-direction: column; } }
 
   /* TIMER PAGE */
   .timer-expanded { font-size: clamp(3rem, 7vw, 5.5rem); font-weight: 800; color: var(--navy-primary); text-align: center; margin: 0; font-family: "Inter", sans-serif; font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: 0; }
@@ -299,7 +307,7 @@
   .pill { border-radius: 999px; padding: 4px 10px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: var(--bg-gray); color: var(--text-main); border: 1px solid var(--border);}
   .pill.overdue { background: transparent; color: var(--danger); border-color: var(--danger); }
   .pill.canvas { background: transparent; color: var(--canvas); border-color: var(--canvas);}
-  .pill.teamsnap { background: transparent; color: var(--navy-primary); border-color: var(--navy-primary);}
+  /* TeamSnap styling removed */
   .pill.membean { background: transparent; color: #16a34a; border-color: #16a34a;}
   .pill.qa { background: #fffbeb; color: #b45309; border-color: #f59e0b; }
   .pill.ma { background: #fee2e2; color: #b91c1c; border-color: #dc2626; font-weight: 900; }
@@ -419,8 +427,8 @@
   .welcome-hero::after { content: ""; position: absolute; inset: auto -12% -30% -12%; height: 48%; background: color-mix(in srgb, var(--gold) 32%, transparent); filter: blur(44px); opacity: 0.55; z-index: -1; }
   .welcome-content { max-width: 620px; display: grid; justify-items: center; gap: 1rem; }
   .welcome-school-logo { width: min(340px, 78vw); max-height: 150px; object-fit: contain; border-radius: var(--radius-lg); padding: 14px 18px; background: rgba(255,255,255,0.94); border: 1px solid rgba(255,255,255,0.32); box-shadow: 0 24px 58px -34px rgba(0,0,0,0.72); }
-  .welcome-title { margin: 0; color: #ffffff !important; font-size: clamp(2.15rem, 6vw, 4rem); line-height: 0.98; letter-spacing: 0; text-shadow: 0 3px 18px rgba(0,0,0,0.5); }
-  .welcome-motto { margin: 0; color: color-mix(in srgb, var(--primary-content) 88%, transparent); font-weight: 800; font-size: clamp(1rem, 2.4vw, 1.35rem); line-height: 1.7; }
+  .welcome-title { margin: 0; color: #ffffff !important; font-size: clamp(2.15rem, 6vw, 4rem); line-height: 0.98; letter-spacing: 0; text-shadow: none; }
+  .welcome-motto { margin: 0; color: var(--primary-content) !important; font-weight: 800; font-size: clamp(1rem, 2.4vw, 1.35rem); line-height: 1.7; }
   .welcome-motto span { display: inline-block; white-space: nowrap; }
   .welcome-copy { margin: 0; color: color-mix(in srgb, var(--primary-content) 74%, transparent); max-width: 520px; font-weight: 600; }
   .welcome-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; margin-top: 0.3rem; }
@@ -580,7 +588,7 @@
   <header class="topbar">
     <div class="brand">
       <div class="brand-badge">
-        <img class="brand-logo" src="logo.png" alt="EPStudy logo" />
+        <img class="brand-logo" src="image-removebg-preview (2).png" alt="EPStudy logo" />
       </div>
       <div>
         <p class="eyebrow">Eastside Preparatory School</p>
@@ -703,13 +711,6 @@
         </div>
       </article>
 
-      <article class="panel dashboard-section" data-dashboard-section="smart" style="background: var(--bg-gray); border-color: var(--gold);">
-        <h2>Smart Suggestion</h2>
-        <p id="smartMessage" class="helper-text" style="font-size: 0.85rem;">Analyzing your queue...</p>
-        <div id="smartTaskMeta" class="smart-list"></div>
-        <button id="useSmartTaskBtn" class="button primary" type="button" style="width: 100%; margin-top: 15px;">Load Top Task In Timer</button>
-      </article>
-
   </section>
 
   <section class="dashboard-row" data-dashboard-row>
@@ -759,22 +760,7 @@
           </div>
           <p id="canvasMessage" class="alert">Import assignments and calendar events from Canvas here.</p>
         </article>
-        <article class="panel col-6">
-          <h2>TeamSnap</h2>
-          <div class="canvas-form">
-            <label class="mini-text" style="display:flex; align-items:center; gap: 8px; color: var(--text-dark);">
-              <input id="teamSnapEnabled" type="checkbox" /> I use TeamSnap
-            </label>
-            <textarea id="teamSnapTeamId" class="field" rows="3" placeholder="TeamSnap Team IDs, one per line or comma separated"></textarea>
-            <input id="teamSnapToken" class="password-field" type="password" placeholder="TeamSnap API token" />
-            <div class="row" style="align-items: center; margin-top: 4px;">
-              <input type="checkbox" id="teamSnapUseProxy" checked />
-              <label for="teamSnapUseProxy" class="mini-text">Use the secure sync helper if needed</label>
-            </div>
-            <button id="teamSnapSyncBtn" class="button primary" type="button">Sync TeamSnap</button>
-          </div>
-          <p id="teamSnapMessage" class="alert">Imports TeamSnap events to the calendar and reminders.</p>
-        </article>
+        <!-- TeamSnap support removed -->
         <article class="panel col-12">
           <h2>Courses</h2>
           <p class="helper-text" style="margin-bottom: 1rem;">Keep course names and colors tidy here so tasks stay easy to scan.</p>
@@ -802,14 +788,12 @@
           <button class="skin-choice" type="button" data-skin-choice="default">Default<span>Always unlocked</span></button>
           <button class="skin-choice" type="button" data-skin-choice="rainbow">Bright<span>Unlock by finishing tasks</span></button>
           <button class="skin-choice" type="button" data-skin-choice="sparkle">Dark Focus<span>Unlock with focus sessions</span></button>
-          <button class="skin-choice" type="button" data-skin-choice="stars">Stars<span>Unlock with focus minutes</span></button>
           <button class="skin-choice" type="button" data-skin-choice="ocean">Ocean<span>Unlock after Canvas sync</span></button>
           <button class="skin-choice" type="button" data-skin-choice="forest">Forest<span>Unlock after 10 completed tasks</span></button>
           <button class="skin-choice" type="button" data-skin-choice="sunset">Sunset<span>Unlock after 300 focus minutes</span></button>
           <button class="skin-choice" type="button" data-skin-choice="notebook">Notebook<span>Unlock after creating 8 tasks</span></button>
           <button class="skin-choice" type="button" data-skin-choice="arcade">Arcade<span>Unlock after 12 focus sessions</span></button>
-          <button class="skin-choice" type="button" data-skin-choice="rain">Rain<span>Unlock after TeamSnap sync</span></button>
-          <button class="skin-choice" type="button" data-skin-choice="autumn">Autumn<span>Unlock after 20 completed tasks</span></button>
+          <!-- Removed normal skins: stars, rain, autumn (keep MEGA versions) -->
           <!-- Extra skins added -->
           <button class="skin-choice" type="button" data-skin-choice="mist">Mist<span>Unlock after 2 Canvas syncs</span></button>
           <button class="skin-choice" type="button" data-skin-choice="copper">Copper<span>Unlock after 5 completed tasks</span></button>
@@ -820,7 +804,7 @@
           <button class="skin-choice" type="button" data-skin-choice="vapor">Vapor<span>Unlock after importing a playlist</span></button>
           <button class="skin-choice" type="button" data-skin-choice="glimmer">Glimmer<span>Unlock after 600 focus minutes</span></button>
           <button class="skin-choice" type="button" data-skin-choice="ember">Ember<span>Unlock after 20 completed tasks</span></button>
-          <button class="skin-choice" type="button" data-skin-choice="sage">Sage<span>Unlock after TeamSnap sync</span></button>
+          <button class="skin-choice" type="button" data-skin-choice="sage">Sage<span>Unlock after Canvas sync</span></button>
           <button class="skin-choice" type="button" data-skin-choice="teal">Teal<span>Unlock by enabling Focus Shield</span></button>
           <button class="skin-choice" type="button" data-skin-choice="plum">Plum<span>Unlock after 15 focus sessions</span></button>
           <button class="skin-choice" type="button" data-skin-choice="breeze">Breeze<span>Unlock after 3 Canvas imports</span></button>
@@ -940,7 +924,6 @@
             <label><input type="checkbox" data-dashboard-toggle="quote" /> Quote of the day</label>
             <label><input type="checkbox" data-dashboard-toggle="schedule" /> Schedule awareness</label>
             <label><input type="checkbox" data-dashboard-toggle="timer" /> Focus timer</label>
-            <label><input type="checkbox" data-dashboard-toggle="smart" /> Smart suggestions</label>
             <label><input type="checkbox" data-dashboard-toggle="calendar" /> Calendar outline</label>
           </div>
         </div>
@@ -950,7 +933,32 @@
           <p style="font-size: 0.85rem; margin-top: 8px;">Built for Eastside Preparatory School.</p>
           <button id="privacyGuideBtn" class="button" type="button" style="margin-top: 10px;">How We Store Your Info</button>
         </div>
-        <!-- Developer progress controls removed for production -->
+        <!-- Developer progress controls (set progress) - hidden by default -->
+        <div id="devControlsPanel" style="display:none">
+        <div class="settings-card col-12" style="background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);">
+          <h3>Set Progress (dev)</h3>
+          <p class="helper-text" style="margin-top:0;">Quickly set your progress counters for testing. Changes are saved to local storage.</p>
+          <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:8px;">
+            <label style="display:flex; flex-direction:column; font-size:0.85rem; color:var(--text-dark);">
+              Sessions Completed
+              <input id="devSessionsCompleted" type="number" class="field" min="0" style="width:120px;" />
+            </label>
+            <label style="display:flex; flex-direction:column; font-size:0.85rem; color:var(--text-dark);">
+              Focus Minutes
+              <input id="devFocusMinutes" type="number" class="field" min="0" style="width:120px;" />
+            </label>
+            <label style="display:flex; flex-direction:column; font-size:0.85rem; color:var(--text-dark);">
+              Streak Days
+              <input id="devStreakDays" type="number" class="field" min="0" style="width:120px;" />
+            </label>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <button id="devSetProgressBtn" class="button primary" type="button">Set Progress</button>
+              <button id="devClearProgressBtn" class="button" type="button">Reset To Zero</button>
+              <button id="devUnlockAllBtn" class="button" type="button">Unlock All</button>
+            </div>
+          </div>
+        </div>
+        </div>
       </div>
     </div>
 
@@ -959,7 +967,14 @@
       <h2 class="section-title">Tasks</h2>
       
       <section class="grid">
-        <details class="panel col-12 collapsible-panel">
+        <article class="panel col-4">
+          <h2>Smart Suggestion</h2>
+          <p id="smartMessage" class="helper-text" style="font-size: 0.85rem;">Analyzing your queue...</p>
+          <div id="smartTaskMeta" class="smart-list"></div>
+          <button id="useSmartTaskBtn" class="button primary" type="button">Load Top Task In Timer</button>
+        </article>
+
+        <details class="panel col-8 collapsible-panel">
           <summary class="collapsible-summary"><h2>Add New Task</h2><span class="collapse-cta" aria-hidden="true"></span></summary>
           <form id="taskForm" class="task-form collapsible-body">
             <div class="field-group span-6">
@@ -1115,7 +1130,7 @@
   <div class="modal-card welcome-card">
     <div class="welcome-hero">
       <div class="welcome-content">
-        <img class="welcome-school-logo" src="EPS-logo.jpeg" alt="Eastside Preparatory School logo" />
+        <img class="welcome-school-logo" src="image-removebg-preview (2).png" alt="Eastside Preparatory School logo" />
         <div>
           <p class="eyebrow" style="color: var(--gold); margin-bottom: 0.65rem;">EPStudy Workspace</p>
           <h2 class="welcome-title">Welcome EPS Eagles!</h2>
@@ -1161,10 +1176,7 @@
             <input type="radio" name="guideSchoolDivision" value="ms" data-guide-division />
             <span><strong>Middle Schooler</strong><span>Show middle school lunch, advisory, and band blocks.</span></span>
           </label>
-          <label class="guide-choice">
-            <input id="guideTeamSnapEnabled" type="checkbox" />
-            <span><strong>Use TeamSnap</strong><span>Sync team events to the calendar and reminders.</span></span>
-          </label>
+          <!-- TeamSnap option removed from guide -->
         </div>
       </section>
 
@@ -1182,7 +1194,7 @@
         <article class="guide-feature" style="--guide-accent: #14b8a6;">
           <div class="guide-icon">CA</div>
           <h3>Calendar + Schedule</h3>
-          <p>The calendar shows Canvas work and TeamSnap events without duplicates. Week view stays on the current week, and the school schedule highlights the current period when school is in session.</p>
+          <p>The calendar shows Canvas work and external events without duplicates. Week view stays on the current week, and the school schedule highlights the current period when school is in session.</p>
         </article>
       </div>
 
@@ -1197,13 +1209,13 @@
             <div><strong>Open Settings first.</strong><span>Choose Middle Schooler or Upper Schooler, set your reminders, and keep only the dashboard sections you actually use.</span></div>
           </div>
           <div class="guide-flow-item">
-            <div><strong>Use Sync for imports.</strong><span>Connect Canvas or TeamSnap from the Sync tab when you want outside tasks and events pulled in.</span></div>
+            <div><strong>Use Sync for imports.</strong><span>Connect Canvas or other external services from the Sync tab when you want outside tasks and events pulled in.</span></div>
           </div>
           <div class="guide-flow-item">
             <div><strong>Start from Smart Suggestion.</strong><span>Use the suggestion as your first task, dismiss anything you do not want to see, or open More Info to jump back to Canvas when a link is available.</span></div>
           </div>
           <div class="guide-flow-item">
-            <div><strong>Use the timer when you are ready.</strong><span>Load a task into either focus timer, start a session, and let notifications keep TeamSnap events visible without putting them in your task list.</span></div>
+            <div><strong>Use the timer when you are ready.</strong><span>Load a task into either focus timer, start a session, and let notifications keep external events visible without putting them in your task list.</span></div>
           </div>
         </div>
         </div>
@@ -1220,7 +1232,7 @@
           <div class="guide-tip"><strong>Dashboard expansion</strong><span>Settings lets you choose which dashboard sections start as compact buttons, so big panels stay out of the way until you need them.</span></div>
           <div class="guide-tip"><strong>Skins can do more than colors</strong><span>Some skins change the whole mood of the page, including animated or visual backgrounds. Use Show Skins to turn those effects on or off.</span></div>
           <div class="guide-tip"><strong>Music is optional</strong><span>Pick a chill, study, or lofi track in Settings, import your own audio, or choose None if you want EPStudy quiet.</span></div>
-          <div class="guide-tip"><strong>TeamSnap stays on the calendar</strong><span>TeamSnap items are treated as events, not homework. They appear on the calendar and notifications page when they are coming up soon.</span></div>
+          <div class="guide-tip"><strong>External events stay on the calendar</strong><span>Imported external items are treated as events, not homework. They appear on the calendar and notifications page when they are coming up soon.</span></div>
           <div class="guide-tip"><strong>Reset is serious</strong><span>The Reset button clears tasks, calendar data, settings, notifications, and saved dashboard state. Use it only when you really want a fresh start.</span></div>
         </div>
         </div>
@@ -1260,7 +1272,7 @@
     <h2>How EPStudy Stores Your Info</h2>
     <ol class="guide-steps">
       <li><b>Website data:</b> tasks, courses, dashboard settings, notifications, timers, and blocked-site lists are stored in this browser's localStorage under EPStudy's storage key.</li>
-      <li><b>Sync data:</b> Canvas, TeamSnap, lunch, course settings, and Focus Shield state stay on this device in your browser storage unless a connected service is being queried live.</li>
+      <li><b>Sync data:</b> Canvas, lunch, course settings, and Focus Shield state stay on this device in your browser storage unless a connected service is being queried live.</li>
       <li><b>Canvas token:</b> if you paste a Canvas API token into the page, it stays in the page field unless your browser autofills/saves it. EPStudy does not upload it to a database.</li>
       <li><b>Contact form:</b> sending support opens your email app with the message addressed to both support emails. The site itself does not silently send mail.</li>
       <li><b>Reset:</b> the Reset button clears EPStudy website data from this browser.</li>
@@ -1305,15 +1317,15 @@
     { id: "first_task", title: "Launch Pad", detail: "Add your first task", test: (state) => state.tasks.length >= 1, skinReward: null },
     { id: "task_starter", title: "Task Finisher", detail: "Complete 3 tasks", test: (state) => state.tasks.filter((t) => t.completed).length >= 3, skinReward: "rainbow" },
     { id: "session_runner", title: "Focus Runner", detail: "Finish 5 sessions", test: (state) => state.sessionsCompleted >= 5, skinReward: "sparkle" },
-    { id: "focus_120", title: "Century Club", detail: "Log 120 focus minutes", test: (state) => state.focusMinutes >= 120, skinReward: "stars" },
+    { id: "focus_120", title: "Century Club", detail: "Log 120 focus minutes", test: (state) => state.focusMinutes >= 120, skinReward: null },
     { id: "streak_3", title: "On a Roll", detail: "Reach a 3-day streak", test: (state) => state.streakDays >= 3, skinReward: "aurora" },
     { id: "canvas_link", title: "Canvas Link", detail: "Import Canvas work once", test: (state) => state.canvasImports >= 1, skinReward: "ocean" },
     { id: "task_10", title: "Forest Builder", detail: "Complete 10 tasks", test: (state) => state.tasks.filter((t) => t.completed).length >= 10, skinReward: "forest" },
     { id: "focus_300", title: "Golden Hour", detail: "Log 300 focus minutes", test: (state) => state.focusMinutes >= 300, skinReward: "sunset" },
     { id: "planner_8", title: "Notebook Ready", detail: "Create 8 tasks", test: (state) => state.tasks.length >= 8, skinReward: "notebook" },
     { id: "session_12", title: "Arcade Grind", detail: "Finish 12 focus sessions", test: (state) => state.sessionsCompleted >= 12, skinReward: "arcade" },
-    { id: "teamsnap_link", title: "Rain Check", detail: "Import TeamSnap once", test: (state) => state.teamsnapImports >= 1, skinReward: "rain" },
-    { id: "task_20", title: "Autumn Momentum", detail: "Complete 20 tasks", test: (state) => state.tasks.filter((t) => t.completed).length >= 20, skinReward: "autumn" }
+    // TeamSnap achievement removed
+    { id: "task_20", title: "Autumn Momentum", detail: "Complete 20 tasks", test: (state) => state.tasks.filter((t) => t.completed).length >= 20, skinReward: null }
     ,
     { id: "nebula_min", title: "Nebula Minutes", detail: "Log 50 focus minutes", test: (state) => state.focusMinutes >= 50, skinReward: "nebula" },
     { id: "mist_syncs", title: "Mist Sync", detail: "Perform 2 Canvas syncs", test: (state) => state.canvasImports >= 2, skinReward: "mist" },
@@ -1325,7 +1337,7 @@
     { id: "vapor_playlist", title: "Vapor Playlist", detail: "Import a playlist", test: (state) => Array.isArray(state.importedMusicPlaylist) && state.importedMusicPlaylist.length >= 1, skinReward: "vapor" },
     { id: "glimmer_600", title: "Glimmer Marathon", detail: "Log 600 focus minutes", test: (state) => state.focusMinutes >= 600, skinReward: "glimmer" },
     { id: "ember_tasks20", title: "Ember Effort", detail: "Complete 20 tasks", test: (state) => state.tasks.filter((t) => t.completed).length >= 20, skinReward: "ember" },
-    { id: "sage_teamsnap", title: "Sage Sync", detail: "Import TeamSnap", test: (state) => state.teamsnapImports >= 1, skinReward: "sage" },
+    // TeamSnap-based achievement removed
     { id: "teal_shield", title: "Teal Shield", detail: "Enable Focus Shield", test: (state) => Boolean(state.focusBlockerEnabled), skinReward: "teal" },
     { id: "plum_sessions15", title: "Plum Patron", detail: "Finish 15 focus sessions", test: (state) => state.sessionsCompleted >= 15, skinReward: "plum" },
     { id: "breeze_canvas3", title: "Breeze Sync", detail: "Perform 3 Canvas imports", test: (state) => state.canvasImports >= 3, skinReward: "breeze" },
@@ -1445,12 +1457,12 @@
     return {
       tasks: [], courses: [...DEFAULT_COURSES], selectedTaskId: null,
       sessionsCompleted: 0, focusMinutes: 0, streakDays: 0, lastSessionDate: null,
-      canvasImports: 0, teamsnapImports: 0, minimalist: false, tutorialSeen: false,
+      canvasImports: 0, minimalist: false, tutorialSeen: false,
       selectedSkin: "default", skinsVisible: true, confettiEnabled: false, trailEnabled: false, unlockedSkins: ["default"], unlockedAchievements: [],
       musicMode: "none", musicVolume: 35, importedMusicName: "", importedMusicDataUrl: "", musicSearchQuery: "",
       importedMusicPlaylist: [], importedMusicIndex: null,
       membeanEnabled: false,
-      teamSnapEnabled: false,
+      devControlsVisible: false,
       calendarYear: now.getFullYear(), calendarMonth: now.getMonth(), calendarDay: now.getDate(), timerMinutes: 25,
 	      calendarView: "month",
 	      schoolDivision: "us",
@@ -1467,7 +1479,7 @@
       liveSchedule: null,
       epsSchedules: {},
       lunchItems: {},
-      teamSnap48NoticeKeys: [],
+      // teamSnap notice keys removed
       currentPeriod: null,
       focusModeActive: false,
       focusModePeriod: null,
@@ -1497,7 +1509,6 @@
       merged.availabilityByDay = typeof merged.availabilityByDay === "object" && merged.availabilityByDay ? merged.availabilityByDay : base.availabilityByDay;
       merged.notificationSettings = { ...base.notificationSettings, ...(merged.notificationSettings || {}) };
       merged.membeanEnabled = false;
-      merged.teamSnapEnabled = Boolean(merged.teamSnapEnabled);
       merged.calendarView = ["month", "week"].includes(merged.calendarView) ? merged.calendarView : "month";
       merged.selectedSkin = SKIN_IDS.includes(merged.selectedSkin) ? merged.selectedSkin : "default";
       merged.skinsVisible = true;
@@ -1508,6 +1519,7 @@
       merged.proAccessUnlocked = Boolean(merged.proAccessUnlocked);
       merged.megaAccessUnlocked = Boolean(merged.megaAccessUnlocked);
       merged.dominionAccessUnlocked = Boolean(merged.dominionAccessUnlocked);
+      merged.devControlsVisible = Boolean(merged.devControlsVisible);
       merged.musicMode = "none";
       merged.musicVolume = Math.max(0, Math.min(100, Number(merged.musicVolume) || 35));
       merged.importedMusicName = "";
@@ -1532,13 +1544,10 @@
         merged.dashboardExpansionSections[key] = Boolean(merged.dashboardExpansionSections[key]);
         if (!merged.dashboardExpansionSections[key]) delete merged.dashboardExpandedSections[key];
       });
-      merged.teamSnap48NoticeKeys = Array.isArray(merged.teamSnap48NoticeKeys) ? merged.teamSnap48NoticeKeys.map(String).slice(-200) : [];
+      // merged.teamSnap48NoticeKeys removed
       merged.dashboardSections.membean = false;
       merged.tasks = merged.tasks.filter(task => String(task?.source || "").toLowerCase() !== "membean");
-      if (!merged.teamSnapEnabled) {
-        merged.tasks = merged.tasks.filter(task => String(task?.source || "").toLowerCase() !== "teamsnap");
-        merged.teamSnap48NoticeKeys = [];
-      }
+      // TeamSnap settings/data removed from persisted state
       merged.membeanSessionsCompleted = Math.max(0, Math.min(3, Number(merged.membeanSessionsCompleted) || 0));
       merged.membeanSessionsLastUpdated = typeof merged.membeanSessionsLastUpdated === "string" ? merged.membeanSessionsLastUpdated : null;
 
@@ -2064,7 +2073,6 @@
       .replace(/^\p{Extended_Pictographic}\s*/u, "")
       .replace(/^Calendar:\s*/i, "")
       .replace(/^Assignment\b:?\s*/i, "")
-      .replace(/^TeamSnap\s+(?:Game|Event)\b:?\s*/i, "")
       .replace(/\s+/g, " ")
       .trim();
   }
@@ -2115,11 +2123,7 @@
       const url = String(task.canvasUrl || task.url || "").replace(/\?.*$/, "");
       if (url) aliases.push(`${source}:url:${url}`);
     }
-    if (source === "teamsnap") {
-      if (Number.isFinite(exactTime)) aliases.push(`${source}:title-time:${title}:${exactTime}`);
-      const url = String(task.eventUrl || task.url || "").replace(/\?.*$/, "");
-      if (url) aliases.push(`${source}:url:${url}`);
-    }
+    // TeamSnap aliases removed
     return aliases;
   }
 
@@ -2289,12 +2293,9 @@
     return { ma: "MA", qa: "QA", "cw-hw": "CW/HW", hw: "HW", cw: "CW" }[type] || "";
   }
 
-  function isTeamSnapEvent(task) {
-    return String(task?.source || "").toLowerCase() === "teamsnap";
-  }
-
+  // TeamSnap events removed; treat any task object as actionable when present
   function isActionableTask(task) {
-    return Boolean(task && !isTeamSnapEvent(task));
+    return Boolean(task);
   }
 
   function openTasksSorted(ref = new Date()) {
@@ -2661,7 +2662,7 @@
       const typePill = type ? `<span class='pill ${type === "ma" ? "ma" : type === "qa" ? "qa" : ""}'>${taskTypeLabel(type)}</span>` : "";
       
       const cPill = c ? `<span class='pill' style='background:${c.color}15;color:${c.color};border-color:${c.color}40'>${escapeHtml(c.code || c.name)}</span>` : "";
-      const sourceLabels = { canvas: "Canvas", teamsnap: "TeamSnap", membean: "Membean" };
+      const sourceLabels = { canvas: "Canvas", membean: "Membean" };
       const sPill = sourceLabels[t.source] ? `<span class='pill ${t.source}'>${sourceLabels[t.source]}</span>` : "";
       const hasComment = Boolean((Array.isArray(t.comments) && t.comments.length) || t.comment);
       
@@ -3511,10 +3512,8 @@
   function normalizeIncomingTask(raw, source) {
     if (!raw || typeof raw !== "object") return null;
     const taskSource = String(raw.source || source || "extension").toLowerCase();
-    if (taskSource === "teamsnap" && /driver/i.test(`${raw.title || raw.name || ""} ${raw.description || ""} ${raw.location || ""}`)) return null;
-    if (taskSource === "teamsnap") ensureSportsCourse();
+    // TeamSnap-specific normalization removed
     const sourceCourseFallbacks = {
-      teamsnap: hasRealCourseForCourses({ courseId: "course-sports" }, state.courses) ? "course-sports" : "",
       membean: defaultFallbackCourseId(),
       canvas: ""
     };
@@ -3537,7 +3536,7 @@
       completed: Boolean(raw.completed),
       externalKey,
       canvasUrl: raw.canvasUrl || raw.html_url || raw.url || "",
-      eventUrl: raw.eventUrl || (taskSource === "teamsnap" ? raw.url : ""),
+      eventUrl: raw.eventUrl || raw.url || "",
       location: raw.location || "",
       description: raw.description || "",
       submissionState: raw.submissionState || raw.workflow_state || "",
@@ -3559,32 +3558,10 @@
     return Array.from(byIdentity.values());
   }
 
-  function teamSnapNoticeKey(task) {
-    return String(task.externalKey || task.eventUrl || task.id || `${task.title}:${task.dueDate}`);
-  }
-
-  function notifyUpcomingTeamSnapEvents() {
-    if (!state.teamSnapEnabled) return;
-    const now = Date.now();
-    const windowEnd = now + 48 * 60 * 60 * 1000;
-    const seen = new Set(Array.isArray(state.teamSnap48NoticeKeys) ? state.teamSnap48NoticeKeys : []);
-    const upcoming = state.tasks
-      .filter(task => isTeamSnapEvent(task) && !/driver/i.test(`${task.title || ""} ${task.description || ""} ${task.location || ""}`))
-      .map(task => ({ task, time: new Date(task.dueDate).getTime() }))
-      .filter(item => Number.isFinite(item.time) && item.time >= now && item.time <= windowEnd)
-      .sort((a, b) => a.time - b.time);
-
-    for (const { task } of upcoming) {
-      const key = teamSnapNoticeKey(task);
-      if (seen.has(key)) continue;
-      seen.add(key);
-      addNotification(`TeamSnap event within 48 hours: ${task.title} (${normalizeDueDate(task.dueDate)})`, "warning", 0);
-    }
-    state.teamSnap48NoticeKeys = Array.from(seen).slice(-200);
-  }
+  // TeamSnap notification helpers removed.
 
   function upsertImportedTasks(incomingTasks, source) {
-    if (source === "teamsnap" && !state.teamSnapEnabled) return { added: 0, updated: 0, total: 0 };
+    if (source === "teamsnap") return { added: 0, updated: 0, total: 0 };
     removeTasksWithoutRealCourse(false);
     const normalized = dedupeIncomingTasks((Array.isArray(incomingTasks) ? incomingTasks : [])
       .map(task => normalizeIncomingTask(task, source))
@@ -3611,8 +3588,7 @@
     mergeDuplicateTasks();
     state.tasks.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     if (source === "canvas") state.canvasImports += added;
-    if (source === "teamsnap") state.teamsnapImports += added;
-    if (source === "teamsnap") notifyUpcomingTeamSnapEvents();
+    // TeamSnap imports ignored (feature removed)
     state.extensionSync.lastSyncAt = new Date().toISOString();
     if (source) state.extensionSync.sources[source] = { added, updated, syncedAt: state.extensionSync.lastSyncAt };
     saveState();
@@ -3625,11 +3601,10 @@
     const courseResult = upsertCanvasCourses(payload.courses || payload.canvasCourses || []);
     const sourceCounts = {};
     const canvasStatus = payload.sourceStatus?.canvas || null;
-    const teamSnapStatus = payload.sourceStatus?.teamsnap || null;
-    if (state.teamSnapEnabled && Array.isArray(payload.teamsnap) && payload.teamsnap.length) ensureSportsCourse();
-    for (const source of ["canvas", "teamsnap", "membean"]) {
+    const teamSnapStatus = null;
+    // TeamSnap payloads ignored
+    for (const source of ["canvas", "membean"]) {
       if (source === "membean" && !state.membeanEnabled) continue;
-      if (source === "teamsnap" && !state.teamSnapEnabled) continue;
       if (!Array.isArray(payload[source])) continue;
       const result = upsertImportedTasks(payload[source], source);
       sourceCounts[source] = result.total;
@@ -3654,11 +3629,10 @@
           ? `Canvas is not readable right now, so EPStudy kept ${cachedTasks} saved task(s) and ${cachedCourses} saved course(s). It will refresh when Canvas is opened.`
           : "Canvas is not readable right now. EPStudy will import tasks and courses when Canvas is opened.";
       } else {
-        const sourceSummary = [`Canvas ${sourceCounts.canvas || 0}`, `TeamSnap ${sourceCounts.teamsnap || 0}`, `Membean ${sourceCounts.membean || 0}`].join(", ");
+        const sourceSummary = [`Canvas ${sourceCounts.canvas || 0}`, `Membean ${sourceCounts.membean || 0}`].join(", ");
         status.textContent = total || courseResult.added || courseResult.updated
           ? `Extension synced ${total} task item(s) (${sourceSummary}) and ${courseResult.added + courseResult.updated} Canvas course update(s).`
           : "Extension responded, but no current tasks were found.";
-        if (teamSnapStatus?.status === "waiting_for_schedule") status.textContent += " TeamSnap was found, but no readable schedule events were detected.";
       }
     }
     if (courseResult.added || courseResult.updated) { saveState(); if (!total) renderAll(); }
@@ -3834,89 +3808,7 @@
     }
   }
 
-  function splitTeamSnapIds(raw) {
-    return String(raw || "")
-      .split(/[\n,]+/)
-      .map(id => id.trim())
-      .filter(Boolean);
-  }
-
-  function teamSnapValue(item, names) {
-    const fields = Array.isArray(item?.data) ? item.data : [];
-    for (const name of names) {
-      const found = fields.find(field => String(field.name || "").toLowerCase() === name.toLowerCase());
-      if (found && found.value !== undefined && found.value !== null) return found.value;
-    }
-    return undefined;
-  }
-
-  function normalizeTeamSnapEvent(item, teamId) {
-    const id = teamSnapValue(item, ["id"]) || item?.id || `${teamId}-${Math.random().toString(16).slice(2)}`;
-    const type = String(teamSnapValue(item, ["type", "event_type"]) || item?.type || "").toLowerCase();
-    const isGame = /game|match|tournament/.test(type) || Boolean(teamSnapValue(item, ["opponent_name", "is_game"]));
-    const titleRaw = teamSnapValue(item, ["name", "title", "formatted_title"]) || item?.title || item?.name || (isGame ? "Game" : "Team event");
-    const opponent = teamSnapValue(item, ["opponent_name", "opponent"]);
-    const location = teamSnapValue(item, ["location_name", "location"]);
-    if (/driver/i.test(`${titleRaw} ${opponent || ""} ${location || ""}`)) return null;
-    const startAt = teamSnapValue(item, ["start_date", "start_at", "starts_at"]) || item?.start_at || item?.startDate;
-    const endAt = teamSnapValue(item, ["end_date", "end_at", "ends_at"]);
-    const start = startAt ? new Date(startAt) : new Date();
-    if (Number.isNaN(start.getTime())) return null;
-    const end = endAt ? new Date(endAt) : null;
-    const estimatedMinutes = end && !Number.isNaN(end.getTime()) ? Math.max(15, Math.round((end.getTime() - start.getTime()) / 60000)) : 60;
-    const titleParts = [normalizeAssignmentTitle(titleRaw)];
-    if (opponent && !String(titleRaw).includes(String(opponent))) titleParts.push(`vs ${opponent}`);
-    if (location) titleParts.push(`at ${location}`);
-    return {
-      id: `teamsnap-${teamId}-${id}`,
-      title: titleParts.join(" "),
-      dueDate: start.toISOString(),
-      source: "teamsnap",
-      estimatedMinutes,
-      courseId: "course-sports",
-      completed: false,
-      location: location || "",
-      externalKey: `teamsnap:${teamId}:${id}`
-    };
-  }
-
-  async function syncTeamSnap() {
-    const ids = splitTeamSnapIds(document.getElementById("teamSnapTeamId")?.value);
-    const tkn = document.getElementById("teamSnapToken")?.value.trim();
-    const useProxy = document.getElementById("teamSnapUseProxy")?.checked;
-    const msg = document.getElementById("teamSnapMessage");
-
-    if (!state.teamSnapEnabled) { if (msg) msg.textContent = "Turn on I use TeamSnap before syncing."; return; }
-    if (!ids.length || !tkn) { if (msg) msg.textContent = "At least one Team ID and token required."; return; }
-    if (msg) msg.textContent = `Syncing ${ids.length} TeamSnap team(s)...`;
-
-    const myProxy = PRIVATE_PROXY_URL;
-    const imported = [];
-
-    try {
-      for (const id of ids) {
-        const endpoint = `https://api.teamsnap.com/v3/teams/${encodeURIComponent(id)}/events`;
-        const requestUrl = useProxy ? `${myProxy}/?url=${encodeURIComponent(endpoint)}` : endpoint;
-        const res = await fetch(requestUrl, { headers: { Authorization: `Bearer ${tkn}` } });
-        if (!res.ok) throw new Error(`Team ${id}: ${res.status}`);
-        const json = await res.json();
-        const items = Array.isArray(json.collection?.items) ? json.collection.items : [];
-        for (const item of items) {
-          const normalized = normalizeTeamSnapEvent(item, id);
-          if (normalized) imported.push(normalized);
-        }
-      }
-
-      state.tasks = state.tasks.filter(t => !String(t.title || "").includes("MOCK:"));
-      const result = upsertImportedTasks(imported, "teamsnap");
-      if (msg) msg.textContent = `TeamSnap synced: ${result.added} new, ${result.updated} updated across ${ids.length} team(s).`;
-      addNotification(`TeamSnap synced ${result.total} event(s).`, "info");
-    } catch (err) {
-      console.warn("TeamSnap sync error:", err);
-      addNotification(`TeamSnap sync failed: ${err.message}`, "error");
-      if (msg) msg.textContent = `Sync failed: ${err.message}. Check your TeamSnap connection in settings.`;
-    }
-  }
+  // TeamSnap sync helpers removed.
 
 
   function canChangeSkin(skinId) {
@@ -3972,20 +3864,13 @@
     if (!state.membeanEnabled) state.dashboardExpansionSections.membean = false;
   }
 
-  function setTeamSnapEnabled(enabled) {
-    state.teamSnapEnabled = Boolean(enabled);
-    if (!state.teamSnapEnabled) {
-      state.tasks = state.tasks.filter(task => !isTeamSnapEvent(task));
-      state.teamSnap48NoticeKeys = [];
-    }
-  }
+  // TeamSnap enable/disable removed.
 
   function syncGuideSetupControls() {
     document.querySelectorAll("[data-guide-division]").forEach(input => {
       input.checked = input.value === state.schoolDivision;
     });
-    const guideTeamSnap = document.getElementById("guideTeamSnapEnabled");
-    if (guideTeamSnap) guideTeamSnap.checked = Boolean(state.teamSnapEnabled);
+    // guide TeamSnap control removed
   }
 
   function renderAll() {
@@ -4013,7 +3898,6 @@
     
     const ce = document.getElementById("confettiEnabled"); if (ce) ce.checked = Boolean(state.confettiEnabled);
     const te = document.getElementById("trailEnabled"); if (te) te.checked = Boolean(state.trailEnabled);
-    const tse = document.getElementById("teamSnapEnabled"); if (tse) tse.checked = Boolean(state.teamSnapEnabled);
     const sds = document.getElementById("schoolDivisionSelect"); if (sds) sds.value = state.schoolDivision;
     syncGuideSetupControls();
     syncMusicSettings();
@@ -4061,7 +3945,7 @@
     renderHeaderStats(); renderScheduleCard(); renderTaskList(); renderSmartCard(); renderCalendar(); updateTimerUi();
     renderFullCalendar();
     renderEpsDayInfo();
-    notifyUpcomingTeamSnapEvents();
+    // TeamSnap event notifications removed
     renderNotifications(); updateAllAssignmentsDisplay(); initPageSettings();
     
     // Render task list for Tasks page (same as dashboard)
@@ -4071,7 +3955,7 @@
     }
   }
 
-  function addNotification(message, type = "info", duration = 5000) {
+  function addNotification(message, type = "info", duration = 0) {
     const notif = { id: `notif-${Date.now()}`, message, type, timestamp: new Date(), read: false };
     state.notifications.unshift(notif);
     if (state.notifications.length > 10) state.notifications = state.notifications.slice(0, 10);
@@ -4155,13 +4039,17 @@
       notifAssignments: state.notificationSettings.assignments,
       notifOverdue: state.notificationSettings.overdue,
       notifTimerDone: state.notificationSettings.timerdone,
-      confettiEnabled: state.confettiEnabled,
-      teamSnapEnabled: state.teamSnapEnabled
+      confettiEnabled: state.confettiEnabled
     };
     for (const [id, val] of Object.entries(els)) {
       const el = document.getElementById(id);
       if (el) el.checked = Boolean(val);
     }
+    // Initialize dev progress inputs if present
+    const ds = document.getElementById("devSessionsCompleted"); if (ds) ds.value = Number(state.sessionsCompleted || 0);
+    const dm = document.getElementById("devFocusMinutes"); if (dm) dm.value = Number(state.focusMinutes || 0);
+    const dk = document.getElementById("devStreakDays"); if (dk) dk.value = Number(state.streakDays || 0);
+    const devPanel = document.getElementById("devControlsPanel"); if (devPanel) devPanel.style.display = state.devControlsVisible ? "block" : "none";
   }
   
   function updateAllAssignmentsDisplay() {
@@ -4541,7 +4429,7 @@
     
     document.getElementById("canvasSyncBtn")?.addEventListener("click", syncCanvas);
 
-    document.getElementById("teamSnapSyncBtn")?.addEventListener("click", syncTeamSnap);
+    // TeamSnap sync button removed
 
     ["notifMembean", "notifQuizzes", "notifAssignments", "notifOverdue", "notifTimerDone"].forEach(id => {
       document.getElementById(id)?.addEventListener("change", e => {
@@ -4589,10 +4477,34 @@
       window.open(`https://music.youtube.com/search?q=${encodeURIComponent(query)}`, "_blank", "noopener,noreferrer");
     });
 
-    document.getElementById("teamSnapEnabled")?.addEventListener("change", e => {
-      setTeamSnapEnabled(e.target.checked);
+    // Developer set-progress handlers
+    document.getElementById("devSetProgressBtn")?.addEventListener("click", () => {
+      const s = Number(document.getElementById("devSessionsCompleted")?.value || 0);
+      const m = Number(document.getElementById("devFocusMinutes")?.value || 0);
+      const sd = Number(document.getElementById("devStreakDays")?.value || 0);
+      state.sessionsCompleted = Math.max(0, Math.floor(s));
+      state.focusMinutes = Math.max(0, Math.floor(m));
+      state.streakDays = Math.max(0, Math.floor(sd));
+      state.lastSessionDate = new Date().toISOString();
       saveState(); renderAll();
+      addNotification(`Progress set: ${state.sessionsCompleted} sessions, ${state.focusMinutes} mins, ${state.streakDays} day streak.`, "info", 0);
     });
+    document.getElementById("devClearProgressBtn")?.addEventListener("click", () => {
+      state.sessionsCompleted = 0; state.focusMinutes = 0; state.streakDays = 0; state.lastSessionDate = null;
+      saveState(); renderAll();
+      addNotification("Progress reset to zero.", "info", 0);
+    });
+    document.getElementById("devUnlockAllBtn")?.addEventListener("click", () => {
+      try {
+        state.unlockedSkins = Array.isArray(SKIN_IDS) ? SKIN_IDS.slice() : (state.unlockedSkins || []);
+        if (Array.isArray(ACHIEVEMENTS)) state.unlockedAchievements = ACHIEVEMENTS.map(a => a.id);
+        state.proAccessUnlocked = true; state.megaAccessUnlocked = true; state.dominionAccessUnlocked = true;
+        saveState(); renderAll();
+        addNotification("All skins, achievements and tiers unlocked.", "info", 0);
+      } catch (e) { addNotification("Unlock all failed: " + (e && e.message ? e.message : String(e)), "error", 0); }
+    });
+
+    // TeamSnap enable control removed
 
     document.getElementById("schoolDivisionSelect")?.addEventListener("change", e => {
       state.schoolDivision = e.target.value === "ms" ? "ms" : "us";
@@ -4634,15 +4546,26 @@
         saveState(); renderAll();
       });
     });
-    document.getElementById("guideTeamSnapEnabled")?.addEventListener("change", e => {
-      setTeamSnapEnabled(e.target.checked);
-      saveState(); renderAll();
-    });
+    // guide TeamSnap control removed
     document.getElementById("tutorialCloseBtn")?.addEventListener("click", () => { state.tutorialSeen=true; saveState(); document.getElementById("tutorialModal")?.classList.remove("open"); });
     document.getElementById("canvasTokenGuideBtn")?.addEventListener("click", () => document.getElementById("canvasTokenModal")?.classList.add("open"));
     document.getElementById("canvasTokenCloseBtn")?.addEventListener("click", () => document.getElementById("canvasTokenModal")?.classList.remove("open"));
     document.getElementById("privacyGuideBtn")?.addEventListener("click", () => document.getElementById("privacyModal")?.classList.add("open"));
     document.getElementById("privacyCloseBtn")?.addEventListener("click", () => document.getElementById("privacyModal")?.classList.remove("open"));
+
+    // Keyboard shortcut to toggle dev controls: Ctrl+Shift+U
+    document.addEventListener("keydown", (e) => {
+      try {
+        const targetTag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : null;
+        if (targetTag === 'input' || targetTag === 'textarea' || targetTag === 'select' || (e.target && e.target.isContentEditable)) return;
+        if (e.ctrlKey && e.shiftKey && (e.key === 'U' || e.key === 'u')) {
+          state.devControlsVisible = !Boolean(state.devControlsVisible);
+          const p = document.getElementById('devControlsPanel'); if (p) p.style.display = state.devControlsVisible ? 'block' : 'none';
+          saveState(); renderAll();
+          addNotification(state.devControlsVisible ? 'Developer controls shown' : 'Developer controls hidden', 'info', 0);
+        }
+      } catch (err) {}
+    });
   }
 
   // SYSTEM START
