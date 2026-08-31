@@ -66,6 +66,35 @@
   .nav-btn:hover:not(.active) { background: var(--panel); color: var(--text-dark); }
   .nav-icon { width: 18px; height: 18px; border-radius: 5px; display: inline-grid; place-items: center; flex: 0 0 auto; background: var(--bg-gray); color: var(--navy-primary); font-size: 0.68rem; font-weight: 800; line-height: 1; border: 1px solid var(--border); }
   .nav-btn.active .nav-icon { background: var(--navy-primary); border-color: var(--navy-primary); color: var(--primary-content); }
+  .nav-btn.guide-highlight-target,
+  .nav-btn.active.guide-highlight-target {
+    background: rgba(255, 255, 255, 0.995) !important;
+    background-color: rgba(255, 255, 255, 0.995) !important;
+    background-image: none !important;
+    color: var(--navy-primary) !important;
+    border-color: rgba(255, 199, 44, 0.98) !important;
+    box-shadow: 0 0 0 2px rgba(255, 199, 44, 0.95), 0 0 0 12px rgba(255, 199, 44, 0.16), 0 16px 28px rgba(15, 23, 42, 0.12) !important;
+    filter: none !important;
+    opacity: 1 !important;
+    transform: translateY(-1px);
+    overflow: hidden;
+  }
+  .nav-btn.guide-highlight-target::before,
+  .nav-btn.active.guide-highlight-target::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: rgba(255, 255, 255, 0.995);
+    z-index: -1;
+    pointer-events: none;
+  }
+  .nav-btn.guide-highlight-target .nav-icon,
+  .nav-btn.active.guide-highlight-target .nav-icon {
+    background: var(--navy-primary) !important;
+    border-color: var(--navy-primary) !important;
+    color: var(--primary-content) !important;
+  }
   .page { display: none; animation: fadeIn 0.3s ease; }
   .page.active { display: block; min-height: calc(100vh - 172px); }
   #page-timer.active, #page-notifications.active { height: calc(100vh - 230px); min-height: 0; overflow: hidden; }
@@ -411,38 +440,35 @@
   .full-calendar-cell.today { border: 2px solid var(--navy-primary); }
 
   /* Modals */
-  .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.58); z-index: 60; display: none; padding: 20px; overflow-y: auto; backdrop-filter: blur(8px);}
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.68); z-index: 60; display: none; padding: 20px; overflow-y: auto; backdrop-filter: none; }
   .modal-backdrop.open { display: grid; place-items: center; }
   body.modal-open { overflow: hidden; }
-  #tutorialModal.open { background: transparent; backdrop-filter: none; }
+  #tutorialModal.open { background: rgba(3,10,25,0.68) !important; backdrop-filter: none !important; }
 
     /* When the tutorial runs in guide-mode, allow clicks through the backdrop
       so users can click the highlighted controls. The guide body remains interactive. */
-    .modal-backdrop.guide-mode { pointer-events: none; background: rgba(3,10,25,0.18); backdrop-filter: none; }
-    .modal-backdrop.guide-focus { background: transparent; backdrop-filter: none; }
+    .modal-backdrop.guide-mode { pointer-events: auto; background: rgba(3,10,25,0.68); backdrop-filter: none; }
+    .modal-backdrop.guide-focus { background: rgba(3,10,25,0.68); backdrop-filter: none; }
     .modal-backdrop.guide-mode .guide-body { pointer-events: auto; }
-    .modal-backdrop.tutorial-steps.open { display: block; }
-    .modal-backdrop.tutorial-steps { padding: 0; overflow: visible; pointer-events: none; background: transparent; backdrop-filter: none; }
+    .modal-backdrop.tutorial-steps.open, .modal-backdrop.guide-mode.open { background: rgba(3,10,25,0.68); backdrop-filter: none; }
+    .modal-backdrop.tutorial-steps.open { display: grid; place-items: center; }
+    .modal-backdrop.tutorial-steps { padding: 24px; overflow: auto; pointer-events: auto; background: rgba(3,10,25,0.68); backdrop-filter: none; }
     .modal-backdrop.tutorial-steps .modal-card {
       pointer-events: auto;
-      position: fixed;
-      top: 96px;
-      right: 24px;
-      bottom: 24px;
-      width: 420px;
+      position: relative;
+      inset: auto;
+      width: min(560px, calc(100vw - 32px));
       max-width: calc(100vw - 32px);
-      padding: 1.25rem;
+      padding: 1.05rem;
       display: grid;
       grid-template-rows: auto 1fr auto;
-      border-radius: 16px;
-      box-shadow: 0 18px 48px rgba(15, 23, 42, 0.12);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.985);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: 0 24px 54px rgba(15, 23, 42, 0.18);
       z-index: 10050;
-    }
-    .modal-backdrop.tutorial-steps .modal-card { overflow: hidden; }
-    .modal-backdrop.tutorial-steps .modal-card,
-    .modal-backdrop.guide-mode .modal-card {
-      border: 2px solid color-mix(in srgb, var(--gold) 58%, #ffffff);
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.8), 0 24px 60px rgba(15, 23, 42, 0.18);
+      overflow: hidden;
+      margin: auto;
     }
     .modal-backdrop.tutorial-steps .guide-body {
       overflow-y: auto;
@@ -452,22 +478,89 @@
       overscroll-behavior: contain;
       scrollbar-gutter: stable;
     }
-    .modal-backdrop.tutorial-steps .guide-tour-step {
-      border-radius: 12px;
-      border-color: color-mix(in srgb, var(--gold) 34%, var(--border));
-      box-shadow: 0 0 0 2px color-mix(in srgb, var(--gold) 40%, transparent), var(--shadow-sm);
+    .modal-backdrop.tutorial-steps .guide-body {
+      gap: 0.9rem;
+      padding-top: 0.25rem;
     }
-    .modal-backdrop.tutorial-steps .guide-tour-controls { border-top: 1px solid var(--border); padding-top: 0.75rem; }
-    .modal-backdrop.tutorial-steps .guide-tour-actions .button { min-width: 92px; }
-    .modal-backdrop.tutorial-steps .guide-jump { display: flex; align-items: center; gap: 0.5rem; }
-    .modal-backdrop.tutorial-steps .guide-jump select { flex: 1; }
-    .modal-backdrop.tutorial-steps .modal-card {
-      width: min(760px, 100%);
-      padding: 1.5rem;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-lg);
-      z-index: 10050;
+    .modal-backdrop.tutorial-steps .guide-tour-shell { gap: 0.85rem; }
+    .modal-backdrop.tutorial-steps .guide-tour-banner {
+      padding: 0.95rem 1rem;
+      border-radius: 18px;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--navy-primary) 94%, #000), color-mix(in srgb, var(--navy-primary) 74%, var(--gold)));
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+    }
+    .modal-backdrop.tutorial-steps .guide-tour-step {
+      border-radius: 18px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      background: rgba(255,255,255,0.98);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+      padding: 0.95rem;
+      gap: 0.8rem;
+    }
+    .modal-backdrop.tutorial-steps .guide-tour-rail {
+      display: flex;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+    }
+    .modal-backdrop.tutorial-steps .guide-tour-rail button {
+      flex: 1 1 0;
+      min-width: 140px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 14px;
+      background: rgba(248, 250, 252, 0.96);
+      padding: 0.7rem 0.75rem;
+      text-align: left;
+      display: grid;
+      gap: 0.15rem;
+      color: var(--text-dark);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+    .modal-backdrop.tutorial-steps .guide-tour-rail button span {
+      color: var(--navy-primary);
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .modal-backdrop.tutorial-steps .guide-tour-rail button strong {
+      font-size: 0.9rem;
+      color: var(--text-dark);
+    }
+    .modal-backdrop.tutorial-steps .guide-tour-rail button small {
+      color: var(--muted);
+      line-height: 1.35;
+      font-size: 0.76rem;
+    }
+    .modal-backdrop.tutorial-steps .guide-tour-rail button.is-active {
+      background: rgba(255,255,255,0.995);
+      border-color: rgba(255, 199, 44, 0.82);
+      box-shadow: 0 0 0 2px rgba(255, 199, 44, 0.2), 0 10px 24px rgba(15, 23, 42, 0.08);
+    }
+    .modal-backdrop.tutorial-steps .guide-tour-step-head {
+      gap: 0.65rem;
+      align-items: flex-start;
+      padding-bottom: 0;
+    }
+    .modal-backdrop.tutorial-steps .guide-tour-step-head strong {
+      font-size: 1.02rem;
+      letter-spacing: -0.01em;
+    }
+    .modal-backdrop.tutorial-steps .guide-tour-step-body {
+      font-size: 0.94rem;
+      line-height: 1.56;
+      color: var(--text-main);
+    }
+    .modal-backdrop.tutorial-steps .guide-tour-controls {
+      border-top: 1px solid rgba(15, 23, 42, 0.08);
+      padding-top: 0.7rem;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .modal-backdrop.tutorial-steps .guide-tour-actions .button { min-width: 88px; }
+    .modal-backdrop.tutorial-only {
+      pointer-events: none;
+      background: rgba(3,10,25,0.68);
+      backdrop-filter: none;
     }
     .modal-backdrop.tutorial-only .guide-hero,
     .modal-backdrop.tutorial-only .guide-setup-panel {
@@ -480,15 +573,7 @@
       display: none;
     }
     .modal-backdrop.tutorial-only .modal-card {
-      width: auto;
-      max-width: 420px;
-      padding: 0;
-      background: transparent;
-      border: none;
-      box-shadow: none;
-      position: fixed;
-      right: 24px;
-      bottom: 24px;
+      display: grid;
     }
     .modal-backdrop.tutorial-only .guide-hero,
     .modal-backdrop.tutorial-only .guide-setup-panel {
@@ -545,60 +630,50 @@
   .guide-footer { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; justify-content: space-between; padding-top: 0.35rem; }
   .guide-footer .helper-text { max-width: 680px; }
   .guide-tour-shell { display: grid; gap: 1rem; }
-  .guide-tour-banner { display: grid; gap: 0.45rem; padding: 1rem 1.1rem; border-radius: var(--radius-lg); background: linear-gradient(135deg, color-mix(in srgb, var(--navy-primary) 92%, #000), color-mix(in srgb, var(--navy-primary) 68%, var(--gold))); color: var(--primary-content); }
+  .guide-tour-banner { display: grid; gap: 0.4rem; padding: 1rem 1.1rem; border-radius: var(--radius-lg); background: linear-gradient(135deg, color-mix(in srgb, var(--navy-primary) 92%, #000), color-mix(in srgb, var(--navy-primary) 68%, var(--gold))); color: var(--primary-content); }
   .guide-tour-banner h3 { margin: 0; color: var(--primary-content); font-size: 1rem; }
   .guide-tour-banner p { margin: 0; color: color-mix(in srgb, var(--primary-content) 82%, transparent); }
-  .guide-tour-step { display: grid; gap: 0.85rem; padding: 1rem; border-radius: var(--radius-lg); border: 1px solid var(--border); background: var(--panel); box-shadow: var(--shadow-sm); }
-  .guide-tour-step-head { display: flex; justify-content: space-between; gap: 0.75rem; align-items: start; flex-wrap: wrap; }
+  .guide-tour-step { display: grid; gap: 0.85rem; padding: 1rem; border-radius: 20px; border: 1px solid rgba(15, 23, 42, 0.08); background: rgba(255,255,255,0.95); box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06); }
+  .guide-tour-step-head { display: flex; justify-content: space-between; gap: 0.75rem; align-items: flex-start; flex-wrap: wrap; }
   .guide-tour-step-head strong { color: var(--text-dark); font-size: 1rem; }
-  .guide-tour-step-body { color: var(--text-main); line-height: 1.5; }
+  .guide-tour-step-body { color: var(--text-main); line-height: 1.52; }
   .guide-tour-step-body a { color: var(--navy-primary); font-weight: 700; text-decoration: none; }
   .guide-tour-step-body a:hover { text-decoration: underline; }
-  .guide-tour-target-note { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.4rem 0.7rem; border-radius: 999px; background: color-mix(in srgb, var(--navy-primary) 10%, var(--bg-gray)); color: var(--navy-primary); font-size: 0.78rem; font-weight: 800; }
+  .guide-tour-target-note { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.4rem 0.75rem; border-radius: 999px; background: rgba(37, 99, 235, 0.08); color: var(--navy-primary); font-size: 0.78rem; font-weight: 800; }
   .guide-tour-controls { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: space-between; align-items: center; }
   .guide-tour-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
-  .guide-spotlight {
-    position: fixed;
-    pointer-events: none;
-    z-index: 10020;
-    border-radius: 16px;
-    border: 2px solid color-mix(in srgb, var(--gold) 52%, #ffffff);
-    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.18), 0 0 0 2px rgba(255, 199, 44, 0.22);
-    background: rgba(255, 255, 255, 0.02);
-    transition: all 0.22s ease;
-  }
     /* Dim overlay that covers the page but leaves a rectangular hole for the highlighted target.
       Implemented as four panels (top, left, right, bottom) for reliable click-through in the hole. */
-    .guide-dim { position: fixed; inset: 0; pointer-events: none; z-index: 10010; }
-    .guide-dim .dim-panel { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: rgba(6,10,20,0.54); transition: all 220ms ease; pointer-events: auto; }
+    .guide-dim { position: fixed; inset: 0; pointer-events: none; z-index: 10000; }
+    .guide-dim .dim-panel { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15,20,30,0.18); transition: all 220ms ease; pointer-events: auto; }
     .guide-dim .dim-panel.hidden { display: none; }
     .guide-dim .dim-panel.fade { transition: opacity 240ms ease; }
   .guide-pointer {
     position: fixed;
     z-index: 10030;
     display: grid;
-    gap: 0.35rem;
-    max-width: 280px;
-    padding: 0.7rem 0.8rem;
+    gap: 0.26rem;
+    max-width: 220px;
+    padding: 0.52rem 0.7rem 0.48rem;
     border-radius: 12px;
-    background: var(--panel);
+    background: rgba(255, 255, 255, 0.98);
     color: var(--text-dark);
-    border: 1px solid var(--border);
-    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.16);
-    font-size: 0.82rem;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.14);
+    font-size: 0.76rem;
     line-height: 1.35;
     pointer-events: auto;
   }
-  .guide-pointer strong { color: var(--navy-primary); display: block; font-size: 0.86rem; margin-bottom: 0.1rem; }
-  .guide-pointer button.guide-pointer-next { align-self: end; justify-self: start; border: 1px solid var(--border); border-radius: 999px; background: var(--navy-primary); color: var(--primary-content); padding: 0.28rem 0.7rem; font-size: 0.72rem; font-weight: 800; cursor: pointer; box-shadow: var(--shadow-sm); }
-  .guide-pointer button.guide-pointer-next:hover { filter: brightness(1.05); }
+  .guide-pointer strong { color: var(--navy-primary); display: block; font-size: 0.8rem; margin-bottom: 0.02rem; letter-spacing: -0.01em; }
+  .guide-pointer button.guide-pointer-next { align-self: end; justify-self: start; border: 1px solid rgba(37, 99, 235, 0.12); border-radius: 999px; background: var(--navy-primary); color: var(--primary-content); padding: 0.2rem 0.6rem; font-size: 0.66rem; font-weight: 800; cursor: pointer; box-shadow: 0 4px 10px rgba(37,99,235,0.12); }
+  .guide-pointer button.guide-pointer-next:hover { filter: brightness(1.04); }
   .guide-pointer::after {
     content: "";
     position: absolute;
-    width: 14px;
-    height: 14px;
-    background: var(--panel);
-    border: 1px solid var(--border);
+    width: 12px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid rgba(15, 23, 42, 0.08);
     transform: rotate(45deg);
   }
   .guide-pointer[data-arrow="top"]::after { bottom: -7px; left: 22px; }
@@ -607,9 +682,14 @@
   .guide-pointer[data-arrow="right"]::after { left: -7px; top: 18px; }
   .guide-highlight-target {
     position: relative;
-    z-index: 10000 !important;
-    box-shadow: 0 0 0 2px rgba(255, 199, 44, 0.35), 0 8px 20px rgba(15, 23, 42, 0.14);
-    border-color: var(--gold) !important;
+    z-index: 10020 !important;
+    box-shadow: 0 0 0 2px rgba(255, 199, 44, 0.95), 0 0 0 12px rgba(255, 199, 44, 0.2), 0 18px 36px rgba(15, 23, 42, 0.18);
+    border-color: rgba(255, 199, 44, 0.98) !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    color: var(--text-dark) !important;
+    border-radius: 12px;
+    filter: brightness(1.08) saturate(1.05) contrast(1.02) !important;
+    isolation: isolate;
   }
   .help-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
   .guide-card { position: relative; overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--panel); padding: 1rem; box-shadow: var(--shadow-sm); display: grid; gap: 0.75rem; }
@@ -739,13 +819,6 @@
   body.skin-upload { background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; --panel: rgba(255, 255, 255, 0.95); --bg-gray: rgba(244, 247, 249, 0.8); }
   body.skin-upload .panel { backdrop-filter: blur(10px); }
 
-  /* Minimalist Mode */
-  body.minimalist { background: #ffffff; }
-  body.minimalist #fxCanvas { opacity: 0; }
-  body.minimalist .hero-panel, body.minimalist .quote-panel { display: none; }
-  body.minimalist .settings-grid { display: none; }
-  body.minimalist .section-title { display: none; }
-
   /* Responsive Adjustments */
   @media (max-width: 1200px) {
     .col-8, .col-6, .col-4, .col-3 { grid-column: span 12; }
@@ -795,8 +868,7 @@
       </div>
     </div>
     <div class="actions">
-      <button id="minimalToggle" class="button" type="button">Minimalist: Off</button>
-      <button id="tutorialBtn" class="button primary" type="button">Tutorial</button>
+      <button id="tutorialBtn" class="button primary" type="button">Guide</button>
       <button id="resetAllBtn" class="button danger" type="button" style="margin-left: auto;">Reset</button>
     </div>
   </header>
@@ -1120,7 +1192,7 @@
           <div class="row" style="justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
             <div>
               <h2 style="margin-bottom: 0.35rem;">All Guides</h2>
-              <p class="page-note">Open any guide again from here, or run the tutorial from the Tutorial button.</p>
+              <p class="page-note">Open any guide again from here, or use the Guide button from the top bar.</p>
             </div>
             <button id="openMainGuideBtn" class="button primary" type="button">Open Starting Guide</button>
           </div>
@@ -1128,9 +1200,9 @@
         <div class="help-grid">
           <article class="guide-card" style="--card-accent: var(--navy-primary);">
             <h3>Start Here</h3>
-            <p>The tutorial highlights the main tabs. Use the guide for the full panel walkthrough.</p>
+            <p>The guide highlights the main tabs. Use it for the full panel walkthrough.</p>
             <div class="row">
-              <button class="button primary" type="button" data-open-tutorial="main">Open tutorial</button>
+              <button class="button primary" type="button" data-open-guide="main">Open guide</button>
               <a class="mini-text" href="extension/README.md" target="_blank" rel="noopener">Download extension</a>
             </div>
           </article>
@@ -1460,37 +1532,37 @@
             <div>
               <p class="eyebrow" style="color: var(--gold); margin-bottom: 0.55rem;">EPStudy Guide</p>
               <h2>Learn the workspace one step at a time.</h2>
-              <p>The guide walks you through the main tabs and settings, and you can come back from Help whenever you want.</p>
+              <p>Follow three simple actions to set up your workspace, start focus, and check your schedule.</p>
             </div>
             <span class="guide-badge">Guide</span>
           </div>
           <div class="guide-body guide-tour-shell">
-            <section class="guide-setup-panel" aria-label="Starting options">
+            <section class="guide-setup-panel" aria-label="Quick settings">
               <div>
-                <h3>Starting Options</h3>
-                <p class="mini-text">These can be changed later in Settings.</p>
+                <h3>Quick Settings</h3>
+                <p class="mini-text">Pick only the basics before you begin.</p>
               </div>
               <div class="guide-setup-grid">
                 <label class="guide-choice">
                   <input type="radio" name="guideSchoolDivision" value="us" data-guide-division />
-                  <span><strong>Upper Schooler</strong><span>Show upper school lunch, flex, clubs, and activity blocks.</span></span>
+                  <span><strong>Upper Schooler</strong><span>Use the upper school schedule and lunch blocks.</span></span>
                 </label>
                 <label class="guide-choice">
                   <input type="radio" name="guideSchoolDivision" value="ms" data-guide-division />
-                  <span><strong>Middle Schooler</strong><span>Show middle school lunch, advisory, and band blocks.</span></span>
+                  <span><strong>Middle Schooler</strong><span>Use the middle school schedule and advisory blocks.</span></span>
                 </label>
                 <label class="guide-choice">
                   <input type="radio" name="guideOtherTab" value="show" data-guide-other />
-                  <span><strong>Show Other tab</strong><span>Keep skins, achievements, music, and other extras visible.</span></span>
+                  <span><strong>Show Other tab</strong><span>Keep extras like skins, music, and achievements visible.</span></span>
                 </label>
                 <label class="guide-choice">
                   <input type="radio" name="guideOtherTab" value="hide" data-guide-other />
-                  <span><strong>Hide Other tab</strong><span>Disable the extra tab for a simpler workspace. You can re-enable it later.</span></span>
+                  <span><strong>Hide Other tab</strong><span>Keep the workspace minimal and later re-enable it in Settings.</span></span>
                 </label>
               </div>
               <div class="guide-tour-controls">
                 <a class="mini-text" href="extension/README.md" target="_blank" rel="noopener">Download extension</a>
-                <p class="page-note">The Other tab holds skins, achievements, and music. The Schedule tab stays separate so the dashboard stays cleaner.</p>
+                <p class="page-note">You can change these later in Settings. Keep the setup simple and move on to the guide.</p>
               </div>
             </section>
 
@@ -1502,9 +1574,14 @@
                 </div>
                 <span class="guide-tour-target-note" id="mainGuideProgress">1 of 1</span>
               </div>
+              <div class="guide-tour-rail" id="guideTourRail" aria-label="Guide steps">
+                <button type="button" class="guide-tour-rail-step is-active" data-step="0"><span>Step 1</span><strong>Set division</strong><small>Choose the right school schedule.</small></button>
+                <button type="button" class="guide-tour-rail-step" data-step="1"><span>Step 2</span><strong>Start focus</strong><small>Begin a timer session.</small></button>
+                <button type="button" class="guide-tour-rail-step" data-step="2"><span>Step 3</span><strong>Check schedule</strong><small>Jump to today’s plan.</small></button>
+              </div>
               <div id="mainGuideStepBody" class="guide-tour-step-body"></div>
               <div class="guide-tour-controls">
-                <div class="mini-text">Use the arrows to move backward or forward through the guide.</div>
+                <div class="mini-text">Use Next or Previous to move through the walkthrough.</div>
                 <div class="guide-tour-actions">
                   <button id="mainGuidePrevBtn" class="button" type="button">Previous</button>
                   <button id="mainGuideNextBtn" class="button primary" type="button">Next</button>
@@ -1513,11 +1590,9 @@
             </section>
 
             <div class="guide-footer">
-              <p class="helper-text">Come back from Help any time. The guide will pick up where you left off.</p>
+              <p class="helper-text">Keep the setup simple and come back any time from Help.</p>
               <div class="guide-tour-actions">
-                <button id="mainGuideBackBtn" class="button" type="button">Back to Help</button>
-                <button id="mainGuideTutorialBtn" class="button" type="button">Tutorial</button>
-                <button id="tutorialCloseBtn" class="button primary" type="button">Done</button>
+                <button id="tutorialCloseBtn" class="button primary" type="button">Close Guide</button>
               </div>
             </div>
           </div>
@@ -1735,7 +1810,7 @@
     return {
       tasks: [], courses: [...DEFAULT_COURSES], selectedTaskId: null,
       sessionsCompleted: 0, focusMinutes: 0, streakDays: 0, lastSessionDate: null,
-      canvasImports: 0, minimalist: false, tutorialSeen: false,
+      canvasImports: 0, tutorialSeen: false,
       selectedSkin: "default", skinsVisible: true, confettiEnabled: false, trailEnabled: false, unlockedSkins: ["default"], unlockedAchievements: [],
       musicMode: "none", musicVolume: 35, importedMusicName: "", importedMusicDataUrl: "", musicSearchQuery: "",
       importedMusicPlaylist: [], importedMusicIndex: null,
@@ -2789,657 +2864,42 @@
 
   const MAIN_GUIDE_STEPS = [
     {
-      title: "Dashboard",
-      target: '[data-page="dashboard"]',
+      title: "Set Your Division",
+      target: '#schoolDivisionSelect',
+      page: "settings",
+      targetLabel: "Choose the school schedule that matches you.",
+      body: `
+        <p><strong>Do this now:</strong> open the School dropdown and pick Upper Schooler or Middle Schooler.</p>
+        <div class="guide-flow">
+          <div class="guide-flow-item"><strong>School</strong><span>Choose the division that matches your day.</span></div>
+          <div class="guide-flow-item"><strong>Other tab</strong><span>Hide it if you want a simpler workspace.</span></div>
+        </div>
+      `
+    },
+    {
+      title: "Start Focus",
+      target: '#startPauseBtn',
       page: "dashboard",
-      pointer: "Dashboard is your overview hub for today.",
-      targetLabel: "Dashboard is where you can see everything at a glance.",
+      targetLabel: "Begin a short work session.",
       body: `
-        <p><strong>Dashboard is where you can see everything at a glance.</strong> It is the daily command center for focus, schedule awareness, and quick progress checks.</p>
+        <p><strong>Do this now:</strong> keep 25m selected, choose a task if you have one, then click Start Focus.</p>
         <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Mission Brief</strong><span>Your sessions, focus minutes, and streak show how your momentum is trending right now.</span></div>
-          <div class="guide-flow-item"><strong>Quote Panel</strong><span>A small motivation card that sets the tone without getting in the way of your tasks.</span></div>
-          <div class="guide-flow-item"><strong>Focus Center</strong><span>Start a focus sprint fast with presets, task linking, and live progress updates.</span></div>
-          <div class="guide-flow-item"><strong>Calendar Outline</strong><span>A quick scan of upcoming due dates. Use the arrows and month or week toggle to preview what is next.</span></div>
+          <div class="guide-flow-item"><strong>Duration</strong><span>Use 25m for a normal work block.</span></div>
+          <div class="guide-flow-item"><strong>Task</strong><span>Pick a task so the timer has a goal.</span></div>
         </div>
-        <p>Tip: If you want a cleaner home screen, open Settings and hide any dashboard sections you do not use.</p>
       `
     },
     {
-      title: "Mission Brief",
-      target: '[data-dashboard-section="mission"]',
-      page: "dashboard",
-      pointer: "Mission Brief summarizes your progress today.",
-      targetLabel: "Mission Brief shows your momentum stats.",
-      body: `
-        <p><strong>Mission Brief is your progress snapshot.</strong> It summarizes focus sessions, total minutes, and streaks so you know if today is moving in the right direction.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Sessions</strong><span>How many focused sprints you have completed today.</span></div>
-          <div class="guide-flow-item"><strong>Focus Minutes</strong><span>Total time spent working in focused blocks.</span></div>
-          <div class="guide-flow-item"><strong>Streak</strong><span>How many consecutive days you have shown up to work.</span></div>
-        </div>
-        <p>Tip: Start a timer session to move these numbers immediately.</p>
-      `
-    },
-    {
-      title: "Quote Panel",
-      target: '[data-dashboard-section="quote"]',
-      page: "dashboard",
-      pointer: "Quote Panel is a quick motivation reset.",
-      targetLabel: "Quote Panel keeps the dashboard grounded.",
-      body: `
-        <p><strong>Quote Panel is a quiet motivation reset.</strong> It keeps the dashboard from feeling mechanical and helps you re-center between tasks.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Quote</strong><span>A short reminder to stay consistent even when work feels heavy.</span></div>
-          <div class="guide-flow-item"><strong>Author</strong><span>A quick cue to slow down and reset before the next sprint.</span></div>
-        </div>
-        <p>Tip: Hide this section in Settings if you want a completely minimal dashboard.</p>
-      `
-    },
-    {
-      title: "Focus Center",
-      target: '[data-dashboard-section="timer"]',
-      page: "dashboard",
-      pointer: "Focus Center starts a sprint right away.",
-      targetLabel: "Focus Center is the fastest way to start working.",
-      body: `
-        <p><strong>Focus Center is your one-click work starter.</strong> It lets you jump into a short session without leaving the dashboard.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Presets</strong><span>Pick a quick 10, 25, 45, or 60 minute sprint without typing.</span></div>
-          <div class="guide-flow-item"><strong>Task Link</strong><span>Attach a task so you always know what you are working on.</span></div>
-          <div class="guide-flow-item"><strong>Live Progress</strong><span>The progress bar and countdown help you finish strong.</span></div>
-        </div>
-        <p>Tip: Use the Focus Timer tab for a bigger, distraction-free timer view.</p>
-      `
-    },
-    {
-      title: "Calendar Outline",
-      target: '[data-dashboard-section="calendar"]',
-      page: "dashboard",
-      pointer: "Calendar Outline gives a quick due-date scan.",
-      targetLabel: "Calendar Outline previews what is coming up.",
-      body: `
-        <p><strong>Calendar Outline is a fast due-date scan.</strong> It shows upcoming work without leaving the dashboard.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Navigation</strong><span>Move through time with arrows or jump back to Today.</span></div>
-          <div class="guide-flow-item"><strong>Month or Week</strong><span>Switch views depending on how much detail you want.</span></div>
-          <div class="guide-flow-item"><strong>Open Full Calendar</strong><span>Jump into the full planner when you need deeper planning.</span></div>
-        </div>
-        <p>Tip: Color tags match your course colors so you can spot heavy days quickly.</p>
-      `
-    },
-    {
-      title: "Tasks",
-      target: '[data-page="tasks"]',
-      page: "tasks",
-      pointer: "Tasks is the full list of every assignment and to-do.",
-      targetLabel: "Tasks is where you manage everything you need to do.",
-      body: `
-        <p><strong>Tasks is your master list for everything you need to do.</strong> This is where you capture assignments, homework, and personal tasks in one place.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Smart Suggestion</strong><span>Shows the most urgent or impactful task and can load it into the focus timer.</span></div>
-          <div class="guide-flow-item"><strong>Add New Task</strong><span>Create a task with course, due date, and estimated minutes so it can be scheduled and tracked.</span></div>
-          <div class="guide-flow-item"><strong>All Tasks List</strong><span>Check items off, scan due dates, and open details with the three-dot menu.</span></div>
-        </div>
-        <p>Tip: Linking tasks to courses keeps the color chips consistent with Canvas and helps you scan faster.</p>
-      `
-    },
-    {
-      title: "Smart Suggestion",
-      target: '#page-tasks #smartTaskMeta',
-      page: "tasks",
-      pointer: "Smart Suggestion surfaces your top priority.",
-      targetLabel: "Smart Suggestion highlights what to work on next.",
-      body: `
-        <p><strong>Smart Suggestion is your priority shortcut.</strong> It picks the most urgent or high-impact task so you do not waste energy deciding.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Top Task</strong><span>The best candidate to start right now based on due dates and workload.</span></div>
-          <div class="guide-flow-item"><strong>Load to Timer</strong><span>Use the button to push the task directly into Focus Timer.</span></div>
-        </div>
-        <p>Tip: If a suggestion feels off, add better due dates so the logic stays accurate.</p>
-      `
-    },
-    {
-      title: "Add New Task",
-      target: '#page-tasks #taskForm',
-      page: "tasks",
-      pointer: "Add New Task keeps your list organized.",
-      targetLabel: "Add New Task is where you capture work quickly.",
-      body: `
-        <p><strong>Add New Task is your intake form.</strong> Fill it out with course, time, and due date so the task can be prioritized correctly.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Task + Course</strong><span>Attach a class so the color tags and sorting stay useful.</span></div>
-          <div class="guide-flow-item"><strong>Due Date + Time</strong><span>Accurate deadlines make reminders and smart suggestions sharper.</span></div>
-          <div class="guide-flow-item"><strong>Minutes</strong><span>Estimated effort helps you plan realistic focus blocks.</span></div>
-        </div>
-        <p>Tip: If you do not know the time, leave the default at 11:59 PM.</p>
-      `
-    },
-    {
-      title: "All Tasks List",
-      target: '#page-tasks #taskList',
-      page: "tasks",
-      pointer: "All Tasks List is your full backlog.",
-      targetLabel: "All Tasks List is where you check work off.",
-      body: `
-        <p><strong>All Tasks List is your full backlog.</strong> This is where you scan, complete, and manage everything you have captured.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Checkboxes</strong><span>Mark work complete and watch the dashboard stats update.</span></div>
-          <div class="guide-flow-item"><strong>Due Dates</strong><span>Use the date to see what is urgent and what can wait.</span></div>
-          <div class="guide-flow-item"><strong>Details Menu</strong><span>Open the three-dot menu for more task info and actions.</span></div>
-        </div>
-        <p>Tip: Keep this list short by completing tasks or moving them to a later date.</p>
-      `
-    },
-    {
-      title: "Focus Timer",
-      target: '[data-page="timer"]',
-      page: "timer",
-      pointer: "Focus Timer is built for deep work sessions.",
-      targetLabel: "Focus Timer is where focused work happens.",
-      body: `
-        <p><strong>Focus Timer is your deep work workspace.</strong> Use it when you want a dedicated session with a single task and a clear finish line.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Session Duration</strong><span>Pick a custom length or use presets for quick 10, 25, 45, or 60 minute sprints.</span></div>
-          <div class="guide-flow-item"><strong>Task Linking</strong><span>Load a task so the session is tied to something specific and progress feels concrete.</span></div>
-          <div class="guide-flow-item"><strong>Stats + Progress</strong><span>Track sessions, minutes, and streaks while the progress bar shows how far you are.</span></div>
-        </div>
-        <p>Tip: Start with a 25 minute session, then adjust once you learn how long your typical tasks take.</p>
-      `
-    },
-    {
-      title: "Timer Display",
-      target: '#page-timer #timerExpandedDisplay',
-      page: "timer",
-      pointer: "Timer Display keeps the session visible.",
-      targetLabel: "Timer Display shows your countdown and progress.",
-      body: `
-        <p><strong>Timer Display is the heartbeat of a focus session.</strong> It keeps the countdown front and center so you do not lose track of time.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Countdown</strong><span>Live time remaining so you can finish without guessing.</span></div>
-          <div class="guide-flow-item"><strong>Progress Bar</strong><span>Visual feedback that you are moving forward.</span></div>
-        </div>
-        <p>Tip: Keep this tab open for longer sessions when you want deep focus.</p>
-      `
-    },
-    {
-      title: "Task Selector",
-      target: '#page-timer #timerExpandedTaskSelect',
-      page: "timer",
-      pointer: "Task Selector connects a task to the session.",
-      targetLabel: "Task Selector links your work to the timer.",
-      body: `
-        <p><strong>Task Selector ties a real task to your focus session.</strong> Linking the task helps you stay specific and makes completion feel clear.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Choose a Task</strong><span>Pick from your current task list and keep your focus specific.</span></div>
-          <div class="guide-flow-item"><strong>Context</strong><span>The task name appears in the focus status so you do not drift.</span></div>
-        </div>
-        <p>Tip: If you do not see a task, add it in the Tasks tab first.</p>
-      `
-    },
-    {
-      title: "Session Duration",
-      target: '#page-timer #timerExpandedInput',
-      page: "timer",
-      pointer: "Session Duration sets how long you will focus.",
-      targetLabel: "Session Duration controls the length of your sprint.",
-      body: `
-        <p><strong>Session Duration lets you customize the length of a sprint.</strong> Short sessions help you start. Longer sessions help you finish.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Short Sprints</strong><span>Great for quick assignments and warm-ups.</span></div>
-          <div class="guide-flow-item"><strong>Deep Work Blocks</strong><span>Longer sessions are ideal for essays, labs, or projects.</span></div>
-        </div>
-        <p>Tip: Pair longer sessions with a break right after you finish.</p>
-      `
-    },
-    {
-      title: "Start and Pause",
-      target: '#page-timer #startPauseExpandedBtn',
-      page: "timer",
-      pointer: "Start and Pause controls the session.",
-      targetLabel: "Start and Pause runs your focus session.",
-      body: `
-        <p><strong>Start and Pause is your session control.</strong> Use it to begin focus, pause for quick interruptions, and resume without losing progress.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Start Focus</strong><span>Begin the timer and lock in the task you selected.</span></div>
-          <div class="guide-flow-item"><strong>Pause</strong><span>Take a quick break without resetting the session.</span></div>
-        </div>
-        <p>Tip: If you stop completely, hit Reset to start fresh.</p>
-      `
-    },
-    {
-      title: "Schedule",
-      target: '[data-page="schedule"]',
+      title: "Check Today",
+      target: '#jumpTodayScheduleBtn',
       page: "schedule",
-      pointer: "Schedule shows your live school day timeline.",
-      targetLabel: "Schedule is your real-time school day view.",
+      targetLabel: "Jump back to today’s schedule.",
       body: `
-        <p><strong>Schedule keeps you aware of the school day in real time.</strong> It is separate from the dashboard so you can stay focused on timing.</p>
+        <p><strong>Do this now:</strong> open Schedule, then click Go To Today to bring the timeline back to the current day.</p>
         <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Live Block Status</strong><span>See the current block, how much time is left, and what is next.</span></div>
-          <div class="guide-flow-item"><strong>Lunch + Activities</strong><span>The lunch card and schedule grid show the details for your division.</span></div>
-          <div class="guide-flow-item"><strong>Quick Actions</strong><span>Use Go To Today and Refresh to keep the schedule accurate if it looks stale.</span></div>
+          <div class="guide-flow-item"><strong>Go To Today</strong><span>Returns the calendar to the current day.</span></div>
+          <div class="guide-flow-item"><strong>Refresh</strong><span>Use Refresh Lunch &amp; Schedule if the data needs updating.</span></div>
         </div>
-        <p>Tip: If lunch or advisory blocks look wrong, update your division in Settings.</p>
-      `
-    },
-    {
-      title: "Live Schedule Status",
-      target: '#page-schedule #schedulePrimary',
-      page: "schedule",
-      pointer: "Live Schedule tells you what is happening now.",
-      targetLabel: "Live Schedule shows the current block and status.",
-      body: `
-        <p><strong>Live Schedule Status keeps you on the right block.</strong> It shows what is happening right now so you can move between classes without guessing.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Current Block</strong><span>See the active block name and its time range.</span></div>
-          <div class="guide-flow-item"><strong>Status Chip</strong><span>Quickly tells you if you are in class, free, or between blocks.</span></div>
-        </div>
-        <p>Tip: If it looks off, press Refresh to pull the latest schedule data.</p>
-      `
-    },
-    {
-      title: "Daily Timeline",
-      target: '#page-schedule #scheduleTimeline',
-      page: "schedule",
-      pointer: "Daily Timeline shows the rest of your day.",
-      targetLabel: "Daily Timeline is your block-by-block map.",
-      body: `
-        <p><strong>Daily Timeline is the visual map of your day.</strong> It shows each block in order so you can plan homework and breaks.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Active Block</strong><span>Highlighted so you can see exactly where you are.</span></div>
-          <div class="guide-flow-item"><strong>Upcoming Blocks</strong><span>Know what is next and how long you have to prepare.</span></div>
-        </div>
-        <p>Tip: Use free blocks to knock out small tasks before the next class.</p>
-      `
-    },
-    {
-      title: "Lunch and Activities",
-      target: '#page-schedule .eps-lunch-card',
-      page: "schedule",
-      pointer: "Lunch and activities are summarized here.",
-      targetLabel: "Lunch card keeps meal info close to your schedule.",
-      body: `
-        <p><strong>Lunch and Activities stays pinned to your schedule day.</strong> It shows lunch details and lets you jump to today fast.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Lunch Summary</strong><span>Quickly see what is being served and which day it applies to.</span></div>
-          <div class="guide-flow-item"><strong>Quick Actions</strong><span>Go To Today and Refresh keep the data current.</span></div>
-        </div>
-        <p>Tip: If lunch is missing, try Refresh or check the calendar view.</p>
-      `
-    },
-    {
-      title: "Schedule Grid",
-      target: '#page-schedule #epsScheduleGrid',
-      page: "schedule",
-      pointer: "Schedule Grid breaks down each block.",
-      targetLabel: "Schedule Grid lists the detailed blocks.",
-      body: `
-        <p><strong>Schedule Grid is the detailed breakdown.</strong> It lists each period with timing so you can plan work around classes.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Division Tabs</strong><span>Upper school and middle school blocks are separated for clarity.</span></div>
-          <div class="guide-flow-item"><strong>Block Cards</strong><span>Each card shows the period name and its time range.</span></div>
-        </div>
-        <p>Tip: If you do not see a block, confirm your division in Settings.</p>
-      `
-    },
-    {
-      title: "Full Calendar",
-      target: '[data-page="calendar"]',
-      page: "calendar",
-      pointer: "Full Calendar is the big picture view of work.",
-      targetLabel: "Full Calendar is the big picture planning view.",
-      body: `
-        <p><strong>Full Calendar is the big picture planner.</strong> It is the best place to see assignments and events spread across the month or week.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Month and Week Views</strong><span>Switch views to plan a week in detail or scan the entire month.</span></div>
-          <div class="guide-flow-item"><strong>Task Pills</strong><span>Assignments show as color coded pills so you can spot heavy days fast.</span></div>
-          <div class="guide-flow-item"><strong>Navigation</strong><span>Use arrows and Today to jump through time without losing context.</span></div>
-        </div>
-        <p>Tip: Use the Open Full Calendar button on the dashboard if you want this view quickly.</p>
-      `
-    },
-    {
-      title: "Calendar Toolbar",
-      target: '#page-calendar #calendarLabelFull',
-      page: "calendar",
-      pointer: "Calendar Toolbar controls the view range.",
-      targetLabel: "Calendar Toolbar lets you move through dates.",
-      body: `
-        <p><strong>Calendar Toolbar is your navigation control center.</strong> It lets you jump forward or back and switch between month and week views.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Previous and Next</strong><span>Move through time without losing context.</span></div>
-          <div class="guide-flow-item"><strong>Today</strong><span>Snap back to the current date instantly.</span></div>
-          <div class="guide-flow-item"><strong>View Toggle</strong><span>Switch to week view for detail or month view for planning.</span></div>
-        </div>
-        <p>Tip: Use week view when you are scheduling study blocks.</p>
-      `
-    },
-    {
-      title: "Calendar Grid",
-      target: '#page-calendar #calendarGridFull',
-      page: "calendar",
-      pointer: "Calendar Grid shows all assignments and events.",
-      targetLabel: "Calendar Grid is the main planning surface.",
-      body: `
-        <p><strong>Calendar Grid is the main planning surface.</strong> Every assignment and event appears as a color tagged pill.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Color Tags</strong><span>Match course colors so you can scan by class.</span></div>
-          <div class="guide-flow-item"><strong>Due Dates</strong><span>See heavy days early and spread work out.</span></div>
-        </div>
-        <p>Tip: Click into a task from the Tasks tab if you need details.</p>
-      `
-    },
-    {
-      title: "All Assignments List",
-      target: '#page-calendar #toggleAllAssignmentsBtn',
-      page: "calendar",
-      pointer: "All Assignments shows a full list below the calendar.",
-      targetLabel: "All Assignments reveals a scrollable list view.",
-      body: `
-        <p><strong>All Assignments expands into a full list view.</strong> This is useful when you want to scan everything in one place.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Expand and Collapse</strong><span>Show or hide the list so the page stays clean.</span></div>
-          <div class="guide-flow-item"><strong>Assignment Cards</strong><span>Each card shows the title, due date, and course color.</span></div>
-        </div>
-        <p>Tip: Use this list when you need to triage a busy week.</p>
-      `
-    },
-    {
-      title: "Sync",
-      target: '[data-page="sync"]',
-      page: "sync",
-      pointer: "Sync connects EPStudy to Canvas.",
-      targetLabel: "Sync is where Canvas data is pulled in.",
-      body: `
-        <p><strong>Sync connects EPStudy to Canvas.</strong> Add your Canvas domain and token here so tasks, courses, and calendar events are imported.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Canvas Credentials</strong><span>Enter the domain and API token, then press Sync Canvas.</span></div>
-          <div class="guide-flow-item"><strong>Secure Helper</strong><span>Keep the proxy enabled if your browser blocks direct Canvas requests.</span></div>
-          <div class="guide-flow-item"><strong>Course List</strong><span>Review course names and colors so task chips stay consistent.</span></div>
-        </div>
-        <p>Tip: If you do not see tasks after syncing, confirm your domain and regenerate the token.</p>
-      `
-    },
-    {
-      title: "Canvas Domain",
-      target: '#canvasDomain',
-      page: "sync",
-      pointer: "Canvas Domain tells EPStudy where to connect.",
-      targetLabel: "Canvas Domain is the school Canvas address.",
-      body: `
-        <p><strong>Canvas Domain is the address of your school Canvas.</strong> It tells EPStudy exactly where to fetch assignments and events.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>School URL</strong><span>Keep this set to your school Canvas domain.</span></div>
-          <div class="guide-flow-item"><strong>Accuracy</strong><span>One wrong character means the sync will fail.</span></div>
-        </div>
-        <p>Tip: For Eastside, the default value is already correct.</p>
-      `
-    },
-    {
-      title: "Sync Button",
-      target: '#canvasSyncBtn',
-      page: "sync",
-      pointer: "Sync Button pulls in Canvas tasks.",
-      targetLabel: "Sync Button starts the Canvas import.",
-      body: `
-        <p><strong>Sync Button starts the import.</strong> It pulls in your Canvas to-do items and calendar events.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Progress Message</strong><span>The status line shows what the sync is doing right now.</span></div>
-          <div class="guide-flow-item"><strong>Refresh</strong><span>Run it again whenever you want the latest tasks.</span></div>
-        </div>
-        <p>Tip: If sync fails, open the token guide and verify your token.</p>
-      `
-    },
-    {
-      title: "Courses List",
-      target: '#courseList',
-      page: "sync",
-      pointer: "Courses List shows course names and colors.",
-      targetLabel: "Courses List keeps your course labels tidy.",
-      body: `
-        <p><strong>Courses List keeps your course labels consistent.</strong> The colors here control how tasks are displayed everywhere else.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Course Names</strong><span>Rename a course to keep your list readable.</span></div>
-          <div class="guide-flow-item"><strong>Course Colors</strong><span>Pick colors that are easy to recognize at a glance.</span></div>
-        </div>
-        <p>Tip: Consistent colors make the calendar much easier to scan.</p>
-      `
-    },
-    {
-      title: "Other",
-      target: '[data-page="other"]',
-      page: "other",
-      pointer: "Other holds optional extras like skins and music.",
-      targetLabel: "Other is the extras tab for customization.",
-      missing: "The Other tab is hidden right now. Re-enable it from Settings if you want the extras.",
-      body: `
-        <p><strong>Other is the optional extras tab.</strong> It is for personalization and fun without cluttering your core workflow.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Skins</strong><span>Unlock and apply new looks as you finish tasks and focus sessions.</span></div>
-          <div class="guide-flow-item"><strong>Achievements</strong><span>Track progress milestones and see which rewards you have earned.</span></div>
-          <div class="guide-flow-item"><strong>Music Tools</strong><span>Search YouTube or upload playlist files to keep focus sessions energized.</span></div>
-        </div>
-        <p>Tip: If you want a cleaner workspace, you can hide this tab and turn it back on later.</p>
-      `
-    },
-    {
-      title: "Skins",
-      target: '#page-other .skin-choice-grid',
-      page: "other",
-      pointer: "Skins change the look and feel of EPStudy.",
-      targetLabel: "Skins let you personalize the workspace.",
-      missing: "Skins are hidden because the Other tab is disabled in Settings.",
-      body: `
-        <p><strong>Skins let you personalize the workspace.</strong> Many skins unlock only after you complete focus or task milestones.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Unlocked Skins</strong><span>These are ready to use right away.</span></div>
-          <div class="guide-flow-item"><strong>Locked Skins</strong><span>Complete tasks and focus sessions to unlock more.</span></div>
-        </div>
-        <p>Tip: Choose a high-contrast skin if you study in bright light.</p>
-      `
-    },
-    {
-      title: "Music Tools",
-      target: '#page-other #musicSearchInput',
-      page: "other",
-      pointer: "Music Tools open YouTube and playlists quickly.",
-      targetLabel: "Music Tools keep focus sessions energized.",
-      missing: "Music tools are hidden because the Other tab is disabled in Settings.",
-      body: `
-        <p><strong>Music Tools make it fast to find focus soundtracks.</strong> Search YouTube or YouTube Music without leaving EPStudy.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Quick Search</strong><span>Type a song or playlist and open it instantly.</span></div>
-          <div class="guide-flow-item"><strong>Uploads</strong><span>Add your own audio files for a personal focus playlist.</span></div>
-        </div>
-        <p>Tip: Use instrumental playlists to avoid distraction.</p>
-      `
-    },
-    {
-      title: "Achievements",
-      target: '#page-other #achievementGrid',
-      page: "other",
-      pointer: "Achievements track progress and unlock skins.",
-      targetLabel: "Achievements show your long-term milestones.",
-      missing: "Achievements are hidden because the Other tab is disabled in Settings.",
-      body: `
-        <p><strong>Achievements track long-term progress.</strong> Each milestone unlocks cosmetic rewards and shows how consistent you have been.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Unlocked</strong><span>Completed goals you can celebrate right now.</span></div>
-          <div class="guide-flow-item"><strong>Upcoming</strong><span>Goals that hint at what to work on next.</span></div>
-        </div>
-        <p>Tip: Focus sessions are one of the fastest ways to unlock new skins.</p>
-      `
-    },
-    {
-      title: "Help",
-      target: '[data-page="help"]',
-      page: "help",
-      pointer: "Help is the guide hub and quick links.",
-      targetLabel: "Help gathers every walkthrough and shortcut.",
-      body: `
-        <p><strong>Help is your guide hub.</strong> It collects every walkthrough so you can re-open them any time.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Start Here</strong><span>Re-run the main tutorial when you need a refresh.</span></div>
-          <div class="guide-flow-item"><strong>Canvas Token Guide</strong><span>Step-by-step instructions for creating your Canvas token.</span></div>
-          <div class="guide-flow-item"><strong>Privacy Guide</strong><span>Explains what is stored locally and what is synced.</span></div>
-          <div class="guide-flow-item"><strong>Quick Links</strong><span>Jump to Schedule or Other directly if you just need a shortcut.</span></div>
-        </div>
-        <p>Tip: The Tutorial button in the top bar always brings you back here.</p>
-      `
-    },
-    {
-      title: "Open Starting Guide",
-      target: '#page-help #openMainGuideBtn',
-      page: "help",
-      pointer: "Open Starting Guide reruns the full tutorial.",
-      targetLabel: "Open Starting Guide is the main tour launcher.",
-      body: `
-        <p><strong>Open Starting Guide launches the full walkthrough.</strong> Use it whenever you want to revisit the onboarding steps.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Restart</strong><span>Begin the guide from step one.</span></div>
-          <div class="guide-flow-item"><strong>Refresh</strong><span>Useful after updates or when new features are added.</span></div>
-        </div>
-        <p>Tip: Pair this with the tutorial button for the quickest reset.</p>
-      `
-    },
-    {
-      title: "Guide Cards",
-      target: '#page-help .help-grid',
-      page: "help",
-      pointer: "Guide Cards link to specific walkthroughs.",
-      targetLabel: "Guide Cards open targeted help fast.",
-      body: `
-        <p><strong>Guide Cards are quick entry points.</strong> Each card jumps directly to a focused guide so you can solve one problem fast.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Start Here</strong><span>Rerun the main tutorial in a single click.</span></div>
-          <div class="guide-flow-item"><strong>Canvas + Privacy</strong><span>Open setup guides without hunting through menus.</span></div>
-          <div class="guide-flow-item"><strong>Shortcuts</strong><span>Jump directly to Schedule or Other.</span></div>
-        </div>
-        <p>Tip: Use Help as your bookmark hub for everything else.</p>
-      `
-    },
-    {
-      title: "Settings",
-      target: '[data-page="settings"]',
-      page: "settings",
-      pointer: "Settings is where you personalize the workspace.",
-      targetLabel: "Settings is the control room for preferences.",
-      body: `
-        <p><strong>Settings controls how EPStudy behaves.</strong> Use it to tune notifications, focus tools, and which sections stay visible.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>School Division</strong><span>Set Upper School or Middle School so lunch and schedules match.</span></div>
-          <div class="guide-flow-item"><strong>Focus Shield</strong><span>Block distracting sites while you are in a focus session.</span></div>
-          <div class="guide-flow-item"><strong>Notifications</strong><span>Turn on only the reminders that help you, not the ones that distract you.</span></div>
-          <div class="guide-flow-item"><strong>Dashboard Sections</strong><span>Hide mission brief, quote, timer, or calendar if you want a minimal home view.</span></div>
-          <div class="guide-flow-item"><strong>Workspace Tabs</strong><span>Show or hide the Other tab if you want fewer navigation items.</span></div>
-        </div>
-        <p>Tip: If a tab disappears, this is where you bring it back.</p>
-      `
-    },
-    {
-      title: "School Division",
-      target: '#page-settings #schoolDivisionSelect',
-      page: "settings",
-      pointer: "School Division keeps schedule blocks accurate.",
-      targetLabel: "School Division selects Upper or Middle School.",
-      body: `
-        <p><strong>School Division controls which schedule blocks you see.</strong> It keeps lunch, advisory, and activity times accurate for your grade level.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Upper School</strong><span>Shows upper school lunch, flex, clubs, and activities.</span></div>
-          <div class="guide-flow-item"><strong>Middle School</strong><span>Shows middle school lunch, advisory, and band blocks.</span></div>
-        </div>
-        <p>Tip: If the schedule looks wrong, check this setting first.</p>
-      `
-    },
-    {
-      title: "Focus Shield",
-      target: '#page-settings #focusBlockerEnabled',
-      page: "settings",
-      pointer: "Focus Shield blocks distracting sites.",
-      targetLabel: "Focus Shield helps you stay on task.",
-      body: `
-        <p><strong>Focus Shield blocks distractions while you work.</strong> It keeps common time sinks from pulling you out of a session.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Enable Toggle</strong><span>Turn blocking on or off depending on your needs.</span></div>
-          <div class="guide-flow-item"><strong>Block List</strong><span>Add domains you want to avoid during focus time.</span></div>
-        </div>
-        <p>Tip: Start with one or two sites and expand the list if you need more focus.</p>
-      `
-    },
-    {
-      title: "Notifications",
-      target: '#page-settings #notifMembean',
-      page: "settings",
-      pointer: "Notifications control what alerts appear.",
-      targetLabel: "Notifications let you tune reminders.",
-      body: `
-        <p><strong>Notifications keep reminders helpful instead of noisy.</strong> Turn off alerts that distract you and keep only what matters.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Membean + Quizzes</strong><span>Keep academic reminders visible when they matter.</span></div>
-          <div class="guide-flow-item"><strong>Overdue Alerts</strong><span>Use them if you want extra urgency.</span></div>
-        </div>
-        <p>Tip: Fewer alerts usually means better focus.</p>
-      `
-    },
-    {
-      title: "Dashboard Toggles",
-      target: '#page-settings [data-dashboard-toggle="mission"]',
-      page: "settings",
-      pointer: "Dashboard Toggles hide or show sections.",
-      targetLabel: "Dashboard Toggles customize your home screen.",
-      body: `
-        <p><strong>Dashboard Toggles customize what you see on the home screen.</strong> Hide anything you do not need so the dashboard stays clean.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Mission Brief</strong><span>Hide if you only need the timer and calendar.</span></div>
-          <div class="guide-flow-item"><strong>Quote + Timer</strong><span>Turn them on or off to match your style.</span></div>
-        </div>
-        <p>Tip: A simpler dashboard helps you start faster.</p>
-      `
-    },
-    {
-      title: "Workspace Tabs",
-      target: '#page-settings #otherTabEnabledSettings',
-      page: "settings",
-      pointer: "Workspace Tabs control whether Other is visible.",
-      targetLabel: "Workspace Tabs lets you hide or show the Other tab.",
-      body: `
-        <p><strong>Workspace Tabs control the Other tab visibility.</strong> Hide extras for a clean layout, or turn them back on any time.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Show Other</strong><span>Enable skins, achievements, and music tools.</span></div>
-          <div class="guide-flow-item"><strong>Hide Other</strong><span>Keep navigation minimal for pure academics.</span></div>
-        </div>
-        <p>Tip: If the Other tab disappears, this toggle brings it back.</p>
-      `
-    },
-    {
-      title: "Notifications",
-      target: '[data-page="notifications"]',
-      page: "notifications",
-      pointer: "Notifications is your alert history.",
-      targetLabel: "Notifications shows recent alerts and reminders.",
-      body: `
-        <p><strong>Notifications is your alert history.</strong> It keeps a clean timeline of reminders, timer finishes, and important nudges.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Recent Notifications</strong><span>Read what happened, when it happened, and close items you are done with.</span></div>
-          <div class="guide-flow-item"><strong>Badge Counter</strong><span>The nav badge shows how many unread items are waiting for you.</span></div>
-        </div>
-        <p>Tip: Use Settings to choose which alerts appear so this list stays useful.</p>
-      `
-    },
-    {
-      title: "Recent Notifications",
-      target: '#page-notifications #notificationsPanel',
-      page: "notifications",
-      pointer: "Recent Notifications is the alert timeline.",
-      targetLabel: "Recent Notifications lists your latest alerts.",
-      body: `
-        <p><strong>Recent Notifications is your alert timeline.</strong> Review what happened, when it happened, and clear items you are done with.</p>
-        <div class="guide-flow">
-          <div class="guide-flow-item"><strong>Alert Cards</strong><span>Each card includes a message and timestamp.</span></div>
-          <div class="guide-flow-item"><strong>Close Button</strong><span>Dismiss alerts you no longer need.</span></div>
-        </div>
-        <p>Tip: Keep this list short so important alerts stand out.</p>
       `
     }
   ];
@@ -3447,7 +2907,7 @@
   let guideSpotlightEl = null;
   let guidePointerEl = null;
   let _lastFocusedBeforeModal = null;
-  let guideRequireClick = true; // when true, users must click the highlighted control to advance
+  let guideRequireClick = false; // keep the walkthrough simple and use the buttons to advance
   let guideHighlightEnabled = false; // when false, show the guide panel without spotlight/pointer
   let guidePanelVisible = true; // when false, hide the guide panel for highlight-only tutorial
   let _guideTargetListener = null;
@@ -3488,13 +2948,37 @@
   }
 
   function clearGuideMarkers() {
-    document.querySelectorAll(".guide-highlight-target").forEach(el => el.classList.remove("guide-highlight-target"));
-    guideSpotlightEl?.remove();
-    guidePointerEl?.remove();
-    guideSpotlightEl = null;
-    guidePointerEl = null;
+    document.querySelectorAll(".guide-highlight-target").forEach(el => {
+      el.classList.remove("guide-highlight-target");
+      if (Object.prototype.hasOwnProperty.call(el.dataset, 'guideInlineStyleSnapshot')) {
+        const snapshot = el.dataset.guideInlineStyleSnapshot;
+        if (snapshot) {
+          el.setAttribute('style', snapshot);
+        } else {
+          el.removeAttribute('style');
+        }
+        delete el.dataset.guideInlineStyleSnapshot;
+      }
+    });
     // remove dim overlay when clearing markers
     clearGuideDim();
+  }
+
+  function applyGuideHighlightStyles(target) {
+    if (!target) return;
+    if (!Object.prototype.hasOwnProperty.call(target.dataset, 'guideInlineStyleSnapshot')) {
+      target.dataset.guideInlineStyleSnapshot = target.getAttribute('style') || '';
+    }
+    target.style.backgroundColor = 'rgba(255, 255, 255, 0.995)';
+    target.style.backgroundImage = 'none';
+    target.style.color = 'var(--navy-primary)';
+    target.style.borderColor = 'rgba(255, 199, 44, 0.98)';
+    target.style.boxShadow = '0 0 0 2px rgba(255, 199, 44, 0.95), 0 0 0 12px rgba(255, 199, 44, 0.16), 0 16px 28px rgba(15, 23, 42, 0.12)';
+    target.style.filter = 'none';
+    target.style.opacity = '1';
+    target.style.transform = 'translateY(-1px)';
+    target.style.isolation = 'isolate';
+    target.style.overflow = 'hidden';
   }
 
   function setInertForModal(modalId, inert) {
@@ -3597,7 +3081,12 @@
     modal.setAttribute('aria-hidden', 'true');
     modal.classList.remove('guide-mode');
     modal.classList.remove('guide-focus');
+    modal.classList.remove('tutorial-only');
     modal.classList.remove('tutorial-steps');
+    const setupPanel = modal.querySelector('.guide-setup-panel');
+    const tourStep = modal.querySelector('.guide-tour-step');
+    if (setupPanel) setupPanel.style.display = '';
+    if (tourStep) tourStep.style.display = '';
     syncBodyModalLock();
     if (!document.querySelector('.modal-backdrop.open')) setInertForModal(null, false);
   }
@@ -3618,19 +3107,6 @@
     setInertForModal(null, false);
     syncBodyModalLock();
     try { document.activeElement?.blur?.(); } catch (e) {}
-  }
-
-  function ensureGuidePointer() {
-    if (!guideSpotlightEl) {
-      guideSpotlightEl = document.createElement("div");
-      guideSpotlightEl.className = "guide-spotlight";
-      document.body.appendChild(guideSpotlightEl);
-    }
-    if (!guidePointerEl) {
-      guidePointerEl = document.createElement("div");
-      guidePointerEl.className = "guide-pointer";
-      document.body.appendChild(guidePointerEl);
-    }
   }
 
   // Dim overlay management (four panels leaving a hole at the target rect)
@@ -3658,14 +3134,23 @@
       const modalCard = tutorialModal.querySelector('.modal-card');
       if (modalCard) excludeRect = modalCard.getBoundingClientRect();
     }
-    // If excludeRect is provided, compute union so both target and panel remain undimmed
+    // If excludeRect is provided, compute union so both target and panel remain undimmed.
+    // Add a little padding so the active element and tutorial are fully clear, not just barely visible.
+    const pad = 14;
     let hole = rect;
     if (excludeRect) {
       hole = {
-        top: Math.min(rect.top, excludeRect.top),
-        left: Math.min(rect.left, excludeRect.left),
-        right: Math.max(rect.right, excludeRect.right),
-        bottom: Math.max(rect.bottom, excludeRect.bottom)
+        top: Math.min(rect.top, excludeRect.top) - pad,
+        left: Math.min(rect.left, excludeRect.left) - pad,
+        right: Math.max(rect.right, excludeRect.right) + pad,
+        bottom: Math.max(rect.bottom, excludeRect.bottom) + pad
+      };
+    } else {
+      hole = {
+        top: rect.top - pad,
+        left: rect.left - pad,
+        right: rect.right + pad,
+        bottom: rect.bottom + pad
       };
     }
     // panels: top covers from top to rect.top
@@ -3699,54 +3184,7 @@
 
   function positionGuideMarkers(target, step) {
     if (!target) return;
-    ensureGuidePointer();
     const rect = target.getBoundingClientRect();
-    guideSpotlightEl.style.left = `${Math.max(8, rect.left - 8)}px`;
-    guideSpotlightEl.style.top = `${Math.max(8, rect.top - 8)}px`;
-    guideSpotlightEl.style.width = `${Math.min(window.innerWidth - 16, rect.width + 16)}px`;
-    guideSpotlightEl.style.height = `${Math.min(window.innerHeight - 16, rect.height + 16)}px`;
-    const pointerWidth = Math.min(320, Math.max(220, Math.round(window.innerWidth * 0.22)));
-    // Prefer placing the pointer to the right of the target if there's room, otherwise place to the left.
-    const canPlaceRight = rect.right + pointerWidth + 24 < window.innerWidth;
-    const canPlaceLeft = rect.left - pointerWidth - 24 > 0;
-    let arrow, left;
-    if (canPlaceRight) {
-      arrow = 'left';
-      left = rect.right + 12;
-    } else if (canPlaceLeft) {
-      arrow = 'right';
-      left = rect.left - pointerWidth - 12;
-    } else {
-      // fallback: place above or below depending on space
-      arrow = rect.top > window.innerHeight * 0.55 ? 'top' : 'bottom';
-      left = Math.max(12, Math.min(window.innerWidth - pointerWidth - 12, rect.left));
-    }
-    // vertically center the pointer near the target when side-placed, otherwise offset above/below
-    let top;
-    if (arrow === 'left' || arrow === 'right') {
-      top = Math.max(12, Math.min(window.innerHeight - 88, rect.top + (rect.height / 2) - 28));
-    } else {
-      top = arrow === 'top' ? Math.max(12, rect.top - 92) : Math.min(window.innerHeight - 88, rect.bottom + 14);
-    }
-    guidePointerEl.dataset.arrow = arrow;
-    guidePointerEl.style.left = `${left}px`;
-    guidePointerEl.style.top = `${top}px`;
-    const pointerText = step.pointer || `Go to ${step.title} to explore it.`;
-    guidePointerEl.innerHTML = `<strong>${escapeHtml(step.title)}</strong><span>${escapeHtml(pointerText)}</span><button type="button" class="guide-pointer-next">Next</button>`;
-    const nextButton = guidePointerEl.querySelector('.guide-pointer-next');
-    if (nextButton) {
-      nextButton.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if (activeGuideIndex >= MAIN_GUIDE_STEPS.length - 1) {
-          closeMainGuide();
-          navigate('help');
-        } else {
-          activeGuideIndex = Math.min(MAIN_GUIDE_STEPS.length - 1, activeGuideIndex + 1);
-          renderMainGuideStep();
-        }
-      });
-    }
   }
 
   function syncBodyModalLock() {
@@ -3754,6 +3192,8 @@
   }
 
   function renderMainGuideStep() {
+    const tm = document.getElementById('tutorialModal');
+    const isGuideMode = !!(tm && tm.classList.contains('guide-mode'));
     const step = MAIN_GUIDE_STEPS[activeGuideIndex] || MAIN_GUIDE_STEPS[0];
     const title = document.getElementById("mainGuideStepTitle");
     const body = document.getElementById("mainGuideStepBody");
@@ -3761,6 +3201,7 @@
     const targetLabel = document.getElementById("mainGuideStepTarget");
     const prevBtn = document.getElementById("mainGuidePrevBtn");
     const nextBtn = document.getElementById("mainGuideNextBtn");
+    const finishBtn = document.getElementById("tutorialCloseBtn");
     const highlightEnabled = guideHighlightEnabled;
     const pointerText = step.pointer || `Go to ${step.title} to explore it.`;
     const targetText = step.targetLabel || pointerText;
@@ -3768,14 +3209,18 @@
     if (body) body.innerHTML = step.body || "";
     if (progress) progress.textContent = `${activeGuideIndex + 1} of ${MAIN_GUIDE_STEPS.length}`;
     if (targetLabel) targetLabel.textContent = highlightEnabled ? targetText : `Guide step ${activeGuideIndex + 1}`;
+    const railButtons = document.querySelectorAll('#guideTourRail [data-step]');
+    railButtons.forEach((button, index) => {
+      button.classList.toggle('is-active', index === activeGuideIndex);
+      button.setAttribute('aria-current', index === activeGuideIndex ? 'step' : 'false');
+    });
     if (prevBtn) prevBtn.disabled = activeGuideIndex === 0;
     if (nextBtn) nextBtn.textContent = activeGuideIndex === MAIN_GUIDE_STEPS.length - 1 ? "Finish" : "Next";
-    const requireClick = guideRequireClick && highlightEnabled;
-    if (requireClick) {
-      if (nextBtn) nextBtn.style.display = 'none';
-    } else {
-      if (nextBtn) nextBtn.style.display = '';
+    if (finishBtn) {
+      finishBtn.textContent = "Close Guide";
+      finishBtn.disabled = false;
     }
+    if (nextBtn) nextBtn.style.display = '';
     if (step.page && state.currentPage !== step.page) {
       navigate(step.page);
       clearGuideMarkers();
@@ -3803,69 +3248,89 @@
       return;
     }
     if (target && highlightEnabled) {
+      applyGuideHighlightStyles(target);
       target.classList.add("guide-highlight-target");
       try { target.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" }); } catch (e) {}
-      window.requestAnimationFrame(() => {
-        positionGuideMarkers(target, step);
-        const rect = target.getBoundingClientRect();
-        positionGuideDim(rect);
-      });
-      if (requireClick) {
-        _guideCurrentTarget = target;
-        _guideTargetListener = function (e) {
-          const initialPage = window.state && window.state.currentPage;
-          const initialModalCount = document.querySelectorAll('.modal-backdrop.open').length;
-          const initialClass = target.className;
-          const MAX_WAIT = 1500;
-          const start = Date.now();
-          function checkDone() {
-            if (step && step.page && window.state && window.state.currentPage === step.page) return true;
-            if (document.querySelectorAll('.modal-backdrop.open').length !== initialModalCount) return true;
-            if (target.className !== initialClass) return true;
-            if (!document.body.contains(target)) return true;
-            return false;
-          }
-          (function poll() {
-            if (checkDone() || Date.now() - start > MAX_WAIT) {
-              if (activeGuideIndex >= MAIN_GUIDE_STEPS.length - 1) {
-                closeMainGuide();
-                navigate('help');
-              } else {
-                activeGuideIndex = Math.min(MAIN_GUIDE_STEPS.length - 1, activeGuideIndex + 1);
-                renderMainGuideStep();
-              }
-              return;
-            }
-            setTimeout(poll, 80);
-          })();
-        };
-        try { target.addEventListener('click', _guideTargetListener); } catch (e) {}
-      }
+      positionGuideMarkers(target, step);
+      const rect = target.getBoundingClientRect();
+      positionGuideDim(rect);
     }
   }
 
+  function setGuideModalMode(mode) {
+    const tm = document.getElementById('tutorialModal');
+    if (!tm) return;
+    clearGuideMarkers();
+    clearGuideDim();
+    tm.style.background = 'rgba(3,10,25,0.68)';
+    tm.style.backdropFilter = 'none';
+    const card = tm.querySelector('.modal-card');
+    if (card) {
+      card.style.position = 'relative';
+      card.style.inset = 'auto';
+      card.style.margin = 'auto';
+      card.style.width = mode === 'tutorial' ? 'min(560px, calc(100vw - 32px))' : 'min(760px, 100%)';
+      card.style.maxWidth = mode === 'tutorial' ? 'calc(100vw - 32px)' : 'calc(100vw - 24px)';
+      card.style.right = 'auto';
+      card.style.bottom = 'auto';
+      card.style.top = 'auto';
+      card.style.left = 'auto';
+      card.style.boxShadow = '0 16px 40px rgba(15, 23, 42, 0.18)';
+      card.style.padding = mode === 'tutorial' ? '1.05rem' : '';
+      card.style.display = '';
+    }
+    const isTutorial = mode === 'tutorial';
+    tm.classList.toggle('tutorial-only', isTutorial);
+    tm.classList.toggle('guide-mode', !isTutorial);
+    tm.classList.toggle('tutorial-steps', isTutorial);
+    const setupPanel = tm.querySelector('.guide-setup-panel');
+    const tourStep = tm.querySelector('.guide-tour-step');
+    if (setupPanel) setupPanel.style.display = isTutorial ? 'none' : '';
+    if (tourStep) tourStep.style.display = isTutorial ? '' : 'none';
+  }
+
+  function finishTutorial() {
+    state.tutorialSeen = true;
+    saveState();
+    closeMainGuide();
+  }
+
   function openTutorial(stepIndex = 0) {
-    if (typeof stepIndex === 'number') activeGuideIndex = stepIndex;
-    // open the tutorial modal and enable guide highlight mode
-    showModal('tutorialModal').then(() => {
-      const tm = document.getElementById('tutorialModal');
-      if (tm) {
-        tm.classList.add('guide-mode');
-        tm.classList.add('tutorial-steps');
-        tm.setAttribute('aria-hidden', 'false');
-      }
-      guidePanelVisible = true;
-      guideHighlightEnabled = true;
-      syncBodyModalLock();
-      setInertForModal('tutorialModal', true);
-      renderMainGuideStep();
-      setTimeout(() => { try { const b = document.getElementById('mainGuideNextBtn'); if (b) b.focus(); } catch (e) {} }, 120);
-    }).catch(() => {});
+    openMainGuide(stepIndex);
+  }
+
+  function beginTutorialAfterGuide() {
+    openMainGuide(1);
   }
 
   function openGuidePanel(stepIndex = 0) {
     if (typeof stepIndex === 'number') activeGuideIndex = stepIndex;
+    setGuideModalMode('guide');
+    clearGuideMarkers();
+    clearGuideDim();
     showModal('tutorialModal').then(() => {
+      setGuideModalMode('guide');
+      const tm = document.getElementById('tutorialModal');
+      if (tm) {
+        tm.setAttribute('aria-hidden', 'false');
+      }
+      guidePanelVisible = true;
+      guideHighlightEnabled = false;
+      syncBodyModalLock();
+      setInertForModal('tutorialModal', true);
+      const setupPanel = document.querySelector('#tutorialModal .guide-setup-panel');
+      if (setupPanel) setupPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => { try { const b = document.getElementById('mainGuideNextBtn'); if (b) b.focus(); } catch (e) {} }, 120);
+    }).catch(() => {});
+  }
+
+  function openMainGuide(stepIndex = 0) {
+    if (typeof stepIndex === 'number') activeGuideIndex = stepIndex;
+    setGuideModalMode('guide');
+    clearGuideMarkers();
+    clearGuideDim();
+    showModal('tutorialModal').then(() => {
+      setGuideModalMode('guide');
       const tm = document.getElementById('tutorialModal');
       if (tm) {
         tm.classList.add('guide-mode');
@@ -3874,25 +3339,6 @@
       }
       guidePanelVisible = true;
       guideHighlightEnabled = false;
-      syncBodyModalLock();
-      setInertForModal('tutorialModal', true);
-      renderMainGuideStep();
-      setTimeout(() => { try { const b = document.getElementById('mainGuideNextBtn'); if (b) b.focus(); } catch (e) {} }, 120);
-    }).catch(() => {});
-  }
-
-  function openMainGuide(stepIndex = 0) {
-    if (typeof stepIndex === 'number') activeGuideIndex = stepIndex;
-    // open the main guide (panel + highlight)
-    showModal('tutorialModal').then(() => {
-      const tm = document.getElementById('tutorialModal');
-      if (tm) {
-        tm.classList.add('guide-mode');
-        tm.classList.add('tutorial-steps');
-        tm.setAttribute('aria-hidden', 'false');
-      }
-      guidePanelVisible = true;
-      guideHighlightEnabled = true;
       syncBodyModalLock();
       setInertForModal('tutorialModal', true);
       renderMainGuideStep();
@@ -3909,7 +3355,33 @@
     clearGuideMarkers();
     document.activeElement?.blur?.();
     const tm = document.getElementById("tutorialModal");
-    if (tm) { tm.classList.remove("open"); tm.classList.remove('guide-mode'); tm.classList.remove('guide-focus'); tm.classList.remove('tutorial-only'); tm.classList.remove('tutorial-steps'); tm.setAttribute("aria-hidden", "true"); }
+    if (tm) {
+      tm.classList.remove("open");
+      tm.classList.remove('guide-mode');
+      tm.classList.remove('guide-focus');
+      tm.classList.remove('tutorial-only');
+      tm.classList.remove('tutorial-steps');
+      tm.style.background = '';
+      tm.style.backdropFilter = '';
+      const card = tm.querySelector('.modal-card');
+      if (card) {
+        card.style.position = '';
+        card.style.inset = '';
+        card.style.margin = '';
+        card.style.width = '';
+        card.style.maxWidth = '';
+        card.style.right = '';
+        card.style.bottom = '';
+        card.style.top = '';
+        card.style.left = '';
+        card.style.boxShadow = '';
+      }
+      const setupPanel = tm.querySelector('.guide-setup-panel');
+      const tourStep = tm.querySelector('.guide-tour-step');
+      if (setupPanel) setupPanel.style.display = '';
+      if (tourStep) tourStep.style.display = '';
+      tm.setAttribute("aria-hidden", "true");
+    }
     // restore background interactivity
     syncBodyModalLock();
     if (!document.querySelector('.modal-backdrop.open')) setInertForModal(null, false);
@@ -5371,9 +4843,6 @@
     } else {
       document.body.classList.add('skin-default');
     }
-    document.body.classList.toggle("minimalist", Boolean(state.minimalist));
-    const mt = document.getElementById("minimalToggle"); if (mt) mt.textContent = `Minimalist: ${state.minimalist ? "On" : "Off"}`;
-    
     document.querySelectorAll("[data-skin-choice]").forEach(btn => {
       const skin = btn.dataset.skinChoice;
       const chosen = skin === state.selectedSkin;
@@ -5762,7 +5231,6 @@
       renderEpsDayInfo();
     });
     // Clear Done button removed by user request; functionality disabled.
-    document.getElementById("minimalToggle")?.addEventListener("click", () => { state.minimalist = !state.minimalist; saveState(); renderAll(); });
 
     document.getElementById("focusBlockerEnabled")?.addEventListener("change", (e) => {
       state.focusBlockerEnabled = e.target.checked;
@@ -6085,28 +5553,28 @@
     });
 
     // Modals
-    document.getElementById("tutorialBtn")?.addEventListener("click", () => openTutorial(0));
+    document.getElementById("tutorialBtn")?.addEventListener("click", () => {
+      closeMainGuide();
+      setTimeout(() => openMainGuide(0), 80);
+    });
     document.getElementById("welcomeContinueBtn")?.addEventListener("click", () => {
       hideModal('welcomeModal');
       // wait until there are no open modals (or timeout) before opening the guide
       waitForNoOpenModals(600).then(ok => {
         // if the modal cleared, open the guide; otherwise fallback with a short delay
-        if (ok) openGuidePanel(0);
-        else setTimeout(() => openGuidePanel(0), 160);
-      }).catch(() => setTimeout(() => openGuidePanel(0), 160));
+        if (ok) openMainGuide(0);
+        else setTimeout(() => openMainGuide(0), 160);
+      }).catch(() => setTimeout(() => openMainGuide(0), 160));
     });
-    // Start tutorial from inside the guide: close guide then open tutorial
+    // Start the guide from the guide card entry point.
     document.getElementById("mainGuideTutorialBtn")?.addEventListener("click", () => {
-      // close the guide and then launch tutorial after a brief pause
+      // close the guide and then relaunch the guide from the beginning after a brief pause
       closeMainGuide();
-      setTimeout(() => openTutorial(0), 140);
+      setTimeout(() => openMainGuide(0), 140);
     });
-    document.getElementById("openMainGuideBtn")?.addEventListener("click", () => openGuidePanel(0));
+    document.getElementById("openMainGuideBtn")?.addEventListener("click", () => openMainGuide(0));
     document.querySelectorAll("[data-open-guide='main']").forEach(button => {
-      button.addEventListener("click", () => openGuidePanel(0));
-    });
-    document.querySelectorAll("[data-open-tutorial='main']").forEach(button => {
-      button.addEventListener("click", () => openTutorial(0));
+      button.addEventListener("click", () => openMainGuide(0));
     });
     document.querySelectorAll("[data-open-modal]").forEach(button => {
       button.addEventListener("click", () => {
@@ -6149,8 +5617,7 @@
     });
     document.getElementById("mainGuideNextBtn")?.addEventListener("click", () => {
       if (activeGuideIndex >= MAIN_GUIDE_STEPS.length - 1) {
-        closeMainGuide();
-        navigate("help");
+        finishTutorial();
         return;
       }
       activeGuideIndex = Math.min(MAIN_GUIDE_STEPS.length - 1, activeGuideIndex + 1);
@@ -6160,7 +5627,9 @@
       closeMainGuide();
       navigate("help");
     });
-    document.getElementById("tutorialCloseBtn")?.addEventListener("click", () => { state.tutorialSeen=true; saveState(); closeMainGuide(); });
+    document.getElementById("tutorialCloseBtn")?.addEventListener("click", () => {
+      finishTutorial();
+    });
     document.getElementById("canvasTokenGuideBtn")?.addEventListener("click", () => showModal('canvasTokenModal'));
     document.getElementById("canvasTokenCloseBtn")?.addEventListener("click", () => hideModal('canvasTokenModal'));
     document.getElementById("privacyGuideBtn")?.addEventListener("click", () => showModal('privacyModal'));
@@ -6381,7 +5850,13 @@
   registerEvents();
   window.addEventListener("beforeunload", saveState);
   resizeFxCanvas();
-  if(!state.tutorialSeen) showModal('welcomeModal');
+  if(!state.tutorialSeen) {
+    setTimeout(() => {
+      const tm = document.getElementById('tutorialModal');
+      if (tm && tm.classList.contains('open')) return;
+      openGuidePanel(0);
+    }, 180);
+  }
   
   const tdd = document.getElementById("taskDueDate");
   if(tdd && !tdd.value) tdd.value = new Date().toISOString().slice(0, 10);
