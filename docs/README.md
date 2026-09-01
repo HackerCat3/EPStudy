@@ -11,6 +11,8 @@ Keep context small. The app is the main product; the extension is an optional co
 
 ## Main app modules
 
+- [../index.html](../index.html): app shell and page template
+- [../app-shell.js](../app-shell.js): minimal bootstrap layer for navigation, modal/prompt wiring, and extension bridge setup
 - [../app-data.js](../app-data.js): static defaults and metadata
 - [../app-state.js](../app-state.js): local storage and state initialization
 - [../app-timer.js](../app-timer.js): timer behavior and task loading

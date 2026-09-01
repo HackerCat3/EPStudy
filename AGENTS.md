@@ -15,7 +15,8 @@ Use the documentation index before reading large files. Load only the docs neede
 
 ## Repo map
 
-- [index.html](index.html): main app UI, styling, and browser-side logic.
+- [index.html](index.html): main app shell, page template, and UI structure.
+- [app-shell.js](app-shell.js): minimal browser bootstrap layer for navigation, modal/prompt wiring, and extension-message plumbing.
 - [app-data.js](app-data.js): extracted static configuration and app defaults.
 - [app-state.js](app-state.js): extracted state initialization and localStorage persistence.
 - [app-timer.js](app-timer.js): extracted focus timer and task-loading helpers.
@@ -57,8 +58,9 @@ Use the documentation index before reading large files. Load only the docs neede
 
 ## Source-of-truth rule
 
-- [index.html](index.html) is the app shell and orchestration layer.
-- Extracted logic belongs in dedicated modules such as [app-dashboard.js](app-dashboard.js), [app-calendar.js](app-calendar.js), and [app-settings.js](app-settings.js).
+- [index.html](index.html) is the app shell and markup layer.
+- [app-shell.js](app-shell.js) is the minimal browser bootstrap layer for navigation, modal/prompt plumbing, and extension-message wiring.
+- Extracted feature logic belongs in dedicated modules such as [app-dashboard.js](app-dashboard.js), [app-calendar.js](app-calendar.js), and [app-settings.js](app-settings.js).
 - Module code is the canonical implementation; [index.html](index.html) should not redeclare the same behavior unless it is a thin adapter for compatibility.
 - When you add a module, update the repo map and change boundaries in this file and [docs/architecture.md](docs/architecture.md) in the same change.
 

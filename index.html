@@ -1671,6 +1671,7 @@
 <script src="app-settings.js"></script>
 <script src="app-helpers.js"></script>
 <script src="app-visuals.js"></script>
+<script src="app-shell.js"></script>
 <script>
   const appState = window.EPSTUDY_APP_STATE || { defaultState: () => ({}) , loadState: () => ({}) };
   const appConfig = window.EPSTUDY_APP_CONFIG || {};
@@ -1714,12 +1715,23 @@
   }
 
   function saveState() {
+    const shellSaveState = window.EPSTUDY_APP_SHELL && typeof window.EPSTUDY_APP_SHELL.saveState === "function" ? window.EPSTUDY_APP_SHELL.saveState : null;
+    if (shellSaveState && shellSaveState !== saveState && typeof shellSaveState === "function") {
+      return shellSaveState();
+    }
+    if (typeof window.saveState === "function" && window.saveState !== saveState) {
+      return window.saveState();
+    }
     syncCourseColorInputsToState();
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } 
     catch (e) { console.error("Failed to save state. Storage might be full.", e); }
   }
 
   const state = appState.loadState();
+  window.state = state;
+  if (window.EPSTUDY_APP_SHELL && typeof window.EPSTUDY_APP_SHELL.initAppShell === "function") {
+    window.EPSTUDY_APP_SHELL.initAppShell();
+  }
   const initialRemovedNoCourse = removeTasksWithoutRealCourse(false);
   const initialMergedDuplicates = mergeDuplicateTasks();
   if (initialRemovedNoCourse || initialMergedDuplicates) saveState();
@@ -1790,29 +1802,6 @@
     }
   });
 
-  // Generic Prompt Logic
-  let promptCallback = null;
-  function showPrompt(message, defaultVal, callback) {
-    const pm = document.getElementById("promptModal");
-    if(!pm) return;
-    document.getElementById("promptTitle").textContent = message;
-    const input = document.getElementById("promptInput");
-    input.value = defaultVal || "";
-    promptCallback = callback;
-    pm.classList.add("open");
-    input.focus();
-  }
-
-  document.getElementById("promptConfirmBtn")?.addEventListener("click", () => {
-    document.getElementById("promptModal")?.classList.remove("open");
-    if(promptCallback) promptCallback(document.getElementById("promptInput")?.value);
-  });
-
-  document.getElementById("promptCancelBtn")?.addEventListener("click", () => {
-    document.getElementById("promptModal")?.classList.remove("open");
-    if(promptCallback) promptCallback(null);
-  });
-
   async function resetEverything(skipPrompt = false) {
     const doReset = () => new Promise(resolve => {
       if (skipPrompt) return resolve(true);
@@ -1879,84 +1868,6 @@
     try { sessionStorage.setItem("epstudy_after_reset", JSON.stringify({ page: "settings", openWelcome: true })); } catch (e) {}
     setTimeout(() => location.reload(), 700);
   }
-
-  // ROUTING VIA HISTORY API
-  function navigate(page, updateHistory = true) {
-    page = page === "cosmetics" ? "other" : page;
-    if (page === "other" && state.otherTabEnabled === false) page = "dashboard";
-    state.currentPage = page;
-    if (page === "calendar") cleanupCalendarOverlaps(true);
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
-    
-    const target = document.getElementById(`page-${page}`);
-    if (target) target.classList.add("active");
-    
-    const btn = document.querySelector(`[data-page="${page}"]`);
-    if (btn) btn.classList.add("active");
-    
-    if (updateHistory) {
-      try {
-        const url = new URL(window.location);
-        url.searchParams.set("page", page);
-        window.history.pushState({ page }, "", url);
-      } catch (e) {
-        // Safe fallback for iframe or blob environments where pushState throws SecurityError
-        console.warn("Skipping URL pushState update due to environment restrictions.", e);
-      }
-    }
-    saveState();
-  }
-
-  window.addEventListener("popstate", (e) => {
-    const page = e.state?.page || new URLSearchParams(window.location.search).get("page") || "dashboard";
-    navigate(page, false);
-  });
-
-  window.addEventListener("message", (event) => {
-    if (event.source !== window || !event.data || typeof event.data !== "object") return;
-    if (event.data.type === "EPSTUDY_EXTENSION_SYNC") handleExtensionPayload(event.data.payload || {});
-    if (event.data.type === "EPSTUDY_RESET_ALL_DONE") location.reload();
-    if (event.data.type === "EPSTUDY_EXTENSION_STATUS") {
-      const status = document.getElementById("extensionSyncStatus");
-      if (status) status.textContent = String(event.data.message || "Extension is connected.");
-    }
-  });
-
-  function bridgeTargetOrigin() {
-    return window.location.protocol === "file:" || window.location.origin === "null" ? "*" : window.location.origin;
-  }
-
-  function requestExtensionSync(statusMessage = "Requesting fresh data from the extension...") {
-    const status = document.getElementById("extensionSyncStatus");
-    if (status) status.textContent = statusMessage;
-    window.postMessage({ type: "EPSTUDY_EXTENSION_REQUEST_SYNC", config: { canvasDomain: getCanvasConfig().domain } }, bridgeTargetOrigin());
-  }
-
-  function fetchTextViaExtension(url, timeoutMs = 10000) {
-    return new Promise((resolve, reject) => {
-      const requestId = `fetch-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-      const timer = window.setTimeout(() => {
-        window.removeEventListener("message", onMessage);
-        reject(new Error("Extension fetch timed out."));
-      }, timeoutMs);
-      function onMessage(event) {
-        if (event.source !== window || event.data?.type !== "EPSTUDY_FETCH_TEXT_RESULT" || event.data.requestId !== requestId) return;
-        window.clearTimeout(timer);
-        window.removeEventListener("message", onMessage);
-        event.data.ok ? resolve(String(event.data.text || "")) : reject(new Error(event.data.error || "Extension fetch failed."));
-      }
-      window.addEventListener("message", onMessage);
-      window.postMessage({ type: "EPSTUDY_FETCH_TEXT", requestId, url }, bridgeTargetOrigin());
-    });
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const startPage = new URLSearchParams(window.location.search).get("page") || state.currentPage || "dashboard";
-    navigate(startPage, false);
-    // initialize modal inert manager
-    try { initModalInertManager(); } catch (e) { /* ignore */ }
-  });
 
   // global keyboard handler: Esc closes tutorial if open
   document.addEventListener('keydown', (e) => {

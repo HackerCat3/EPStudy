@@ -13,7 +13,8 @@ The app is the primary product. The extension is a separate helper that makes sc
 
 ## High-level structure
 
-- [../index.html](../index.html): main app UI, styles, and browser-side logic
+- [../index.html](../index.html): main app shell, markup, and styles
+- [../app-shell.js](../app-shell.js): minimal browser bootstrap layer for navigation, prompt wiring, and extension message plumbing
 - [../app-data.js](../app-data.js): extracted static defaults and configuration metadata
 - [../app-state.js](../app-state.js): extracted state initialization and localStorage persistence
 - [../app-timer.js](../app-timer.js): extracted focus timer and task-loading logic
@@ -45,7 +46,8 @@ The app is the primary product. The extension is a separate helper that makes sc
 
 ## Change boundaries
 
-- Dashboard, timer, or school-planning logic: [../index.html](../index.html)
+- Page shell, markup, and layout structure: [../index.html](../index.html)
+- Browser bootstrap glue only: [../app-shell.js](../app-shell.js)
 - Shared app configuration and default metadata: [../app-data.js](../app-data.js)
 - State defaults, validation, and localStorage management: [../app-state.js](../app-state.js)
 - Focus timer UI updates and task-in-timer flow: [../app-timer.js](../app-timer.js)

@@ -15,7 +15,8 @@ This app is the primary product. The browser extension is a separate helper that
 
 ## Main parts of the repo
 
-- [index.html](index.html): the main app UI and browser-side behavior
+- [index.html](index.html): the main app shell and page template
+- [app-shell.js](app-shell.js): minimal bootstrap layer for page navigation, modal flow, and extension message plumbing
 - [app-data.js](app-data.js): extracted static app configuration, defaults, and metadata for the main app
 - [app-state.js](app-state.js): state defaults and browser persistence
 - [app-timer.js](app-timer.js): focus timer logic and task-loading flow
