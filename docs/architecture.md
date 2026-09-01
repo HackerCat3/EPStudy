@@ -14,6 +14,7 @@ The app is the primary product. The extension is a separate helper that makes sc
 ## High-level structure
 
 - [../index.html](../index.html): main app UI, styles, and browser-side logic
+- [../app-data.js](../app-data.js): extracted static defaults and configuration for the main app
 - [../extension/background.js](../extension/background.js): background service worker for sync and messaging
 - [../extension/source-scraper.js](../extension/source-scraper.js): content scripts for school pages
 - [../extension/website-bridge.js](../extension/website-bridge.js): app-to-extension communication
@@ -37,6 +38,7 @@ The app is the primary product. The extension is a separate helper that makes sc
 ## Change boundaries
 
 - Dashboard, timer, or school-planning logic: [../index.html](../index.html)
+- Shared app configuration and default metadata: [../app-data.js](../app-data.js)
 - Sync scheduling or background messaging: [../extension/background.js](../extension/background.js)
 - Source scraping: [../extension/source-scraper.js](../extension/source-scraper.js)
 - App-to-extension bridge: [../extension/website-bridge.js](../extension/website-bridge.js)

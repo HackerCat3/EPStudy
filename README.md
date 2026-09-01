@@ -15,7 +15,8 @@ This app is the primary product. The browser extension is a separate helper that
 
 ## Main parts of the repo
 
-- [index.html](index.html): the main app UI and browser-side logic
+- [index.html](index.html): the main app UI and browser-side behavior
+- [app-data.js](app-data.js): extracted static app configuration, defaults, and metadata for the main app
 - [extension/README.md](extension/README.md): optional companion extension setup and sync behavior
 - [extension/background.js](extension/background.js): background sync logic
 - [extension/source-scraper.js](extension/source-scraper.js): extraction logic for school sources
