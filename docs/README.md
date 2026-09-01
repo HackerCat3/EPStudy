@@ -5,9 +5,20 @@ Keep context small. The app is the main product; the extension is an optional co
 ## Start here
 
 - [../README.md](../README.md): app overview and product scope
-- [architecture.md](architecture.md): repo structure and responsibilities
+- [architecture.md](architecture.md): repo structure and responsibilities, including the extracted main-app module map
 - [extension.md](extension.md): optional extension behavior and sync flow
 - [operations.md](operations.md): local usage and maintenance notes
+
+## Main app modules
+
+- [../app-data.js](../app-data.js): static defaults and metadata
+- [../app-state.js](../app-state.js): local storage and state initialization
+- [../app-timer.js](../app-timer.js): timer behavior and task loading
+- [../app-dashboard.js](../app-dashboard.js): dashboard rendering
+- [../app-calendar.js](../app-calendar.js): calendar display and navigation
+- [../app-settings.js](../app-settings.js): settings and assignment views
+- [../app-helpers.js](../app-helpers.js): shared helper utilities
+- [../app-visuals.js](../app-visuals.js): canvas visuals and particle effects
 
 ## When to read each doc
 

@@ -1669,6 +1669,8 @@
 <script src="app-dashboard.js"></script>
 <script src="app-calendar.js"></script>
 <script src="app-settings.js"></script>
+<script src="app-helpers.js"></script>
+<script src="app-visuals.js"></script>
 <script>
   const appState = window.EPSTUDY_APP_STATE || { defaultState: () => ({}) , loadState: () => ({}) };
   const appConfig = window.EPSTUDY_APP_CONFIG || {};
@@ -1787,13 +1789,6 @@
       target.value = "";
     }
   });
-
-  const fxCanvas = document.getElementById("fxCanvas");
-  const fxCtx = fxCanvas.getContext("2d");
-  let confetti = [];
-  let skinParticles = [];
-  let activeSkinEffect = "";
-  let fxAnimationRunning = false;
 
   // Generic Prompt Logic
   let promptCallback = null;
@@ -1975,25 +1970,7 @@
   });
 
   // UTILITIES
-  function isValidTime(value) { return /^([01]\d|2[0-3]):([0-5]\d)$/.test(String(value || "")); }
-  function safeIsoFromDateTime(dateValue, timeValue) {
-    if (!dateValue || !isValidTime(timeValue)) return null;
-    const parsed = new Date(`${dateValue}T${timeValue}:00`);
-    return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
-  }
-  function toMinutes(value) {
-    if (!isValidTime(value)) return -1;
-    const [h, m] = value.split(":").map(Number);
-    return h * 60 + m;
-  }
-  function nowMinutes(date = new Date()) { return date.getHours() * 60 + date.getMinutes(); }
-  function isWeekend(date = new Date()) { return date.getDay() === 0 || date.getDay() === 6; }
-  function toTimeLabel(value) {
-    const [h, m] = value.split(":").map(Number);
-    const d = new Date(); d.setHours(h || 0, m || 0, 0, 0);
-    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  }
-  function getDayWindows(dayIndex) { return (state.availabilityByDay[String(dayIndex)] || []).slice(); }
+  // Utility helpers are owned by app-helpers.js.
   
   // LIVE SCHEDULE FETCHING
   async function fetchLiveSchedule(date = new Date()) {
@@ -2492,12 +2469,6 @@
   function pickSmartTask(ref = new Date()) {
     const smart = getSmartTaskChoices(ref, 1);
     return { message: smart.message, task: smart.tasks[0] || null };
-  }
-
-  function escapeHtml(str) { return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])); }
-  function getCourseById(id) { return state.courses.find(c => c.id === id) || null; }
-  function normalizeDomain(value) {
-    return String(value || "").trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/$/, "");
   }
 
   function isNonLunchPeriod(date = new Date()) {
@@ -4244,6 +4215,8 @@
   const appDashboard = window.EPSTUDY_APP_DASHBOARD || { isDashboardSectionVisible: () => true, renderDashboardSections: () => {}, renderHeaderStats: () => {}, renderScheduleCard: () => {}, renderTaskList: () => {}, renderSmartCard: () => {}, getMembeanProgress: () => ({ completedSessions: 0, requiredSessions: 3, minutesPerSession: 10, activeTask: null }), renderMembeanCard: () => {} };
   const appCalendar = window.EPSTUDY_APP_CALENDAR || { getCalendarAnchorDate: () => new Date(), getWeekStart: (date) => date, formatCalendarRange: (start, end) => `${start}-${end}`, setCalendarLabels: () => {}, getCalendarTaskMap: () => ({}), renderCalendarTaskPill: () => "", renderMonthCalendar: () => {}, renderWeekCalendar: () => {}, renderCalendar: () => {}, renderFullCalendar: () => {}, shiftCalendar: () => {}, goToCurrentCalendarPeriod: () => {}, selectedCalendarDateKey: () => "", scheduleInfoDateKey: () => "", actualTodayKey: () => "" };
   const appSettings = window.EPSTUDY_APP_SETTINGS || { initPageSettings: () => {}, renderBlocklist: () => {}, updateAllAssignmentsDisplay: () => {}, toggleAllAssignmentsDisplay: () => {} };
+  const appHelpers = window.EPSTUDY_APP_HELPERS || { isValidTime: () => false, safeIsoFromDateTime: () => null, toMinutes: () => -1, nowMinutes: () => 0, isWeekend: () => false, toTimeLabel: () => "", escapeHtml: (value) => String(value), getCourseById: () => null, normalizeDomain: (value) => String(value || ""), getDayWindows: () => [] };
+  const appVisuals = window.EPSTUDY_APP_VISUALS || { resizeFxCanvas: () => {}, emitConfetti: () => {}, updateSkinEffect: () => {}, makeSkinParticle: () => ({}), ensureSkinParticles: () => {}, drawSkinParticles: () => {}, animateFx: () => {} };
 
   const isDashboardSectionVisible = appDashboard.isDashboardSectionVisible;
   const renderDashboardSections = appDashboard.renderDashboardSections;
@@ -4253,6 +4226,25 @@
   const renderSmartCard = appDashboard.renderSmartCard;
   const getMembeanProgress = appDashboard.getMembeanProgress;
   const renderMembeanCard = appDashboard.renderMembeanCard;
+
+  const isValidTime = appHelpers.isValidTime;
+  const safeIsoFromDateTime = appHelpers.safeIsoFromDateTime;
+  const toMinutes = appHelpers.toMinutes;
+  const nowMinutes = appHelpers.nowMinutes;
+  const isWeekend = appHelpers.isWeekend;
+  const toTimeLabel = appHelpers.toTimeLabel;
+  const escapeHtml = appHelpers.escapeHtml;
+  const getCourseById = appHelpers.getCourseById;
+  const normalizeDomain = appHelpers.normalizeDomain;
+  const getDayWindows = appHelpers.getDayWindows;
+
+  const resizeFxCanvas = appVisuals.resizeFxCanvas;
+  const emitConfetti = appVisuals.emitConfetti;
+  const updateSkinEffect = appVisuals.updateSkinEffect;
+  const makeSkinParticle = appVisuals.makeSkinParticle;
+  const ensureSkinParticles = appVisuals.ensureSkinParticles;
+  const drawSkinParticles = appVisuals.drawSkinParticles;
+  const animateFx = appVisuals.animateFx;
 
   const getCalendarAnchorDate = appCalendar.getCalendarAnchorDate;
   const getWeekStart = appCalendar.getWeekStart;
@@ -4880,206 +4872,11 @@
     });
   }
 
-  // SYSTEM START
-  function resizeFxCanvas() {
-    fxCanvas.width = window.innerWidth;
-    fxCanvas.height = window.innerHeight;
-    skinParticles = [];
-    updateSkinEffect();
-  }
-  window.addEventListener("resize", resizeFxCanvas);
-  // Set Current Year in Footer
-  const cy = document.getElementById("currentYear");
-  if (cy) cy.textContent = new Date().getFullYear();
-
-  function emitConfetti(count) {
-    if (!state.confettiEnabled) return;
-    for (let i = 0; i < count; i++) confetti.push({ x: window.innerWidth * (0.2 + Math.random() * 0.6), y: window.innerHeight * 0.3, vx: (Math.random() - 0.5) * 8, vy: -Math.random() * 7 - 2, life: 90, size: Math.random() * 4 + 2, hue: Math.random() * 120 + 150 });
-    if (!fxAnimationRunning) { fxAnimationRunning = true; requestAnimationFrame(animateFx); }
-  }
-
-  function updateSkinEffect() {
-    const effect = SKIN_EFFECTS[state.selectedSkin] ? state.selectedSkin : "";
-    if (effect !== activeSkinEffect) {
-      activeSkinEffect = effect;
-      skinParticles = [];
-    }
-    ensureSkinParticles();
-    if ((activeSkinEffect || confetti.length) && !fxAnimationRunning) {
-      fxAnimationRunning = true;
-      requestAnimationFrame(animateFx);
-    }
-  }
-
-  function makeSkinParticle(type) {
-    const w = fxCanvas.width || window.innerWidth;
-    const h = fxCanvas.height || window.innerHeight;
-    if (type === "stars") return { x: Math.random() * w, y: Math.random() * h, size: Math.random() * 1.9 + 0.6, alpha: Math.random() * 0.65 + 0.25, twinkle: Math.random() * Math.PI * 2, speed: Math.random() * 0.012 + 0.004 };
-    if (type === "rain") return { x: Math.random() * w, y: Math.random() * h, len: Math.random() * 18 + 12, speed: Math.random() * 7 + 5, alpha: Math.random() * 0.28 + 0.16 };
-    if (type === "autumn") return { x: Math.random() * w, y: Math.random() * h, size: Math.random() * 7 + 5, speed: Math.random() * 1.2 + 0.5, drift: Math.random() * 1.6 - 0.8, spin: Math.random() * Math.PI * 2, hue: Math.random() * 32 + 24 };
-    if (String(type).startsWith("mega")) return { x: Math.random() * w, y: Math.random() * h, size: Math.random() * 6 + 2, hue: Math.random() * 360, alpha: Math.random() * 0.9 + 0.1, vx: (Math.random() - 0.5) * 0.9, vy: (Math.random() - 0.5) * 0.9 };
-    if (type === "dominion-royal") return { x: Math.random() * w, y: Math.random() * h, size: Math.random() * 9 + 5, hue: 35 + Math.random() * 35, alpha: 0.15 + Math.random() * 0.45, vx: (Math.random() - 0.5) * 0.45, vy: (Math.random() - 0.5) * 0.45, ring: Math.random() * 140 + 60 };
-    if (type === "dominion-abyss") return { x: Math.random() * w, y: Math.random() * h, size: Math.random() * 22 + 10, hue: 240 + Math.random() * 35, alpha: 0.08 + Math.random() * 0.25, vx: (Math.random() - 0.5) * 0.85, vy: (Math.random() - 0.5) * 0.85, life: Math.random() * 500 + 220 };
-    if (type === "dominion-empyrean") return { x: Math.random() * w, y: Math.random() * h, size: Math.random() * 14 + 6, hue: 180 + Math.random() * 90, alpha: 0.12 + Math.random() * 0.4, vx: (Math.random() - 0.5) * 1.15, vy: (Math.random() - 0.5) * 1.15, beam: Math.random() * 220 + 120 };
-    if (String(type).startsWith("dominion")) return { x: Math.random() * w, y: Math.random() * h, size: Math.random() * 18 + 8, hue: Math.random() * 360, alpha: Math.random() * 0.9 + 0.05, vx: (Math.random() - 0.5) * 1.5, vy: (Math.random() - 0.5) * 1.5, life: Math.random() * 400 + 200 };
-    // PRO-specific particles
-    if (type === "galaxy") return { x: Math.random() * w, y: Math.random() * h, size: Math.random() * 2 + 0.6, alpha: Math.random() * 0.9 + 0.1, twinkle: Math.random() * Math.PI * 2, hue: 210 + Math.random() * 60 };
-    if (type === "aether") return { x: Math.random() * w, y: Math.random() * h * 0.6 + h * 0.2, width: Math.random() * 240 + 120, speed: Math.random() * 0.8 + 0.08, hue: 180 + Math.random() * 90, alpha: 0.12 + Math.random() * 0.22 };
-    if (type === "void") return { x: Math.random() * w, y: Math.random() * h, size: Math.random() * 12 + 6, hue: 260 + Math.random() * 40, alpha: 0.06 + Math.random() * 0.3, vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6 };
-    if (type === "plasma") return { x: Math.random() * w, y: Math.random() * h, size: Math.random() * 5 + 2, hue: Math.random() * 360, alpha: 0.18 + Math.random() * 0.5, vx: (Math.random() - 0.5) * 0.8, vy: (Math.random() - 0.5) * 0.8 };
-    return { x: Math.random() * w, y: Math.random() * h, width: Math.random() * 170 + 90, speed: Math.random() * 0.45 + 0.16, alpha: Math.random() * 0.18 + 0.08, hue: Math.random() > 0.5 ? 170 : 265 };
-  }
-
-  function ensureSkinParticles() {
-    const count = SKIN_EFFECTS[activeSkinEffect]?.count || 0;
-    while (skinParticles.length < count) skinParticles.push(makeSkinParticle(activeSkinEffect));
-    if (skinParticles.length > count) skinParticles = skinParticles.slice(0, count);
-  }
-
-  function drawSkinParticles() {
-    if (!activeSkinEffect) return;
-    const w = fxCanvas.width || window.innerWidth;
-    const h = fxCanvas.height || window.innerHeight;
-    skinParticles.forEach(p => {
-      if (activeSkinEffect === "stars") {
-        p.twinkle += p.speed;
-        const alpha = Math.max(0.18, Math.min(1, p.alpha + Math.sin(p.twinkle) * 0.28));
-        fxCtx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-        fxCtx.beginPath();
-        fxCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        fxCtx.fill();
-      } else if (activeSkinEffect === "rain") {
-        fxCtx.strokeStyle = `rgba(14, 116, 144, ${p.alpha})`;
-        fxCtx.lineWidth = 1;
-        fxCtx.beginPath();
-        fxCtx.moveTo(p.x, p.y);
-        fxCtx.lineTo(p.x - 6, p.y + p.len);
-        fxCtx.stroke();
-        p.y += p.speed;
-        p.x -= 0.8;
-        if (p.y > h + p.len) { p.y = -p.len; p.x = Math.random() * w; }
-      } else if (activeSkinEffect === "autumn") {
-        p.spin += 0.04;
-        fxCtx.save();
-        fxCtx.translate(p.x, p.y);
-        fxCtx.rotate(p.spin);
-        fxCtx.fillStyle = `hsla(${p.hue}, 78%, 48%, 0.48)`;
-        fxCtx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size * 0.66);
-        fxCtx.restore();
-        p.y += p.speed;
-        p.x += p.drift + Math.sin(p.spin) * 0.35;
-        if (p.y > h + 20) { p.y = -20; p.x = Math.random() * w; }
-      } else if (activeSkinEffect === "aurora") {
-        p.x += p.speed;
-        if (p.x > w + p.width) p.x = -p.width;
-        const gradient = fxCtx.createLinearGradient(p.x, p.y, p.x + p.width, p.y + 40);
-        gradient.addColorStop(0, `hsla(${p.hue}, 90%, 70%, 0)`);
-        gradient.addColorStop(0.5, `hsla(${p.hue}, 90%, 70%, ${p.alpha})`);
-        gradient.addColorStop(1, `hsla(${p.hue}, 90%, 70%, 0)`);
-        fxCtx.strokeStyle = gradient;
-        fxCtx.lineWidth = 28;
-        fxCtx.beginPath();
-        fxCtx.moveTo(p.x, p.y);
-        fxCtx.bezierCurveTo(p.x + p.width * 0.25, p.y - 40, p.x + p.width * 0.65, p.y + 55, p.x + p.width, p.y);
-        fxCtx.stroke();
-      }
-      else if (String(activeSkinEffect).startsWith("mega")) {
-        // colorful small particles with soft glow
-        p.x += Math.sin((p.hue + Date.now() * 0.002) / 50) * 0.6 + (p.vx || 0);
-        p.y += (p.vy || 0) * 0.6;
-        const g = fxCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 6);
-        const hue = Math.floor(p.hue % 360);
-        g.addColorStop(0, `hsla(${hue}, 90%, 70%, ${Math.min(1, p.alpha)})`);
-        g.addColorStop(1, `hsla(${hue}, 90%, 50%, 0)`);
-        fxCtx.fillStyle = g;
-        fxCtx.beginPath(); fxCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2); fxCtx.fill();
-        // gentle drift and wrap
-        if (p.x < -50) p.x = fxCanvas.width + 50; if (p.x > fxCanvas.width + 50) p.x = -50;
-        if (p.y < -50) p.y = fxCanvas.height + 50; if (p.y > fxCanvas.height + 50) p.y = -50;
-      } else if (String(activeSkinEffect).startsWith("dominion")) {
-        if (activeSkinEffect === "dominion-royal") {
-          p.x += (p.vx || 0); p.y += (p.vy || 0);
-          p.vx *= 0.995; p.vy *= 0.995;
-          const rr = fxCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.ring || (p.size * 12));
-          rr.addColorStop(0, `hsla(${p.hue}, 100%, 70%, ${p.alpha})`);
-          rr.addColorStop(0.35, `hsla(${p.hue + 10}, 95%, 60%, ${p.alpha * 0.8})`);
-          rr.addColorStop(1, `hsla(${p.hue + 20}, 95%, 40%, 0)`);
-          fxCtx.strokeStyle = rr; fxCtx.lineWidth = 3;
-          fxCtx.beginPath(); fxCtx.arc(p.x, p.y, p.size * 1.4, 0, Math.PI * 2); fxCtx.stroke();
-          fxCtx.fillStyle = `hsla(${p.hue}, 90%, 68%, ${Math.min(1, p.alpha)})`;
-          fxCtx.beginPath(); fxCtx.moveTo(p.x, p.y - p.size * 2); fxCtx.lineTo(p.x + p.size * 1.2, p.y + p.size * 0.5); fxCtx.lineTo(p.x - p.size * 1.2, p.y + p.size * 0.5); fxCtx.closePath(); fxCtx.fill();
-        } else if (activeSkinEffect === "dominion-abyss") {
-          p.x += p.vx || 0; p.y += p.vy || 0;
-          const ab = fxCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 5);
-          ab.addColorStop(0, `hsla(${p.hue}, 75%, 60%, ${p.alpha})`);
-          ab.addColorStop(0.5, `hsla(${p.hue + 10}, 70%, 40%, ${p.alpha * 0.5})`);
-          ab.addColorStop(1, `hsla(${p.hue + 20}, 80%, 18%, 0)`);
-          fxCtx.fillStyle = ab; fxCtx.beginPath(); fxCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2); fxCtx.fill();
-          fxCtx.strokeStyle = `hsla(${p.hue}, 80%, 72%, ${Math.min(0.35, p.alpha)})`;
-          fxCtx.lineWidth = 1;
-          fxCtx.beginPath(); fxCtx.moveTo(p.x - p.size, p.y + p.size * 0.2); fxCtx.lineTo(p.x + p.size * 1.8, p.y - p.size * 0.15); fxCtx.stroke();
-          if (p.life) p.life -= 0.45; if (p.life < 0) { p.x = Math.random() * fxCanvas.width; p.y = Math.random() * fxCanvas.height; p.life = Math.random() * 500 + 220; }
-        } else if (activeSkinEffect === "dominion-empyrean") {
-          p.x += p.vx || 0; p.y += p.vy || 0;
-          const be = fxCtx.createLinearGradient(p.x, p.y - (p.beam || 160), p.x, p.y + (p.beam || 160));
-          be.addColorStop(0, `hsla(${p.hue}, 98%, 76%, 0)`);
-          be.addColorStop(0.45, `hsla(${p.hue + 20}, 100%, 72%, ${p.alpha})`);
-          be.addColorStop(0.55, `hsla(${p.hue + 60}, 100%, 78%, ${p.alpha})`);
-          be.addColorStop(1, `hsla(${p.hue + 90}, 100%, 72%, 0)`);
-          fxCtx.strokeStyle = be; fxCtx.lineWidth = Math.max(2, p.size / 4);
-          fxCtx.beginPath(); fxCtx.moveTo(p.x, p.y - (p.beam || 160)); fxCtx.lineTo(p.x, p.y + (p.beam || 160)); fxCtx.stroke();
-          fxCtx.fillStyle = `hsla(${p.hue + 45}, 100%, 80%, ${Math.min(1, p.alpha)})`;
-          fxCtx.beginPath(); fxCtx.arc(p.x, p.y, p.size * 0.7, 0, Math.PI * 2); fxCtx.fill();
-        }
-        if (p.x < -120) p.x = fxCanvas.width + 120; if (p.x > fxCanvas.width + 120) p.x = -120;
-        if (p.y < -120) p.y = fxCanvas.height + 120; if (p.y > fxCanvas.height + 120) p.y = -120;
-      }
-      else if (activeSkinEffect === "galaxy") {
-        // twinkling small blue stars
-        p.twinkle = (p.twinkle || 0) + 0.08 + (p.size * 0.002);
-        const alpha = Math.max(0.06, Math.min(1, p.alpha * (0.6 + Math.sin(p.twinkle) * 0.4)));
-        fxCtx.fillStyle = `hsla(${p.hue}, 90%, 72%, ${alpha})`;
-        fxCtx.beginPath(); fxCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2); fxCtx.fill();
-      } else if (activeSkinEffect === "aether") {
-        // flowing aurora-like bands
-        p.x += p.speed * 0.8;
-        if (p.x > fxCanvas.width + p.width) p.x = -p.width;
-        const gradient = fxCtx.createLinearGradient(p.x, p.y, p.x + p.width, p.y + 80);
-        gradient.addColorStop(0, `hsla(${p.hue - 40}, 90%, 60%, 0)`);
-        gradient.addColorStop(0.5, `hsla(${p.hue}, 90%, 68%, ${p.alpha})`);
-        gradient.addColorStop(1, `hsla(${p.hue + 40}, 90%, 60%, 0)`);
-        fxCtx.fillStyle = gradient; fxCtx.beginPath(); fxCtx.rect(p.x, p.y, p.width, 24); fxCtx.fill();
-      } else if (activeSkinEffect === "void") {
-        // smoky nebula blobs
-        p.x += p.vx || 0; p.y += p.vy || 0;
-        const g = fxCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 4);
-        g.addColorStop(0, `hsla(${p.hue}, 70%, 60%, ${p.alpha})`);
-        g.addColorStop(1, `hsla(${p.hue}, 70%, 20%, 0)`);
-        fxCtx.fillStyle = g; fxCtx.beginPath(); fxCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2); fxCtx.fill();
-      } else if (activeSkinEffect === "plasma") {
-        // shifting colorful blobs
-        p.x += p.vx || 0; p.y += p.vy || 0;
-        const hue = Math.floor((p.hue + Date.now() * 0.02) % 360);
-        const gg = fxCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 6);
-        gg.addColorStop(0, `hsla(${hue}, 90%, 65%, ${p.alpha})`);
-        gg.addColorStop(1, `hsla(${(hue+60)%360}, 80%, 45%, 0)`);
-        fxCtx.fillStyle = gg; fxCtx.beginPath(); fxCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2); fxCtx.fill();
-      }
-    });
-  }
-  
-  function animateFx() {
-    fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
-    ensureSkinParticles();
-    drawSkinParticles();
-    confetti = confetti.filter(p => p.life > 0);
-    confetti.forEach(p => { p.vy += 0.11; p.x += p.vx; p.y += p.vy; p.life--; fxCtx.fillStyle = `hsla(${p.hue}, 95%, 70%, ${p.life/90})`; fxCtx.fillRect(p.x, p.y, p.size, p.size * 1.6); });
-    if (confetti.length || activeSkinEffect) requestAnimationFrame(animateFx); else fxAnimationRunning = false;
-  }
-
   registerEvents();
   window.addEventListener("beforeunload", saveState);
-  resizeFxCanvas();
+  if (typeof resizeFxCanvas === "function") {
+    resizeFxCanvas();
+  }
   if(!state.tutorialSeen) {
     setTimeout(() => {
       const tm = document.getElementById('tutorialModal');

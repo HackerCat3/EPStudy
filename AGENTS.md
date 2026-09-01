@@ -23,6 +23,8 @@ Use the documentation index before reading large files. Load only the docs neede
 - [app-dashboard.js](app-dashboard.js): extracted dashboard rendering and section management.
 - [app-calendar.js](app-calendar.js): extracted calendar navigation and task display.
 - [app-settings.js](app-settings.js): extracted settings UI and assignments display.
+- [app-helpers.js](app-helpers.js): extracted shared validation and formatting utilities used across the app.
+- [app-visuals.js](app-visuals.js): extracted canvas particle and skin-effect rendering logic.
 - [extension/background.js](extension/background.js): extension service worker that schedules syncs and handles requests from the web app.
 - [extension/source-scraper.js](extension/source-scraper.js): scripts that read Canvas, TeamSnap, and Membean pages.
 - [extension/website-bridge.js](extension/website-bridge.js): bridge between the web app and the extension.

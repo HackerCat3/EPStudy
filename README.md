@@ -17,6 +17,13 @@ This app is the primary product. The browser extension is a separate helper that
 
 - [index.html](index.html): the main app UI and browser-side behavior
 - [app-data.js](app-data.js): extracted static app configuration, defaults, and metadata for the main app
+- [app-state.js](app-state.js): state defaults and browser persistence
+- [app-timer.js](app-timer.js): focus timer logic and task-loading flow
+- [app-dashboard.js](app-dashboard.js): dashboard rendering and summary cards
+- [app-calendar.js](app-calendar.js): calendar navigation and task display
+- [app-settings.js](app-settings.js): settings and assignment display UI
+- [app-helpers.js](app-helpers.js): shared validation and formatting helpers
+- [app-visuals.js](app-visuals.js): canvas visuals and skin-particle effects
 - [extension/README.md](extension/README.md): optional companion extension setup and sync behavior
 - [extension/background.js](extension/background.js): background sync logic
 - [extension/source-scraper.js](extension/source-scraper.js): extraction logic for school sources

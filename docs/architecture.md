@@ -21,6 +21,8 @@ The app is the primary product. The extension is a separate helper that makes sc
 - [../app-dashboard.js](../app-dashboard.js): extracted dashboard rendering and section visibility helpers
 - [../app-calendar.js](../app-calendar.js): extracted calendar navigation and task-display logic
 - [../app-settings.js](../app-settings.js): extracted settings UI initialization and display management
+- [../app-helpers.js](../app-helpers.js): extracted validation, formatting, and shared helper logic
+- [../app-visuals.js](../app-visuals.js): extracted canvas-based visual effects and skin particle animation
 - [../extension/background.js](../extension/background.js): background service worker for sync and messaging
 - [../extension/source-scraper.js](../extension/source-scraper.js): content scripts for school pages
 - [../extension/website-bridge.js](../extension/website-bridge.js): app-to-extension communication
@@ -51,6 +53,8 @@ The app is the primary product. The extension is a separate helper that makes sc
 - Dashboard section rendering and visibility: [../app-dashboard.js](../app-dashboard.js)
 - Calendar navigation, task mapping, and display: [../app-calendar.js](../app-calendar.js)
 - Settings UI initialization and all-assignments display: [../app-settings.js](../app-settings.js)
+- Shared validation and formatting helpers: [../app-helpers.js](../app-helpers.js)
+- Canvas effects and skin particle animation: [../app-visuals.js](../app-visuals.js)
 - Sync scheduling or background messaging: [../extension/background.js](../extension/background.js)
 - Source scraping: [../extension/source-scraper.js](../extension/source-scraper.js)
 - App-to-extension bridge: [../extension/website-bridge.js](../extension/website-bridge.js)
