@@ -15,8 +15,11 @@ Use the documentation index before reading large files. Load only the docs neede
 
 ## Repo map
 
-- [index.html](index.html): main student app UI, styling, and browser-side logic.
-- [app-data.js](app-data.js): extracted static configuration and app defaults used by the main app.
+- [index.html](index.html): main app UI, styling, and browser-side logic.
+- [app-data.js](app-data.js): extracted static configuration and app defaults.
+- [app-state.js](app-state.js): extracted state initialization and localStorage persistence.
+- [app-timer.js](app-timer.js): extracted focus timer and task-loading helpers.
+- [app-notifications.js](app-notifications.js): extracted notification and toast feedback system.
 - [extension/background.js](extension/background.js): extension service worker that schedules syncs and handles requests from the web app.
 - [extension/source-scraper.js](extension/source-scraper.js): scripts that read Canvas, TeamSnap, and Membean pages.
 - [extension/website-bridge.js](extension/website-bridge.js): bridge between the web app and the extension.

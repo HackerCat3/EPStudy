@@ -14,7 +14,10 @@ The app is the primary product. The extension is a separate helper that makes sc
 ## High-level structure
 
 - [../index.html](../index.html): main app UI, styles, and browser-side logic
-- [../app-data.js](../app-data.js): extracted static defaults and configuration for the main app
+- [../app-data.js](../app-data.js): extracted static defaults and configuration metadata
+- [../app-state.js](../app-state.js): extracted state initialization and localStorage persistence
+- [../app-timer.js](../app-timer.js): extracted focus timer and task-loading logic
+- [../app-notifications.js](../app-notifications.js): extracted notification and toast feedback system
 - [../extension/background.js](../extension/background.js): background service worker for sync and messaging
 - [../extension/source-scraper.js](../extension/source-scraper.js): content scripts for school pages
 - [../extension/website-bridge.js](../extension/website-bridge.js): app-to-extension communication
@@ -39,6 +42,9 @@ The app is the primary product. The extension is a separate helper that makes sc
 
 - Dashboard, timer, or school-planning logic: [../index.html](../index.html)
 - Shared app configuration and default metadata: [../app-data.js](../app-data.js)
+- State defaults, validation, and localStorage management: [../app-state.js](../app-state.js)
+- Focus timer UI updates and task-in-timer flow: [../app-timer.js](../app-timer.js)
+- Notification and toast feedback system: [../app-notifications.js](../app-notifications.js)
 - Sync scheduling or background messaging: [../extension/background.js](../extension/background.js)
 - Source scraping: [../extension/source-scraper.js](../extension/source-scraper.js)
 - App-to-extension bridge: [../extension/website-bridge.js](../extension/website-bridge.js)
