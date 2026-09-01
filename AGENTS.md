@@ -20,6 +20,9 @@ Use the documentation index before reading large files. Load only the docs neede
 - [app-state.js](app-state.js): extracted state initialization and localStorage persistence.
 - [app-timer.js](app-timer.js): extracted focus timer and task-loading helpers.
 - [app-notifications.js](app-notifications.js): extracted notification and toast feedback system.
+- [app-dashboard.js](app-dashboard.js): extracted dashboard rendering and section management.
+- [app-calendar.js](app-calendar.js): extracted calendar navigation and task display.
+- [app-settings.js](app-settings.js): extracted settings UI and assignments display.
 - [extension/background.js](extension/background.js): extension service worker that schedules syncs and handles requests from the web app.
 - [extension/source-scraper.js](extension/source-scraper.js): scripts that read Canvas, TeamSnap, and Membean pages.
 - [extension/website-bridge.js](extension/website-bridge.js): bridge between the web app and the extension.
@@ -47,6 +50,15 @@ Use the documentation index before reading large files. Load only the docs neede
 2. Favor small, documented edits that match the existing project structure.
 3. Treat Canvas, TeamSnap, and Membean as first-class data sources when relevant.
 4. Make the extension and website docs reflect the same source-of-truth behavior.
+5. Never duplicate extracted UI logic in both [index.html](index.html) and a module file. If a function is moved to a module, [index.html](index.html) must only reference that module via a single alias or delegation.
+6. Before a refactor is considered complete, run a duplicate-code audit: search the repo for the same function names and remove any leftover copies.
+
+## Source-of-truth rule
+
+- [index.html](index.html) is the app shell and orchestration layer.
+- Extracted logic belongs in dedicated modules such as [app-dashboard.js](app-dashboard.js), [app-calendar.js](app-calendar.js), and [app-settings.js](app-settings.js).
+- Module code is the canonical implementation; [index.html](index.html) should not redeclare the same behavior unless it is a thin adapter for compatibility.
+- When you add a module, update the repo map and change boundaries in this file and [docs/architecture.md](docs/architecture.md) in the same change.
 
 ## Related docs
 

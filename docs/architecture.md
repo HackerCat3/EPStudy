@@ -18,6 +18,9 @@ The app is the primary product. The extension is a separate helper that makes sc
 - [../app-state.js](../app-state.js): extracted state initialization and localStorage persistence
 - [../app-timer.js](../app-timer.js): extracted focus timer and task-loading logic
 - [../app-notifications.js](../app-notifications.js): extracted notification and toast feedback system
+- [../app-dashboard.js](../app-dashboard.js): extracted dashboard rendering and section visibility helpers
+- [../app-calendar.js](../app-calendar.js): extracted calendar navigation and task-display logic
+- [../app-settings.js](../app-settings.js): extracted settings UI initialization and display management
 - [../extension/background.js](../extension/background.js): background service worker for sync and messaging
 - [../extension/source-scraper.js](../extension/source-scraper.js): content scripts for school pages
 - [../extension/website-bridge.js](../extension/website-bridge.js): app-to-extension communication
@@ -45,6 +48,9 @@ The app is the primary product. The extension is a separate helper that makes sc
 - State defaults, validation, and localStorage management: [../app-state.js](../app-state.js)
 - Focus timer UI updates and task-in-timer flow: [../app-timer.js](../app-timer.js)
 - Notification and toast feedback system: [../app-notifications.js](../app-notifications.js)
+- Dashboard section rendering and visibility: [../app-dashboard.js](../app-dashboard.js)
+- Calendar navigation, task mapping, and display: [../app-calendar.js](../app-calendar.js)
+- Settings UI initialization and all-assignments display: [../app-settings.js](../app-settings.js)
 - Sync scheduling or background messaging: [../extension/background.js](../extension/background.js)
 - Source scraping: [../extension/source-scraper.js](../extension/source-scraper.js)
 - App-to-extension bridge: [../extension/website-bridge.js](../extension/website-bridge.js)
@@ -52,3 +58,11 @@ The app is the primary product. The extension is a separate helper that makes sc
 ## Documentation rule
 
 Keep [../README.md](../README.md) and [README.md](README.md) aligned when contributor guidance changes.
+
+## Duplicate-code prevention
+
+- Treat extracted modules as the source of truth for their feature area.
+- Do not keep a duplicate implementation of the same function in [../index.html](../index.html) after moving logic into a module.
+- If the app still needs a compatibility alias, it must be a one-line delegation to the module and not a second implementation.
+- Use a quick repo-wide function-name search before merging any refactor to confirm there is only one canonical implementation.
+- Update documentation alongside any refactor so future contributors know which file owns each behavior.
