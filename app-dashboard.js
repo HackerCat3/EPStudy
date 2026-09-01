@@ -144,6 +144,7 @@
       const sel = t.id === state.selectedTaskId, od = !t.completed && isOverdue(t);
       const c = getCourseById(t.courseId);
       const type = getTaskType(t);
+      const isCanvasTask = String(t.source || "").toLowerCase() === "canvas";
       const typePill = type ? `<span class='pill ${type === "ma" ? "ma" : type === "qa" ? "qa" : ""}'>${taskTypeLabel(type)}</span>` : "";
       const cPill = c ? `<span class='pill' style='background:${c.color}15;color:${c.color};border-color:${c.color}40'>${escapeHtml(c.code || c.name)}</span>` : "";
       const sourceLabels = { canvas: "Canvas", membean: "Membean" };
@@ -151,7 +152,7 @@
       const hasComment = Boolean((Array.isArray(t.comments) && t.comments.length) || t.comment);
       return `<div class="task-item ${sel ? "selected" : ""} ${t.completed ? "completed" : ""} ${type}">
         <div class="task-main"><div class="task-title">${escapeHtml(t.title)}</div><div class="task-meta"><span>${t.estimatedMinutes}m</span><span>&bull;</span><span>${normalizeDueDate(t.dueDate)}</span>${typePill}${cPill}${od ? "<span class='pill overdue'>Overdue</span>" : ""}${sPill}</div></div>
-        <div class="task-actions">${isCanvas ? `<button class="button" data-action="info" data-id="${t.id}" type="button">More Info</button>` : ""}${hasComment ? `<button class="button" data-action="comment" data-id="${t.id}" type="button">Read Comment</button>` : ""}<button class="button" data-action="load-timer" data-id="${t.id}" type="button">Load in Timer</button><button class="icon-button" data-action="edit" data-id="${t.id}" title="Edit Time">Min</button><button class="icon-button" data-action="toggle" data-id="${t.id}" title="Toggle Done">${t.completed ? "↺" : "✓"}</button><button class="icon-button" style="color:var(--danger)" data-action="delete" data-id="${t.id}" title="Delete">✕</button></div>
+        <div class="task-actions">${isCanvasTask ? `<button class="button" data-action="info" data-id="${t.id}" type="button">More Info</button>` : ""}${hasComment ? `<button class="button" data-action="comment" data-id="${t.id}" type="button">Read Comment</button>` : ""}<button class="button" data-action="load-timer" data-id="${t.id}" type="button">Load in Timer</button><button class="icon-button" data-action="edit" data-id="${t.id}" title="Edit Time">Min</button><button class="icon-button" data-action="toggle" data-id="${t.id}" title="Toggle Done">${t.completed ? "↺" : "✓"}</button><button class="icon-button" style="color:var(--danger)" data-action="delete" data-id="${t.id}" title="Delete">✕</button></div>
       </div>`;
     }).join("");
   }
