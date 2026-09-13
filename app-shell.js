@@ -10,18 +10,24 @@
     return appConfig.STORAGE_KEY || "epstudy_secure_pro_v6";
   }
 
-  function saveState() {
-    const state = getCurrentState();
-    if (typeof window.syncCourseColorInputsToState === "function") {
-      window.syncCourseColorInputsToState();
-    }
+function saveState() {
+  const state = getCurrentState();
 
-    try {
-      localStorage.setItem(getStorageKey(), JSON.stringify(state));
-    } catch (error) {
-      console.error("Failed to save state. Storage might be full.", error);
-    }
+  // STOP: Don't save if the app hasn't finished loading yet!
+  if (!state || !state.tasks || (state.tasks.length === 0 && !state.tutorialSeen)) {
+    return;
   }
+
+  if (typeof window.syncCourseColorInputsToState === "function") {
+    window.syncCourseColorInputsToState();
+  }
+
+  try {
+    localStorage.setItem(getStorageKey(), JSON.stringify(state));
+  } catch (error) {
+    console.error("Failed to save state. Storage might be full.", error);
+  }
+}
 
   function showPrompt(message, defaultVal, callback) {
     const modal = document.getElementById("promptModal");
