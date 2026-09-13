@@ -137,7 +137,7 @@
     
     const now = new Date();
     const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const oneAndHalfWeeksAhead = new Date(now.getTime() + 10.5 * 24 * 60 * 60 * 1000);
+    const oneAndHalfWeeksAhead = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000);
     
     const filtered = actionableTasks.filter(t => {
       const taskDate = new Date(t.dueDate);
