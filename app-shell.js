@@ -12,14 +12,11 @@
 
 function saveState() {
   const state = getCurrentState();
-  
-  // BULLETPROOF SHIELD: Check if we are about to overwrite good data with 0 tasks
   const previousData = JSON.parse(localStorage.getItem(getStorageKey()) || "{}");
   
+  // SUPER SHIELD: If the app tries to reset, restore EVERYTHING (tasks, settings, and school level)
   if (state.tasks && state.tasks.length === 0 && previousData.tasks && previousData.tasks.length > 0) {
-    console.log("Shield Activated: Prevented an empty sync from wiping out your tasks.");
-    // Force the active memory to keep the saved tasks!
-    state.tasks = previousData.tasks; 
+    Object.assign(state, previousData); 
   }
 
   if (typeof window.syncCourseColorInputsToState === "function") {
