@@ -68,7 +68,7 @@
   function renderScheduleCard() {
     updateCurrentPeriod();
     const status = getScheduleStatus(), avail = getAvailabilityStatus();
-    const chip = document.getElementById("scheduleChip"), prim = document.getElementById("schedulePrimary"), prog = document.getElementById("scheduleProgress"), timeline = document.getElementById("scheduleTimeline");
+    const chip = document.getElementById("scheduleChip"), prim = document.getElementById("schedulePrimary"), prog = document.getElementById("scheduleProgress"), timeline = document.getElementById("scheduleTimeline"), overrideBtn = document.getElementById("scheduleOverrideBtn");
     if (!chip || !prim || !prog || !timeline) return;
     
     const currentPeriodElem = document.getElementById("currentPeriodDisplay");
@@ -87,16 +87,23 @@
     
     if (status.inClass && !status.isStudyHall) {
       chip.className = "status-chip class"; chip.textContent = "In Class";
-      prim.textContent = `${status.currentBlock.label} ends in ${status.minutesLeft}m`;
+      prim.textContent = state.scheduleOverrideActive ? `Override active during ${status.currentBlock.label}. ${status.minutesLeft}m left.` : `${status.currentBlock.label} ends in ${status.minutesLeft}m`;
       prog.style.width = `${status.progress}%`;
     } else {
       chip.className = "status-chip free"; chip.textContent = "Free Block";
-      if (status.isStudyHall) prim.textContent = `Study Hall active! ${status.freeMinutes}m left.`;
+      if (status.isLunch) prim.textContent = `${status.currentBlock.label} break. ${status.minutesLeft}m left.`;
+      else if (status.isActivity) prim.textContent = `${status.currentBlock.label} activity. ${status.minutesLeft}m left.`;
+      else if (status.isStudyHall) prim.textContent = `Study Hall active! ${status.freeMinutes}m left.`;
       else if (avail.isFreeNow && avail.currentWindow) prim.textContent = `Study Window: ${toTimeLabel(avail.currentWindow.start)}-${toTimeLabel(avail.currentWindow.end)}`;
       else if (avail.nextWindow) prim.textContent = `Next block: ${toTimeLabel(avail.nextWindow.start)}-${toTimeLabel(avail.nextWindow.end)}`;
       else if (status.nextBlock) prim.textContent = `${status.freeMinutes}m until ${status.nextBlock.label}`;
       else prim.textContent = "Schedule complete.";
       prog.style.width = "100%";
+    }
+    if (overrideBtn) {
+      overrideBtn.hidden = !status.inClass;
+      overrideBtn.textContent = state.scheduleOverrideActive ? "Turn Off Override" : "Override Class Status";
+      overrideBtn.classList.toggle("primary", Boolean(state.scheduleOverrideActive));
     }
 
     const now = nowMinutes(new Date());
@@ -158,22 +165,27 @@
   }
 
   function renderSmartCard() {
-    const smart = getSmartTaskChoices(new Date(), 5), msg = document.getElementById("smartMessage"), meta = document.getElementById("smartTaskMeta");
-    if (!msg || !meta) return;
-    const useBtn = document.getElementById("useSmartTaskBtn");
-    msg.textContent = smart.message;
-    if (useBtn) useBtn.disabled = !smart.tasks.length;
+    const smart = getSmartTaskChoices(new Date(), 5);
+    const messages = [document.getElementById("smartMessage"), document.getElementById("smartMessageDashboard")].filter(Boolean);
+    const metas = [document.getElementById("smartTaskMeta"), document.getElementById("smartTaskMetaDashboard")].filter(Boolean);
+    const useButtons = [document.getElementById("useSmartTaskBtn"), document.getElementById("useSmartTaskDashboardBtn")].filter(Boolean);
+    if (!metas.length) return;
+    messages.forEach(msg => { msg.textContent = smart.message; });
+    useButtons.forEach(useBtn => { useBtn.disabled = !smart.tasks.length; });
     if (!smart.tasks.length) {
-      meta.innerHTML = state.smartDismissedTaskIds.length ? `<button class="button" type="button" data-smart-clear-dismissed>Show dismissed tasks again</button>` : "";
+      metas.forEach(meta => { meta.innerHTML = state.smartDismissedTaskIds.length ? `<button class="button" type="button" data-smart-clear-dismissed>Show dismissed tasks again</button>` : ""; });
       updateTimerUi();
       return;
     }
-    meta.innerHTML = smart.tasks.map((task, index) => {
+    const smartHtml = smart.tasks.map((task, index) => {
       const course = getCourseById(task.courseId);
       const type = getTaskType(task);
       const label = taskTypeLabel(type);
-      return `<div class="smart-item ${type}" data-task-id="${task.id}"><span class="smart-rank">${index + 1}</span><div class="smart-main"><div class="smart-title">${escapeHtml(task.title)}</div><div class="smart-meta">${label ? `${label} • ` : ""}${task.estimatedMinutes}m • ${normalizeDueDate(task.dueDate)}${course ? ` • ${escapeHtml(course.code || course.name)}` : ""}${task.smartReason ? ` • ${escapeHtml(task.smartReason)}` : ""}</div><div class="smart-actions"><label class="smart-dismiss" title="Hide this task from Smart Suggestion" data-smart-dismiss="${task.id}"><input type="checkbox" data-smart-dismiss="${task.id}" /> Dismiss</label><button class="button" type="button" data-smart-info="${task.id}">More</button><button class="button" type="button" data-smart-select="${task.id}">Load</button></div></div><button class="smart-toggle" type="button" data-smart-toggle aria-expanded="false">▾</button></div>`;
+      const remaining = typeof getTaskRemainingMinutes === "function" ? getTaskRemainingMinutes(task) : task.estimatedMinutes;
+      const chunk = Math.min(60, remaining);
+      return `<div class="smart-item ${type}" data-task-id="${task.id}"><span class="smart-rank">${index + 1}</span><div class="smart-main"><div class="smart-title">${escapeHtml(task.title)}</div><div class="smart-meta">${label ? `${label} • ` : ""}${remaining}m left • ${chunk}m chunk • ${normalizeDueDate(task.dueDate)}${course ? ` • ${escapeHtml(course.code || course.name)}` : ""}${task.smartReason ? ` • ${escapeHtml(task.smartReason)}` : ""}</div><div class="smart-actions"><label class="smart-dismiss" title="Hide this task from Smart Study" data-smart-dismiss="${task.id}"><input type="checkbox" data-smart-dismiss="${task.id}" /> Dismiss</label><button class="button" type="button" data-smart-info="${task.id}">More</button><button class="button" type="button" data-smart-select="${task.id}">Load Chunk</button></div></div><button class="smart-toggle" type="button" data-smart-toggle aria-expanded="false">▾</button></div>`;
     }).join("");
+    metas.forEach(meta => { meta.innerHTML = smartHtml; });
     updateTimerUi();
   }
 

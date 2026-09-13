@@ -30,7 +30,6 @@
     { id: "vapor_playlist", title: "Vapor Playlist", detail: "Import a playlist", test: (state) => Array.isArray(state.importedMusicPlaylist) && state.importedMusicPlaylist.length >= 1, skinReward: "vapor" },
     { id: "glimmer_600", title: "Glimmer Marathon", detail: "Log 600 focus minutes", test: (state) => state.focusMinutes >= 600, skinReward: "glimmer" },
     { id: "ember_tasks20", title: "Ember Effort", detail: "Complete 20 tasks", test: (state) => state.tasks.filter((t) => t.completed).length >= 20, skinReward: "ember" },
-    { id: "teal_shield", title: "Teal Shield", detail: "Enable Focus Shield", test: (state) => Boolean(state.focusBlockerEnabled), skinReward: "teal" },
     { id: "plum_sessions15", title: "Plum Patron", detail: "Finish 15 focus sessions", test: (state) => state.sessionsCompleted >= 15, skinReward: "plum" },
     { id: "breeze_canvas3", title: "Breeze Sync", detail: "Perform 3 Canvas imports", test: (state) => state.canvasImports >= 3, skinReward: "breeze" },
     { id: "amber_streak3", title: "Amber Streak", detail: "Reach a 3-day streak", test: (state) => state.streakDays >= 3, skinReward: "amber" },

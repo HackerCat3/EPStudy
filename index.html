@@ -980,6 +980,15 @@
   </section>
 
   <section class="dashboard-row" data-dashboard-row>
+    <article class="panel dashboard-section" data-dashboard-section="smart">
+      <h2>Smart Study</h2>
+      <p id="smartMessageDashboard" class="helper-text" style="font-size: 0.85rem;">Finding your next study chunk...</p>
+      <div id="smartTaskMetaDashboard" class="smart-list"></div>
+      <button id="useSmartTaskDashboardBtn" class="button primary" type="button">Load Next Chunk</button>
+    </article>
+  </section>
+
+  <section class="dashboard-row" data-dashboard-row>
     <article class="panel dashboard-section" data-dashboard-section="calendar">
       <div class="calendar-top">
         <h2>Calendar Outline</h2>
@@ -1046,7 +1055,10 @@
               <h2 style="margin-bottom: 0.35rem;">Schedule Awareness</h2>
               <p class="page-note">This is now separate from the dashboard so you can stay on the schedule view when you need it.</p>
             </div>
-            <div id="scheduleChip" class="status-chip free">Free Block</div>
+            <div class="row" style="align-items: center;">
+              <div id="scheduleChip" class="status-chip free">Free Block</div>
+              <button id="scheduleOverrideBtn" class="button" type="button" hidden>Override Class Status</button>
+            </div>
           </div>
           <div style="margin-top: 1rem;">
             <p id="schedulePrimary" class="helper-text" style="font-size: 1.1rem; color: var(--text-dark); font-weight: 600;">Checking schedule...</p>
@@ -1119,7 +1131,7 @@
           <button class="skin-choice" type="button" data-skin-choice="glimmer">Glimmer<span>Unlock after 600 focus minutes</span></button>
           <button class="skin-choice" type="button" data-skin-choice="ember">Ember<span>Unlock after 20 completed tasks</span></button>
           <button class="skin-choice" type="button" data-skin-choice="sage">Sage<span>Unlock after Canvas sync</span></button>
-          <button class="skin-choice" type="button" data-skin-choice="teal">Teal<span>Unlock by enabling Focus Shield</span></button>
+          <button class="skin-choice" type="button" data-skin-choice="teal">Teal<span>Unlock through focused study progress</span></button>
           <button class="skin-choice" type="button" data-skin-choice="plum">Plum<span>Unlock after 15 focus sessions</span></button>
           <button class="skin-choice" type="button" data-skin-choice="breeze">Breeze<span>Unlock after 3 Canvas imports</span></button>
           <button class="skin-choice" type="button" data-skin-choice="amber">Amber<span>Unlock with a 3-day streak</span></button>
@@ -1287,19 +1299,6 @@
           </select>
         </div>
         <div class="settings-card col-4">
-          <h3>Focus Shield</h3>
-          <p>Block distracting sites while you are in focus mode.</p>
-          <label class="mini-text" style="display:flex; align-items:center; gap: 8px; margin-bottom: 8px; color: var(--text-dark);">
-            <input id="focusBlockerEnabled" type="checkbox" /> Enable Focus Shield
-          </label>
-          <div class="row" style="margin-bottom: 8px;">
-            <input id="blockSiteInput" class="field" type="text" placeholder="Add domain (e.g. youtube.com)" />
-            <button id="blockSiteAddBtn" class="button" type="button">Add</button>
-          </div>
-          <div id="blockerStatus" class="mini-text" style="color: var(--muted);"></div>
-          <div id="blockSiteList" class="blocklist"></div>
-        </div>
-        <div class="settings-card col-4">
           <h3>Notifications</h3>
           <p>Keep only the reminders you actually want.</p>
           <label style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; color: var(--text-dark);"><input type="checkbox" id="notifMembean" checked /> Membean reminders</label>
@@ -1315,6 +1314,7 @@
             <label><input type="checkbox" data-dashboard-toggle="mission" /> Mission brief</label>
             <label><input type="checkbox" data-dashboard-toggle="quote" /> Quote of the day</label>
             <label><input type="checkbox" data-dashboard-toggle="timer" /> Focus timer</label>
+            <label><input type="checkbox" data-dashboard-toggle="smart" /> Smart Study</label>
             <label><input type="checkbox" data-dashboard-toggle="calendar" /> Calendar outline</label>
           </div>
         </div>
@@ -1366,10 +1366,10 @@
       
       <section class="grid">
         <article class="panel col-4">
-          <h2>Smart Suggestion</h2>
+          <h2>Smart Study</h2>
           <p id="smartMessage" class="helper-text" style="font-size: 0.85rem;">Analyzing your queue...</p>
           <div id="smartTaskMeta" class="smart-list"></div>
-          <button id="useSmartTaskBtn" class="button primary" type="button">Load Top Task In Timer</button>
+          <button id="useSmartTaskBtn" class="button primary" type="button">Load Next Chunk</button>
         </article>
 
         <details class="panel col-8 collapsible-panel">
@@ -1635,7 +1635,7 @@
     <h2>How EPStudy Stores Your Info</h2>
     <ol class="guide-steps">
       <li><b>Website data:</b> tasks, courses, dashboard settings, notifications, timers, and blocked-site lists are stored in this browser's localStorage under EPStudy's storage key.</li>
-      <li><b>Sync data:</b> Canvas, lunch, course settings, and Focus Shield state stay on this device in your browser storage unless a connected service is being queried live.</li>
+      <li><b>Sync data:</b> Canvas, lunch, and course settings stay on this device in your browser storage unless a connected service is being queried live.</li>
       <li><b>Canvas token:</b> if you paste a Canvas API token into the page, it stays in the page field unless your browser autofills/saves it. EPStudy does not upload it to a database.</li>
       <li><b>Contact form:</b> sending support opens your email app with the message addressed to both support emails. The site itself does not silently send mail.</li>
       <li><b>Reset:</b> the Reset button clears EPStudy website data from this browser.</li>
@@ -1736,6 +1736,7 @@
   const initialMergedDuplicates = mergeDuplicateTasks();
   if (initialRemovedNoCourse || initialMergedDuplicates) saveState();
 
+  const MAX_STUDY_CHUNK_MINUTES = 60;
   let timerDurationSeconds = Math.max(1, Number(state.timerMinutes || 25)) * 60;
   let timerRemainingSeconds = timerDurationSeconds;
   let timerInterval = null;
@@ -1747,6 +1748,18 @@
   let musicPulseTimer = null;
   let musicStep = 0;
   let importedMusicAudio = null;
+
+  function getTaskRemainingMinutes(task) {
+    if (!task) return 0;
+    if (task.completed) return 0;
+    const estimated = Math.max(1, Number(task.estimatedMinutes) || 25);
+    const remaining = Number(task.remainingMinutes);
+    return Math.max(1, Number.isFinite(remaining) && remaining > 0 ? remaining : estimated);
+  }
+
+  function getStudyChunkMinutes(task) {
+    return Math.min(MAX_STUDY_CHUNK_MINUTES, getTaskRemainingMinutes(task));
+  }
   
   function selectImportedTrack(index) {
     if (!Array.isArray(state.importedMusicPlaylist) || state.importedMusicPlaylist.length === 0) return;
@@ -2062,6 +2075,13 @@
     const currentBlock = scheduleBlocks.find(b => now >= scheduleMinuteValue(b, "start") && now < scheduleMinuteValue(b, "end"));
     if (currentBlock) {
       const s = scheduleMinuteValue(currentBlock, "start"), e = scheduleMinuteValue(currentBlock, "end");
+      const blockLabel = String(currentBlock.label || currentBlock.id || "");
+      if (/lunch/i.test(blockLabel)) {
+        return { inClass: false, isLunch: true, currentBlock, minutesLeft: Math.max(0, e - now), progress: 100 };
+      }
+      if (/club|activit|advis/i.test(blockLabel)) {
+        return { inClass: false, isActivity: true, currentBlock, minutesLeft: Math.max(0, e - now), progress: 100 };
+      }
       return { inClass: true, currentBlock, minutesLeft: Math.max(0, e - now), progress: Math.min(100, Math.max(0, ((now - s) / (e - s)) * 100)) };
     }
     const nextBlock = scheduleBlocks.find(b => now < scheduleMinuteValue(b, "start"));
@@ -2316,7 +2336,7 @@
       if (aO !== bO) return aO ? -1 : 1;
       const dueDelta = new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
       if (dueDelta !== 0) return dueDelta;
-      return a.estimatedMinutes - b.estimatedMinutes;
+      return getTaskRemainingMinutes(a) - getTaskRemainingMinutes(b);
     });
   }
 
@@ -2336,21 +2356,22 @@
     const type = getTaskType(task);
     const typeBoost = { ma: 130, qa: 90, "cw-hw": 45, hw: 30, cw: 15 }[type] || 0;
     const majorSoon = type === "ma" && daysUntilDue <= 7 ? 120 : 0;
+    const remaining = getTaskRemainingMinutes(task);
     const fit = availMins > 0
-      ? (task.estimatedMinutes <= availMins ? 55 - Math.max(0, availMins - task.estimatedMinutes) * 0.18 : -Math.min(90, (task.estimatedMinutes - availMins) * 1.4))
-      : Math.max(-60, 35 - task.estimatedMinutes * 0.35);
+      ? (remaining <= availMins ? 55 - Math.max(0, availMins - remaining) * 0.18 : -Math.min(90, (remaining - availMins) * 1.4))
+      : Math.max(-60, 35 - remaining * 0.35);
     const score = overdue + urgency + typeBoost + majorSoon + fit;
     let reason = "Due soon and fits a focus block.";
     if (hrsUntilDue < 0) reason = "Recently overdue, so it needs attention.";
     else if (type === "ma" && daysUntilDue <= 7) reason = "Major assignment due within a week.";
-    else if (availMins > 0 && task.estimatedMinutes <= availMins) reason = "Good fit for your current free time.";
+    else if (availMins > 0 && remaining <= availMins) reason = "Good fit for your current free time.";
     else if (typeBoost) reason = `${taskTypeLabel(type)} work gets a small priority boost.`;
     return { score, reason };
   }
 
   function getSmartTaskChoices(ref = new Date(), limit = 5) {
     const classStatus = getScheduleStatus(ref);
-    if (classStatus.inClass && !classStatus.isStudyHall) return { message: `You are currently in ${classStatus.currentBlock.label}. Focus on class.`, tasks: [] };
+    if (classStatus.inClass && !classStatus.isStudyHall && !state.scheduleOverrideActive) return { message: `You are currently in ${classStatus.currentBlock.label}. Focus on class.`, tasks: [] };
     
     const allPending = openTasksSorted(ref);
     if (allPending.length === 0) return { message: "Queue empty. Add a task to get started.", tasks: [] };
@@ -2380,25 +2401,6 @@
   function pickSmartTask(ref = new Date()) {
     const smart = getSmartTaskChoices(ref, 1);
     return { message: smart.message, task: smart.tasks[0] || null };
-  }
-
-  function isNonLunchPeriod(date = new Date()) {
-    const status = getScheduleStatus(date);
-    return Boolean(status.inClass && status.currentBlock && !/lunch/i.test(status.currentBlock.label || ""));
-  }
-
-  function shouldFocusShieldBeActive() {
-    return Boolean(state.focusBlockerEnabled && (timerInterval || isNonLunchPeriod()));
-  }
-
-  function publishFocusShield(active = shouldFocusShieldBeActive()) {
-    window.postMessage({
-      type: "EPSTUDY_FOCUS_SHIELD",
-      active: Boolean(active && state.focusBlockerEnabled),
-      blockedSites: state.blockedSites,
-      reason: timerInterval ? "timer-running" : (isNonLunchPeriod() ? "school-period" : "inactive"),
-      updatedAt: new Date().toISOString()
-    }, bridgeTargetOrigin());
   }
 
   function stopBackgroundMusic() {
@@ -3052,7 +3054,7 @@
     }
     state.selectedTaskId = task.id;
     lastAutoFilledTaskId = task.id;
-    setTimerFromMinutes(task.estimatedMinutes || state.timerMinutes, true);
+    setTimerFromMinutes(getStudyChunkMinutes(task), true);
     const th = document.getElementById("timerHint"); if (th) th.textContent = `Loaded "${task.title}" into the timer.`;
     const eth = document.getElementById("timerExpandedHint"); if (eth) eth.textContent = `Loaded "${task.title}" into the timer.`;
     saveState(); renderAll();
@@ -3070,7 +3072,7 @@
     const timeStr = `${String(Math.floor(timerRemainingSeconds / 60)).padStart(2, "0")}:${String(timerRemainingSeconds % 60).padStart(2, "0")}`;
     const selected = state.tasks.find(t => isActionableTask(t) && t.id === state.selectedTaskId && !t.completed);
     if (!selected && state.selectedTaskId) state.selectedTaskId = null;
-    const focusText = selected ? `Focus target: ${selected.title} (${selected.estimatedMinutes}m, due ${normalizeDueDate(selected.dueDate)})` : "No task selected yet.";
+    const focusText = selected ? `Focus target: ${selected.title} (${getTaskRemainingMinutes(selected)}m left, due ${normalizeDueDate(selected.dueDate)})` : "No task selected yet.";
     
     const td = document.getElementById("timerDisplay"); if (td) td.textContent = timeStr;
     const tp = document.getElementById("timerProgress"); if (tp) tp.style.width = `${pct}%`;
@@ -3108,7 +3110,6 @@
     clearInterval(timerInterval);
     timerInterval = null;
     clearTimerTask();
-    publishFocusShield();
     setTimerFromMinutes(state.timerMinutes, true);
     const b = document.getElementById("startPauseBtn"); if (b) b.textContent = "Start Focus";
     const eb = document.getElementById("startPauseExpandedBtn"); if (eb) eb.textContent = "Start Focus";
@@ -3122,7 +3123,6 @@
     const th = document.getElementById("timerHint");
     if (timerInterval) {
       clearInterval(timerInterval); timerInterval = null; 
-      publishFocusShield();
       if (btn) btn.textContent = "Resume Focus";
       const ebtn = document.getElementById("startPauseExpandedBtn"); if (ebtn) ebtn.textContent = "Resume Focus";
       if (th) th.textContent = "Timer paused.";
@@ -3137,14 +3137,15 @@
       const ebtn = document.getElementById("startPauseExpandedBtn"); if (ebtn) ebtn.textContent = "Pause Timer";
       if (th) th.textContent = "Focus session active.";
       const eth = document.getElementById("timerExpandedHint"); if (eth) eth.textContent = state.ambientFocusMode ? "Immersive focus mode active." : "Focus session active.";
-      publishFocusShield();
     }
     updateTimerUi();
   }
 
-  function notifyTimerFinished(doneTask) {
+  function notifyTimerFinished(doneTask, finishedTask = true) {
     if (!state.notificationSettings.timerdone) return;
-    const msg = doneTask ? `Focus timer finished. "${doneTask.title}" marked complete.` : "Focus timer finished. Session logged.";
+    const msg = doneTask
+      ? (finishedTask ? `Focus timer finished. "${doneTask.title}" completed.` : `Focus timer finished. Chunk complete for "${doneTask.title}".`)
+      : "Focus timer finished. Session logged.";
     addNotification(msg, "info", 8000);
     if (!("Notification" in window)) return;
     if (Notification.permission === "granted") {
@@ -3154,7 +3155,6 @@
 
   function completeSession(overrideMins = null) {
     clearInterval(timerInterval); timerInterval = null;
-    publishFocusShield();
     state.sessionsCompleted++;
     state.focusMinutes += (overrideMins === null ? Math.max(1, Math.round(timerDurationSeconds / 60)) : Math.max(1, Number(overrideMins)));
     
@@ -3166,15 +3166,21 @@
     state.lastSessionDate = today;
 
     let doneTask = state.tasks.find(t => isActionableTask(t) && t.id === state.selectedTaskId && !t.completed);
-    if (doneTask) doneTask.completed = true;
+    let finishedTask = false;
+    if (doneTask) {
+      const sessionMinutes = Math.max(1, Math.round(timerDurationSeconds / 60));
+      doneTask.remainingMinutes = Math.max(0, getTaskRemainingMinutes(doneTask) - sessionMinutes);
+      finishedTask = doneTask.remainingMinutes === 0;
+      if (finishedTask) doneTask.completed = true;
+    }
     clearTimerTask();
 
     emitConfetti(100);
     const th = document.getElementById("timerHint");
-    if (th) th.textContent = doneTask ? `Done! "${doneTask.title}" marked complete. No task loaded.` : "Session logged. No task loaded.";
+    if (th) th.textContent = doneTask ? (finishedTask ? `Done! "${doneTask.title}" completed. No task loaded.` : `Chunk complete. "${doneTask.title}" has ${doneTask.remainingMinutes}m left.`) : "Session logged. No task loaded.";
     const eth = document.getElementById("timerExpandedHint");
-    if (eth) eth.textContent = doneTask ? `Done! "${doneTask.title}" marked complete. No task loaded.` : "Session logged. No task loaded.";
-    notifyTimerFinished(doneTask);
+    if (eth) eth.textContent = doneTask ? (finishedTask ? `Done! "${doneTask.title}" completed. No task loaded.` : `Chunk complete. "${doneTask.title}" has ${doneTask.remainingMinutes}m left.`) : "Session logged. No task loaded.";
+    notifyTimerFinished(doneTask, finishedTask);
     setTimerFromMinutes(state.timerMinutes, true);
     
     const btn = document.getElementById("startPauseBtn");
@@ -4093,11 +4099,6 @@
         if (ssl) ssl.innerHTML = ws.length ? ws.map((w,i) => `<div class="schedule-item"><span><strong style="color:var(--navy-primary)">${LONG_DAY_LABELS[d]}</strong>: ${toTimeLabel(w.start)} - ${toTimeLabel(w.end)}</span><button class="icon-button" data-action="delete-window" data-day="${d}" data-index="${i}">✕</button></div>`).join("") : "<p class='empty'>No free windows set for this day.</p>";
     }
 
-    const fbe = document.getElementById("focusBlockerEnabled");
-    if (fbe) fbe.checked = Boolean(state.focusBlockerEnabled);
-    const bs = document.getElementById("blockerStatus");
-    if (bs) bs.textContent = state.focusBlockerEnabled ? "Focus Shield active." : "Focus Shield is off.";
-    renderBlocklist();
     renderDashboardSections();
 
     const quoteObj = MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)];
@@ -4125,7 +4126,7 @@
 
   const appDashboard = window.EPSTUDY_APP_DASHBOARD || { isDashboardSectionVisible: () => true, renderDashboardSections: () => {}, renderHeaderStats: () => {}, renderScheduleCard: () => {}, renderTaskList: () => {}, renderSmartCard: () => {}, getMembeanProgress: () => ({ completedSessions: 0, requiredSessions: 3, minutesPerSession: 10, activeTask: null }), renderMembeanCard: () => {} };
   const appCalendar = window.EPSTUDY_APP_CALENDAR || { getCalendarAnchorDate: () => new Date(), getWeekStart: (date) => date, formatCalendarRange: (start, end) => `${start}-${end}`, setCalendarLabels: () => {}, getCalendarTaskMap: () => ({}), renderCalendarTaskPill: () => "", renderMonthCalendar: () => {}, renderWeekCalendar: () => {}, renderCalendar: () => {}, renderFullCalendar: () => {}, shiftCalendar: () => {}, goToCurrentCalendarPeriod: () => {}, selectedCalendarDateKey: () => "", scheduleInfoDateKey: () => "", actualTodayKey: () => "" };
-  const appSettings = window.EPSTUDY_APP_SETTINGS || { initPageSettings: () => {}, renderBlocklist: () => {}, updateAllAssignmentsDisplay: () => {}, toggleAllAssignmentsDisplay: () => {} };
+  const appSettings = window.EPSTUDY_APP_SETTINGS || { initPageSettings: () => {}, updateAllAssignmentsDisplay: () => {}, toggleAllAssignmentsDisplay: () => {} };
   const appHelpers = window.EPSTUDY_APP_HELPERS || { isValidTime: () => false, safeIsoFromDateTime: () => null, toMinutes: () => -1, nowMinutes: () => 0, isWeekend: () => false, toTimeLabel: () => "", escapeHtml: (value) => String(value), getCourseById: () => null, normalizeDomain: (value) => String(value || ""), getDayWindows: () => [] };
   const appVisuals = window.EPSTUDY_APP_VISUALS || { resizeFxCanvas: () => {}, emitConfetti: () => {}, updateSkinEffect: () => {}, makeSkinParticle: () => ({}), ensureSkinParticles: () => {}, drawSkinParticles: () => {}, animateFx: () => {} };
 
@@ -4174,7 +4175,6 @@
   const actualTodayKey = appCalendar.actualTodayKey;
 
   const initPageSettings = appSettings.initPageSettings;
-  const renderBlocklist = appSettings.renderBlocklist;
   const updateAllAssignmentsDisplay = appSettings.updateAllAssignmentsDisplay;
   const toggleAllAssignmentsDisplay = appSettings.toggleAllAssignmentsDisplay;
   
@@ -4336,13 +4336,13 @@
     
     document.getElementById("timerTaskSelect")?.addEventListener("change", e => loadTaskInTimer(e.target.value));
     document.getElementById("timerExpandedTaskSelect")?.addEventListener("change", e => loadTaskInTimer(e.target.value));
-    document.getElementById("useSmartTaskBtn")?.addEventListener("click", () => {
+    document.querySelectorAll("#useSmartTaskBtn, #useSmartTaskDashboardBtn").forEach(button => button.addEventListener("click", () => {
       const s = pickSmartTask();
       if (s.task) loadTaskInTimer(s.task.id);
       state.smartUsedCount = (Number(state.smartUsedCount) || 0) + 1;
       saveState();
       renderAll();
-    });
+    }));
     document.querySelectorAll("[data-timer-preset]").forEach(btn => {
       btn.addEventListener("click", () => setTimerFromMinutes(btn.dataset.timerPreset));
     });
@@ -4359,38 +4359,18 @@
       saveState();
       renderEpsDayInfo();
     });
+    document.getElementById("scheduleOverrideBtn")?.addEventListener("click", () => {
+      state.scheduleOverrideActive = !state.scheduleOverrideActive;
+      saveState();
+      renderAll();
+    });
     document.getElementById("jumpTodayScheduleBtn")?.addEventListener("click", () => {
       goToCurrentCalendarPeriod();
       renderEpsDayInfo();
     });
     // Clear Done button removed by user request; functionality disabled.
 
-    document.getElementById("focusBlockerEnabled")?.addEventListener("change", (e) => {
-      state.focusBlockerEnabled = e.target.checked;
-      publishFocusShield();
-      saveState(); renderAll();
-    });
-
-    document.getElementById("blockSiteAddBtn")?.addEventListener("click", () => {
-      const input = document.getElementById("blockSiteInput");
-      const raw = input?.value;
-      const domain = normalizeDomain(raw);
-      if (!domain) return;
-      if (!state.blockedSites.includes(domain)) state.blockedSites.unshift(domain);
-      if (input) input.value = "";
-      publishFocusShield();
-      saveState(); renderAll();
-    });
-
-    document.getElementById("blockSiteList")?.addEventListener("click", (e) => {
-      const btn = e.target.closest("button");
-      if (!btn || btn.dataset.action !== "remove-block") return;
-      state.blockedSites = state.blockedSites.filter(site => site !== btn.dataset.domain);
-      publishFocusShield();
-      saveState(); renderAll();
-    });
-
-    document.getElementById("smartTaskMeta")?.addEventListener("click", (e) => {
+    document.querySelectorAll("#smartTaskMeta, #smartTaskMetaDashboard").forEach(smartMeta => smartMeta.addEventListener("click", (e) => {
       const toggleBtn = e.target.closest("[data-smart-toggle]");
       if (toggleBtn) {
         const item = toggleBtn.closest('.smart-item');
@@ -4421,7 +4401,7 @@
       if (!btn) return;
       loadTaskInTimer(btn.dataset.smartSelect);
       btn.style.display = "none";
-    });
+    }));
 
     document.querySelectorAll("[data-dashboard-toggle]").forEach(input => {
       input.addEventListener("change", (e) => {
@@ -4802,7 +4782,7 @@
 	  renderAll();
 	  fetchLiveSchedule();
 	  
-	  window.setInterval(() => { renderScheduleCard(); renderSmartCard(); publishFocusShield(); }, 30000);
+    window.setInterval(() => { renderScheduleCard(); renderSmartCard(); }, 30000);
 	  window.setInterval(fetchLiveSchedule, 10 * 60 * 1000);
 
   try {

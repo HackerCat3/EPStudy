@@ -81,7 +81,6 @@
     clearInterval(timerInterval);
     timerInterval = null;
     clearTimerTask();
-    publishFocusShield();
     setTimerFromMinutes(state.timerMinutes, true);
     const b = document.getElementById("startPauseBtn"); if (b) b.textContent = "Start Focus";
     const eb = document.getElementById("startPauseExpandedBtn"); if (eb) eb.textContent = "Start Focus";
@@ -95,7 +94,6 @@
     const th = document.getElementById("timerHint");
     if (timerInterval) {
       clearInterval(timerInterval); timerInterval = null;
-      publishFocusShield();
       if (btn) btn.textContent = "Resume Focus";
       const ebtn = document.getElementById("startPauseExpandedBtn"); if (ebtn) ebtn.textContent = "Resume Focus";
       if (th) th.textContent = "Timer paused.";
@@ -110,7 +108,6 @@
       const ebtn = document.getElementById("startPauseExpandedBtn"); if (ebtn) ebtn.textContent = "Pause Timer";
       if (th) th.textContent = "Focus session active.";
       const eth = document.getElementById("timerExpandedHint"); if (eth) eth.textContent = state.ambientFocusMode ? "Immersive focus mode active." : "Focus session active.";
-      publishFocusShield();
     }
     updateTimerUi();
   }
@@ -127,7 +124,6 @@
 
   function completeSession(overrideMins = null) {
     clearInterval(timerInterval); timerInterval = null;
-    publishFocusShield();
     state.sessionsCompleted++;
     state.focusMinutes += (overrideMins === null ? Math.max(1, Math.round(timerDurationSeconds / 60)) : Math.max(1, Number(overrideMins)));
 

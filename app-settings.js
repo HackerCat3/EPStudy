@@ -18,18 +18,6 @@
     const devPanel = document.getElementById("devControlsPanel"); if (devPanel) devPanel.style.display = state.devControlsVisible ? "block" : "none";
   }
 
-  function renderBlocklist() {
-    const list = document.getElementById("blockSiteList");
-    if (!list) return;
-    const items = state.blockedSites.map(site => `
-      <div class="blocklist-item">
-        <span class="blocklist-domain">${escapeHtml(site)}</span>
-        <button class="icon-button" data-action="remove-block" data-domain="${site}">✕</button>
-      </div>
-    `).join("");
-    list.innerHTML = items || "<p class='empty'>No blocked sites yet.</p>";
-  }
-
   function updateAllAssignmentsDisplay() {
     const container = document.getElementById("allAssignmentsContainer");
     const section = document.getElementById("allAssignmentsSection");
@@ -86,7 +74,6 @@
 
   window.EPSTUDY_APP_SETTINGS = {
     initPageSettings,
-    renderBlocklist,
     updateAllAssignmentsDisplay,
     toggleAllAssignmentsDisplay
   };

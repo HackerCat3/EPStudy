@@ -1,7 +1,6 @@
 const SYNC_ALARM = "epstudy-sync";
 const COURSE_RESYNC_ALARM = "epstudy-course-resync";
 const DEFAULT_CANVAS_HOST = "eastsideprep.instructure.com";
-const FOCUS_RULE_START = 30000;
 const TEAMSNAP_REMINDER_PREFIX = "epstudy-teamsnap-reminder:";
 const TEAMSNAP_LINK_LIMIT = 12;
 const TEAMSNAP_LINK_REFRESH_MS = 30 * 60 * 1000;
@@ -114,11 +113,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
-  if (message.type === "EPSTUDY_FOCUS_SHIELD") {
-    updateFocusShield(Boolean(message.active), message.blockedSites || []).then(() => sendResponse({ ok: true }));
-    return true;
-  }
-
   if (message.type === "EPSTUDY_FETCH_TEXT") {
     fetchTextForWebsite(message.url).then((text) => sendResponse({ ok: true, text })).catch((error) => {
       sendResponse({ ok: false, error: error.message });
@@ -154,7 +148,7 @@ async function resetEpstudyData() {
     const rules = await chrome.declarativeNetRequest.getDynamicRules();
     await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds: rules.map(rule => rule.id), addRules: [] });
   } catch {
-    // Reset should still succeed if focus shield rules are already empty.
+    // Reset should still succeed if dynamic rules cannot be inspected.
   }
 }
 
@@ -236,7 +230,7 @@ function mergeWebsiteCompletionIntoRows(rows, websiteTasks, source) {
 async function getHealthSnapshot() {
   const [cache, local, rules, tabs] = await Promise.all([
     getCache(),
-    chrome.storage.local.get(["websiteTasks", "websiteTasksUpdatedAt", "websiteTasksVersion", "activeWebsiteVersion", "activeWebsiteVersionSource", "activeWebsiteVersionUpdatedAt", "focusShieldActive", "focusShieldBlockedSites"]),
+    chrome.storage.local.get(["websiteTasks", "websiteTasksUpdatedAt", "websiteTasksVersion", "activeWebsiteVersion", "activeWebsiteVersionSource", "activeWebsiteVersionUpdatedAt"]),
     chrome.declarativeNetRequest.getDynamicRules().catch(() => []),
     chrome.tabs.query({}).catch(() => [])
   ]);
@@ -248,9 +242,6 @@ async function getHealthSnapshot() {
     websiteTasksCount: Array.isArray(local.websiteTasks) ? local.websiteTasks.length : 0,
     websiteTasksUpdatedAt: local.websiteTasksUpdatedAt || null,
     websiteTasksVersion: normalizeWebsiteVersion(local.websiteTasksVersion || local.activeWebsiteVersion),
-    focusShieldActive: Boolean(local.focusShieldActive),
-    focusShieldBlockedSites: Array.isArray(local.focusShieldBlockedSites) ? local.focusShieldBlockedSites : [],
-    focusShieldRuleCount: rules.filter(rule => rule.id >= FOCUS_RULE_START && rule.id < FOCUS_RULE_START + 500).length,
     openSources: {
       canvas: tabs.some(tab => sourceFromUrl(tab.url || "") === "canvas"),
       teamsnap: tabs.some(tab => sourceFromUrl(tab.url || "") === "teamsnap"),
@@ -583,27 +574,6 @@ function hasBlockedCanvasCourseKeyword(value) {
 
 function isCanvasNavigationLabel(label) {
   return /^(announcements?|assignments?|assignment groups?|calendar|chat|collaborations?|conferences?|course details?|discussions?|files?|grades?|home|modules?|outcomes?|pages?|people|quizzes?|rubrics?|settings|syllabus|to do|recent feedback|show all)$/i.test(String(label || "").trim());
-}
-
-async function updateFocusShield(active, blockedSites) {
-  const currentRules = await chrome.declarativeNetRequest.getDynamicRules();
-  const removeRuleIds = currentRules
-    .filter(rule => rule.id >= FOCUS_RULE_START && rule.id < FOCUS_RULE_START + 500)
-    .map(rule => rule.id);
-
-  const domains = Array.from(new Set((blockedSites || []).map(normalizeDomain).filter(Boolean))).slice(0, 200);
-  const addRules = active ? domains.map((domain, index) => ({
-    id: FOCUS_RULE_START + index,
-    priority: 1,
-    action: { type: "block" },
-    condition: {
-      urlFilter: `||${domain}^`,
-      resourceTypes: ["main_frame", "sub_frame", "script", "xmlhttprequest", "media"]
-    }
-  })) : [];
-
-  await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds, addRules });
-  await chrome.storage.local.set({ focusShieldActive: active, focusShieldBlockedSites: domains });
 }
 
 function normalizeDomain(value) {

@@ -27,10 +27,9 @@
       notificationSettings: { membean: false, quizzes: true, assignments: true, overdue: true, timerdone: true },
       currentPage: "dashboard",
       skinChangeRestrictedToFreePeriods: true,
-      focusBlockerEnabled: false,
+      scheduleOverrideActive: false,
       ambientFocusMode: false,
       smartDismissedTaskIds: [],
-      blockedSites: ["spotify.com", "poki.com", "crazygames.com"],
       liveSchedule: null,
       epsSchedules: {},
       lunchItems: {},
@@ -86,9 +85,7 @@
       merged.calendarDay = Math.max(1, Math.min(31, Number(merged.calendarDay) || base.calendarDay));
       merged.smartDismissedTaskIds = Array.isArray(merged.smartDismissedTaskIds) ? merged.smartDismissedTaskIds.map(String) : [];
       merged.ambientFocusMode = Boolean(merged.ambientFocusMode);
-      merged.focusBlockerEnabled = typeof merged.focusBlockerEnabled === "boolean" ? merged.focusBlockerEnabled : base.focusBlockerEnabled;
-      merged.blockedSites = Array.isArray(merged.blockedSites) && merged.blockedSites.length ? merged.blockedSites : base.blockedSites.slice();
-      merged.blockedSites = merged.blockedSites.map(normalizeDomain).filter(Boolean);
+      merged.scheduleOverrideActive = Boolean(merged.scheduleOverrideActive);
       merged.extensionSync = typeof merged.extensionSync === "object" && merged.extensionSync ? { ...base.extensionSync, ...merged.extensionSync } : base.extensionSync;
       merged.epsSchedules = typeof merged.epsSchedules === "object" && merged.epsSchedules ? merged.epsSchedules : {};
       merged.lunchItems = typeof merged.lunchItems === "object" && merged.lunchItems ? merged.lunchItems : {};
@@ -128,10 +125,11 @@
           title: normalizeAssignmentTitle(t?.title || "Untitled task"),
           courseId: t?.courseId ? String(t.courseId) : "",
           estimatedMinutes: Math.max(1, Number(t.estimatedMinutes) || 25),
+          remainingMinutes: t?.completed ? 0 : Math.max(1, Number(t.remainingMinutes) || Number(t.estimatedMinutes) || 25),
           dueDate,
           completed: Boolean(t?.completed)
         };
-      }).filter(task => hasRealCourseForCourses(task, merged.courses));
+      })
       for (let day = 0; day <= 6; day += 1) {
         const dk = String(day);
         const rawWindows = Array.isArray(merged.availabilityByDay[dk]) ? merged.availabilityByDay[dk] : [];

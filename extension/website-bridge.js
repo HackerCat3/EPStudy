@@ -44,13 +44,6 @@ window.addEventListener("message", (event) => {
       window.postMessage({ type: "EPSTUDY_EXTENSION_STATUS", message: "Extension data cleared." }, TARGET_ORIGIN);
     });
   }
-  if (event.data.type === "EPSTUDY_FOCUS_SHIELD") {
-    chrome.runtime.sendMessage({
-      type: "EPSTUDY_FOCUS_SHIELD",
-      active: Boolean(event.data.active),
-      blockedSites: event.data.blockedSites || []
-    });
-  }
   if (event.data.type === "EPSTUDY_FETCH_TEXT") {
     chrome.runtime.sendMessage({ type: "EPSTUDY_FETCH_TEXT", url: event.data.url || "" }, (response) => {
       window.postMessage({
