@@ -12,10 +12,14 @@
 
 function saveState() {
   const state = getCurrentState();
-
-  // STOP: Don't save if the app hasn't finished loading yet!
-  if (!state || !state.tasks || (state.tasks.length === 0 && !state.tutorialSeen)) {
-    return;
+  
+  // BULLETPROOF SHIELD: Check if we are about to overwrite good data with 0 tasks
+  const previousData = JSON.parse(localStorage.getItem(getStorageKey()) || "{}");
+  
+  if (state.tasks && state.tasks.length === 0 && previousData.tasks && previousData.tasks.length > 0) {
+    console.log("Shield Activated: Prevented an empty sync from wiping out your tasks.");
+    // Force the active memory to keep the saved tasks!
+    state.tasks = previousData.tasks; 
   }
 
   if (typeof window.syncCourseColorInputsToState === "function") {
@@ -25,7 +29,7 @@ function saveState() {
   try {
     localStorage.setItem(getStorageKey(), JSON.stringify(state));
   } catch (error) {
-    console.error("Failed to save state. Storage might be full.", error);
+    console.error("Failed to save state.", error);
   }
 }
 
