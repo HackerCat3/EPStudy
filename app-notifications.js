@@ -11,7 +11,6 @@
     if (!Array.isArray(st.notifications)) st.notifications = [];
     const notif = { id: `notif-${Date.now()}`, message, type, timestamp: new Date(), read: false };
     st.notifications.unshift(notif);
-    if (st.notifications.length > 10) st.notifications = st.notifications.slice(0, 10);
     safeSaveState();
     renderNotifications();
   }
