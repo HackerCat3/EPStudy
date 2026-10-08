@@ -1,33 +1,56 @@
 # EPStudy Sync Extension
 
-This Chrome/Edge extension syncs signed-in school tabs with EPStudy. It has no popup and only runs on the school services and the EPStudy website listed in the manifest.
+This Chrome/Edge companion extension syncs authenticated school tabs with the EPStudy web application. It runs as a background service worker without a popup UI, restricted solely to approved school services and authorized EPStudy domains.
 
-## Install
+## Related Documentation
 
-1. Open `chrome://extensions`.
-2. Turn on Developer mode.
-3. Click Load unpacked.
-4. Select this `extension` folder.
-5. Open EPStudy at `https://sillywaffle-4.github.io/Epstudy/` or `https://sillywaffle-4.github.io/EPStudy-V6/`. The Web Store package does not request file or local-development page access.
+- [Extension Deep Dive](../docs/extension.md): Full architecture, messaging protocol, and sync lifecycle
+- [Agent Rules & Boundaries](../AGENTS.md): Repository structure and coding rules
+- [Operations Guide](../docs/operations.md): Local development and verification recipes
 
-## Use
+## Files Overview
 
-Keep EPStudy open, then open signed-in tabs for:
+- [manifest.json](manifest.json): Chrome Manifest V3 configuration, permissions, and host patterns
+- [background.js](background.js): Background service worker managing 10-minute periodic sync alarms
+- [source-scraper.js](source-scraper.js): DOM scraping scripts for Canvas, TeamSnap, and Membean
+- [website-bridge.js](website-bridge.js): Content script bridging the web app and extension runtime
 
-- Canvas, defaulting to `eastsideprep.instructure.com`
-- TeamSnap schedule pages on `go.teamsnap.com` for each team you want tracked
-- Membean
+## Installation (Developer Mode)
 
-The extension syncs automatically every 10 minutes. You can also use Settings -> Extension Sync in EPStudy to request a sync, check source health, send website tasks into extension storage, or open Canvas, TeamSnap, and Membean from EPStudy. In V6, the site defaults to Normal mode and reports whether Normal or Simple is active so extension health and exported website tasks follow the selected mode.
+1. Open `chrome://extensions` in Google Chrome or Microsoft Edge.
+2. Toggle **Developer mode** on (top right).
+3. Click **Load unpacked** (top left).
+4. Select this `extension` directory.
+5. Open EPStudy at `https://sillywaffle-4.github.io/Epstudy/`, `https://sillywaffle-4.github.io/EPStudy-V6/`, or `https://epstudy.app/`.
+
+## Usage
+
+Keep EPStudy open in one tab, and open signed-in tabs for:
+
+- **Canvas LMS**: `eastsideprep.instructure.com`
+- **TeamSnap**: `go.teamsnap.com` schedule pages for teams you want tracked
+- **Membean**: `membean.com`
+
+The extension syncs automatically every 10 minutes via background alarms. You can also trigger an instant sync from **Settings -> Extension Sync** within EPStudy.
 
 ## What It Sends
 
-- Canvas assignments and dated todo items found on signed-in Canvas pages
-- TeamSnap games, practices, matches, tournaments, and events across multiple team tabs
-- Membean weekly progress as session counts only; Canvas teacher-created Membean assignments stay responsible for the actual task
-- Extension health metadata, including source status, saved TeamSnap schedule links, selected website version, and website task export counts
+- **Canvas LMS**: Active assignments and dated todo items.
+- **TeamSnap**: Games, practices, matches, tournaments, and events across team tabs.
+- **Membean**: Weekly session completion counts (Canvas assignments remain responsible for graded tasks).
+- **Extension Health**: Source connection status, sync timestamps, and exported task counts.
 
-## Review Notes
+## Security & Web Store Review Compliance
 
-- The packaged manifest avoids `<all_urls>`, file URL access, and local-development host access.
-- Requested permissions are used for scheduled syncing, local storage, notifications, focus blocking, and injecting EPStudy's own scraper/bridge scripts on the allowed sites.
+- **No `<all_urls>`**: Access is strictly scoped to the required school and application origins.
+- **Minimal Permissions**: Uses only `storage`, `alarms`, `notifications`, and `scripting` for core functionality.
+- **Safe Bridge**: `website-bridge.js` validates origins before relaying data to prevent third-party injection.
+
+## Verification for Developers & Antigravity
+
+Before submitting changes to extension files:
+
+```powershell
+Get-ChildItem -Path extension -Filter *.js | ForEach-Object { node -c $_.FullName }
+node .agents/skills/audit-codebase/scripts/audit.js
+```

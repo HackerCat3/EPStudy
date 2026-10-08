@@ -192,23 +192,32 @@
   function getMembeanProgress() {
     const membeanTasks = state.tasks.filter(task => task.source === "membean");
     const taskWithProgress = membeanTasks.find(task => task.progress && Number.isFinite(Number(task.progress.completedSessions)));
-    const completedSessions = Math.max(0, Math.min(3, state.membeanSessionsCompleted || Number(taskWithProgress?.progress?.completedSessions) || 0));
+    const requiredSessions = Math.max(1, Math.min(7, Number(state.membeanWeeklyDays) || Number(taskWithProgress?.progress?.requiredSessions) || 3));
+    const completedSessions = Math.max(0, Math.min(requiredSessions, state.membeanSessionsCompleted || Number(taskWithProgress?.progress?.completedSessions) || 0));
     const activeTask = membeanTasks.find(task => !task.completed) || taskWithProgress || null;
-    return { completedSessions, requiredSessions: 3, minutesPerSession: 10, activeTask };
+    return { completedSessions, requiredSessions, minutesPerSession: 10, activeTask };
   }
 
   function renderMembeanCard() {
-    if (!state.membeanEnabled) return;
+    const card = document.getElementById("membeanCard");
+    if (!card) return;
     const primary = document.getElementById("membeanPrimary");
     const detail = document.getElementById("membeanDetail");
     const progress = document.getElementById("membeanProgress");
-    if (!primary || !detail || !progress) return;
+    const status = document.getElementById("membeanStatus");
+    if (!primary || !detail || !progress || !status) return;
+    card.hidden = !state.membeanEnabled;
+    if (!state.membeanEnabled) {
+      status.textContent = "Off";
+      return;
+    }
+    status.textContent = "Active";
 
     const info = getMembeanProgress();
     const pct = Math.min(100, Math.round((info.completedSessions / info.requiredSessions) * 100));
     progress.style.width = `${pct}%`;
     
-    if (info.completedSessions >= 3) {
+    if (info.completedSessions >= info.requiredSessions) {
       primary.textContent = `✓ ${info.completedSessions}/${info.requiredSessions} Membean sessions complete!`;
       primary.style.color = "#10b981";
       detail.textContent = "All sessions completed for this week. Great job!";
@@ -216,7 +225,7 @@
       primary.textContent = `${info.completedSessions}/${info.requiredSessions} Membean sessions complete`;
       primary.style.color = "var(--text-dark)";
       if (info.activeTask) detail.textContent = `${info.activeTask.title} Due ${normalizeDueDate(info.activeTask.dueDate)}.`;
-      else detail.textContent = `Requirement: 3 sessions of 10 minutes each, due Saturday morning. ${3 - info.completedSessions} session${3 - info.completedSessions === 1 ? "" : "s"} remaining.`;
+      else detail.textContent = `Goal: ${info.requiredSessions} days of 10-minute training this week. ${info.requiredSessions - info.completedSessions} day${info.requiredSessions - info.completedSessions === 1 ? "" : "s"} remaining.`;
     }
   }
 

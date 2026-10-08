@@ -1,74 +1,145 @@
 # Architecture Overview
 
-## Product scope
+## Product Scope
 
-EPStudy is the main app. It is a school productivity tool for Eastside Preparatory School students that combines:
+EPStudy is the core school-focused study and time-management web application for Eastside Preparatory School students. It combines:
 
-- assignment and schedule awareness from Canvas
-- focus and time-management workflows
-- browser-local task and settings persistence
-- optional sync from TeamSnap and Membean via a companion extension
+- Coursework and assignment awareness from Canvas LMS
+- Dynamic schedule integration tailored to the EPS rotating period timetable
+- Focus timer and time-management workflows
+- Local browser state persistence with data restoration safeguards
+- Optional automatic data sync from Canvas, TeamSnap, and Membean via a companion extension
 
-The app is the primary product. The extension is a separate helper that makes school syncing easier without being required for the app itself.
+The web application is the primary product. The browser extension is a separate helper that simplifies school syncing without being required for the web app to function.
 
-## High-level structure
+## High-Level Component Structure
 
-- [../index.html](../index.html): main app shell, markup, and styles
-- [../app-shell.js](../app-shell.js): minimal browser bootstrap layer for navigation, prompt wiring, and extension message plumbing
-- [../app-data.js](../app-data.js): extracted static defaults and configuration metadata
-- [../app-state.js](../app-state.js): extracted state initialization and localStorage persistence
-- [../app-timer.js](../app-timer.js): extracted focus timer and task-loading logic
-- [../app-notifications.js](../app-notifications.js): extracted notification and toast feedback system
-- [../app-dashboard.js](../app-dashboard.js): extracted dashboard rendering and section visibility helpers
-- [../app-calendar.js](../app-calendar.js): extracted calendar navigation and task-display logic
-- [../app-settings.js](../app-settings.js): extracted settings UI initialization and display management
-- [../app-helpers.js](../app-helpers.js): extracted validation, formatting, and shared helper logic
-- [../app-visuals.js](../app-visuals.js): extracted canvas-based visual effects and skin particle animation
-- [../extension/background.js](../extension/background.js): background service worker for sync and messaging
-- [../extension/source-scraper.js](../extension/source-scraper.js): content scripts for school pages
-- [../extension/website-bridge.js](../extension/website-bridge.js): app-to-extension communication
-- [../extension/manifest.json](../extension/manifest.json): allowed hosts and permissions
+The frontend architecture consists of a static HTML shell (`index.html`) accompanied by 10 extracted JavaScript modules and a 4-file companion extension:
 
-## Data flow
+```text
+EPStudy/
+├── index.html                  # Main markup, layouts, modals, and styles
+├── app-shell.js                # Router, bootstrap glue, modal inert manager
+├── app-data.js                 # Configuration, schedule constants, quotes
+├── app-state.js                # State schema, migrations, restoration shields
+├── app-timer.js                # Focus timer countdown, task loading, audio
+├── app-notifications.js        # Notification queue, toasts, badge counts
+├── app-dashboard.js            # Dashboard rendering, schedule card, task lists
+├── app-calendar.js             # Month/Week/Day calendar views and task slots
+├── app-settings.js             # Settings tabs, data import/export, all-tasks view
+├── app-helpers.js              # Formatting, date/time math, validation helpers
+├── app-visuals.js              # Canvas background particles, themes, confetti
+├── extension/
+│   ├── manifest.json           # Manifest V3 permissions and host matching
+│   ├── background.js           # Background service worker and 10m sync alarm
+│   ├── source-scraper.js       # Scrapers for Canvas, TeamSnap, and Membean
+│   └── website-bridge.js       # Web-to-extension postMessage relay
+└── docs/                       # Architectural and operational documentation
+```
 
-1. The app stores local state in the browser.
-2. The extension, when installed, watches approved school pages.
-3. School scrapers extract tasks and metadata.
-4. The extension sends data back to the app.
-5. The app merges that data into the dashboard and study workflow.
+## Module Script Loading Order
 
-## Implementation notes
+In `index.html`, modules are loaded sequentially via standard `<script>` tags before the main app initialization block:
 
-- The main app is a static HTML/CSS/JS site.
-- Most state is browser-local.
-- The extension uses narrow permissions and approved domains.
-- The app and extension should stay aligned when a user workflow touches both.
+1. `app-data.js`: Registers `window.EPSTUDY_APP_CONFIG`
+2. `app-state.js`: Registers `window.EPSTUDY_APP_STATE`
+3. `app-timer.js`: Registers `window.EPSTUDY_APP_TIMER`
+4. `app-notifications.js`: Registers `window.EPSTUDY_APP_NOTIFICATIONS`
+5. `app-dashboard.js`: Registers `window.EPSTUDY_APP_DASHBOARD`
+6. `app-calendar.js`: Registers `window.EPSTUDY_APP_CALENDAR`
+7. `app-settings.js`: Registers `window.EPSTUDY_APP_SETTINGS`
+8. `app-helpers.js`: Registers `window.EPSTUDY_APP_HELPERS`
+9. `app-visuals.js`: Registers `window.EPSTUDY_APP_VISUALS`
+10. `app-shell.js`: Registers `window.EPSTUDY_APP_SHELL`
+11. Inline bootstrap block in `index.html`: Initializes state via `appState.loadState()`, binds events via `registerEvents()`, mounts the initial view, and initiates periodic intervals.
 
-## Change boundaries
+## Module Namespaces & Export Contracts
 
-- Page shell, markup, and layout structure: [../index.html](../index.html)
-- Browser bootstrap glue only: [../app-shell.js](../app-shell.js)
-- Shared app configuration and default metadata: [../app-data.js](../app-data.js)
-- State defaults, validation, and localStorage management: [../app-state.js](../app-state.js)
-- Focus timer UI updates and task-in-timer flow: [../app-timer.js](../app-timer.js)
-- Notification and toast feedback system: [../app-notifications.js](../app-notifications.js)
-- Dashboard section rendering and visibility: [../app-dashboard.js](../app-dashboard.js)
-- Calendar navigation, task mapping, and display: [../app-calendar.js](../app-calendar.js)
-- Settings UI initialization and all-assignments display: [../app-settings.js](../app-settings.js)
-- Shared validation and formatting helpers: [../app-helpers.js](../app-helpers.js)
-- Canvas effects and skin particle animation: [../app-visuals.js](../app-visuals.js)
-- Sync scheduling or background messaging: [../extension/background.js](../extension/background.js)
-- Source scraping: [../extension/source-scraper.js](../extension/source-scraper.js)
-- App-to-extension bridge: [../extension/website-bridge.js](../extension/website-bridge.js)
+Each module exposes its public API through a distinct namespace on `window`:
 
-## Documentation rule
+| Module | Namespace | Key Exports |
+| :--- | :--- | :--- |
+| [../app-data.js](../app-data.js) | `EPSTUDY_APP_CONFIG` | `STORAGE_KEY`, `SCHOOL_SCHEDULE`, `ACHIEVEMENTS`, `DEFAULT_COURSES`, `SKIN_IDS`, `MOTIVATIONAL_QUOTES` |
+| [../app-state.js](../app-state.js) | `EPSTUDY_APP_STATE` | `defaultState()`, `loadState()` |
+| [../app-timer.js](../app-timer.js) | `EPSTUDY_APP_TIMER` | `timerTaskOptions()`, `syncTimerTaskSelectors()`, `loadTaskInTimer()`, `toggleTimer()`, `resetFocusTimer()`, `updateTimerUi()` |
+| [../app-notifications.js](../app-notifications.js) | `EPSTUDY_APP_NOTIFICATIONS` | `addNotification()`, `showToast()`, `removeNotification()`, `renderNotifications()` |
+| [../app-dashboard.js](../app-dashboard.js) | `EPSTUDY_APP_DASHBOARD` | `renderDashboardSections()`, `renderScheduleCard()`, `renderTaskList()`, `renderSmartCard()`, `getMembeanProgress()` |
+| [../app-calendar.js](../app-calendar.js) | `EPSTUDY_APP_CALENDAR` | `renderMonthCalendar()`, `renderWeekCalendar()`, `renderFullCalendar()`, `shiftCalendar()`, `goToCurrentCalendarPeriod()` |
+| [../app-settings.js](../app-settings.js) | `EPSTUDY_APP_SETTINGS` | `initPageSettings()`, `updateAllAssignmentsDisplay()`, `toggleAllAssignmentsDisplay()` |
+| [../app-helpers.js](../app-helpers.js) | `EPSTUDY_APP_HELPERS` | `isValidTime()`, `safeIsoFromDateTime()`, `toMinutes()`, `nowMinutes()`, `isWeekend()`, `escapeHtml()`, `getCourseById()` |
+| [../app-visuals.js](../app-visuals.js) | `EPSTUDY_APP_VISUALS` | `resizeFxCanvas()`, `emitConfetti()`, `updateSkinEffect()`, `drawSkinParticles()`, `animateFx()` |
+| [../app-shell.js](../app-shell.js) | `EPSTUDY_APP_SHELL` | `saveState()`, `navigate()`, `showPrompt()`, `requestExtensionSync()`, `fetchTextViaExtension()`, `initAppShell()` |
 
-Keep [../README.md](../README.md) and [README.md](README.md) aligned when contributor guidance changes.
+## Data Flow & Browser Persistence
 
-## Duplicate-code prevention
+```
++---------------------+           +------------------------+
+|  School Web Pages   |           |    Web App Frontend    |
+| (Canvas, TeamSnap,  |           |      (EPStudy)         |
+|      Membean)       |           +-----------+------------+
++----------+----------+                       |
+           | (DOM scraping)                   | User actions, timer,
+           v                                  | settings changes
++----------+----------+                       v
+|   source-scraper    |           +-----------+------------+
++----------+----------+           |      saveState()       |
+           | chrome.runtime       |   (app-shell.js)       |
+           v                      +-----------+------------+
++----------+----------+                       |
+|   background.js     |                       | Ultimate Shield check
+|  (Service Worker)   |                       | JSON.stringify
+           |                                  v
+           v chrome.tabs.sendMessage  +-------+------------+
++----------+----------+               |   localStorage     |
+|   website-bridge    |               |  (epstudy_secure   |
++----------+----------+               |     _pro_v6)       |
+           | window.postMessage       +-------+------------+
+           v                                  |
++----------+----------+                       | On page load:
+|   app-shell.js      |                       | loadState()
+| handleExtension-    |                       | (app-state.js)
+|     Payload         |                       v
++----------+----------+           +-----------+------------+
+           | Merge tasks          |   In-Memory State      |
+           +--------------------->| (state.tasks, etc.)    |
+                                  +------------------------+
+```
 
-- Treat extracted modules as the source of truth for their feature area.
-- Do not keep a duplicate implementation of the same function in [../index.html](../index.html) after moving logic into a module.
-- If the app still needs a compatibility alias, it must be a one-line delegation to the module and not a second implementation.
-- Use a quick repo-wide function-name search before merging any refactor to confirm there is only one canonical implementation.
-- Update documentation alongside any refactor so future contributors know which file owns each behavior.
+### State Restoration Shields
+
+To safeguard against accidental data loss, `app-shell.js` and `app-state.js` implement defensive shields:
+- If a save or load operation produces an empty tasks array while `localStorage` contains existing tasks, the existing tasks are preserved.
+- Critical user preferences (`schoolDivision`, `tutorialSeen`) are locked and restored from persistent storage.
+- Time values are validated via `isValidTime` before parsing to avoid runtime exceptions on malformed strings.
+
+## Change Boundaries
+
+To maintain clean separation of concerns:
+- **Page shell, markup, and layout**: [../index.html](../index.html)
+- **Navigation, modals, and extension bridge wiring**: [../app-shell.js](../app-shell.js)
+- **Static defaults and schedule constants**: [../app-data.js](../app-data.js)
+- **State loading, migrations, and localStorage**: [../app-state.js](../app-state.js)
+- **Focus timer UI and countdown flow**: [../app-timer.js](../app-timer.js)
+- **Notification banner and toast rendering**: [../app-notifications.js](../app-notifications.js)
+- **Dashboard cards and section layout**: [../app-dashboard.js](../app-dashboard.js)
+- **Calendar views, task mapping, and date shifting**: [../app-calendar.js](../app-calendar.js)
+- **Settings panels and full assignment list**: [../app-settings.js](../app-settings.js)
+- **Shared string, time, and validation utilities**: [../app-helpers.js](../app-helpers.js)
+- **HTML5 canvas effects and skin animations**: [../app-visuals.js](../app-visuals.js)
+- **Extension background sync and alarm logic**: [../extension/background.js](../extension/background.js)
+- **School page scraping**: [../extension/source-scraper.js](../extension/source-scraper.js)
+- **Extension-to-app message bridge**: [../extension/website-bridge.js](../extension/website-bridge.js)
+
+## Duplicate-Code Prevention & Single Source of Truth
+
+- Extracted modules are the canonical source of truth for their respective domain.
+- Never duplicate extracted function implementations in [../index.html](../index.html).
+- If compatibility aliases are required, provide a single-line delegation to the module namespace.
+- Before concluding any refactor, run the automated workspace audit:
+  ```powershell
+  node .agents/skills/audit-codebase/scripts/audit.js
+  ```
+
+## Documentation Alignment Rule
+
+Keep [../README.md](../README.md), [README.md](README.md), and [../AGENTS.md](../AGENTS.md) aligned whenever module boundaries, dependencies, or contributor guidelines change.

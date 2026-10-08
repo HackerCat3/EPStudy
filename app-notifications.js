@@ -1,11 +1,19 @@
 (() => {
+  const getState = () => window.state || (window.EPSTUDY_APP_STATE ? window.EPSTUDY_APP_STATE.loadState() : { notifications: [] });
+  const safeEscapeHtml = (str) => (typeof window.escapeHtml === "function" ? window.escapeHtml(str) : (window.EPSTUDY_APP_HELPERS && typeof window.EPSTUDY_APP_HELPERS.escapeHtml === "function" ? window.EPSTUDY_APP_HELPERS.escapeHtml(str) : String(str ?? "")));
+  const safeSaveState = () => {
+    if (typeof window.saveState === "function") window.saveState();
+    else if (window.EPSTUDY_APP_SHELL && typeof window.EPSTUDY_APP_SHELL.saveState === "function") window.EPSTUDY_APP_SHELL.saveState();
+  };
+
   function addNotification(message, type = "info", duration = 0) {
+    const st = getState();
+    if (!Array.isArray(st.notifications)) st.notifications = [];
     const notif = { id: `notif-${Date.now()}`, message, type, timestamp: new Date(), read: false };
-    state.notifications.unshift(notif);
-    if (state.notifications.length > 10) state.notifications = state.notifications.slice(0, 10);
-    saveState();
+    st.notifications.unshift(notif);
+    if (st.notifications.length > 10) st.notifications = st.notifications.slice(0, 10);
+    safeSaveState();
     renderNotifications();
-    if (duration > 0) setTimeout(() => removeNotification(notif.id), duration);
   }
 
   function showToast(message, type = "info", duration = 4000) {
@@ -40,6 +48,10 @@
   function removeNotification(id) {
     state.notifications = state.notifications.filter(n => n.id !== id);
     saveState();
+    const st = getState();
+    if (!Array.isArray(st.notifications)) return;
+    st.notifications = st.notifications.filter(n => n.id !== id);
+    safeSaveState();
     renderNotifications();
   }
 
@@ -48,11 +60,14 @@
     const panel = document.getElementById("notificationsPanel");
     if (!badge || !panel) return;
 
-    const count = state.notifications.length;
-    badge.textContent = count; badge.style.display = count > 0 ? "grid" : "none";
-    panel.innerHTML = state.notifications.length ? state.notifications.map(n => `
+    const st = getState();
+    const notifs = Array.isArray(st.notifications) ? st.notifications : [];
+    const count = notifs.length;
+    badge.textContent = count;
+    badge.style.display = count > 0 ? "grid" : "none";
+    panel.innerHTML = notifs.length ? notifs.map(n => `
       <div class="notification-item ${n.type}">
-        <div class="notification-item-content"><span>${escapeHtml(n.message)}</span><span class="notif-time">${new Date(n.timestamp).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span></div>
+        <div class="notification-item-content"><span>${safeEscapeHtml(n.message)}</span><span class="notif-time">${new Date(n.timestamp).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span></div>
         <span class="notification-item-close" onclick="removeNotification('${n.id}')">✕</span>
       </div>
     `).join("") : "<div class='notification-item info'><span>No notifications</span></div>";
@@ -64,4 +79,9 @@
     removeNotification,
     renderNotifications
   };
+
+  window.addNotification = addNotification;
+  window.showToast = showToast;
+  window.removeNotification = removeNotification;
+  window.renderNotifications = renderNotifications;
 })();

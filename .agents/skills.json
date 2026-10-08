@@ -1,0 +1,14 @@
+{
+  "entries": [
+    {
+      "path": ".agents/skills/audit-codebase"
+    },
+    {
+      "path": ".agents/skills/preview-app"
+    },
+    {
+      "path": ".agents/skills/extension-sync"
+    }
+  ]
+}
+

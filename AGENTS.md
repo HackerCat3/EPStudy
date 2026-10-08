@@ -1,73 +1,132 @@
 # AGENTS.md
 
-## Purpose
+Welcome to the EPStudy repository. This file serves as the canonical guidelines and operational instructions for Google Antigravity and AI agents working on this codebase.
 
-EPStudy is the core school-focused study and time-management app. The browser extension is a separate, optional companion that makes syncing easier from Canvas, TeamSnap, and Membean, but it is not required for the app itself.
+## Purpose & Scope
 
-## Keep agent context narrow
+EPStudy is the core school-focused study and time-management web application designed for Eastside Preparatory School students. It surfaces Canvas coursework, organizes study blocks around the EPS academic schedule, tracks focus time, and persists student preferences locally.
 
-Use the documentation index before reading large files. Load only the docs needed for the task:
+- **Primary Product**: The static web application (`index.html` and supporting `app-*.js` modules).
+- **Optional Companion**: The browser extension (`extension/`), which simplifies importing assignments and events from Canvas, TeamSnap, and Membean tabs into the web app. The web app is fully functional without the extension.
 
-- Start with [README.md](README.md) for the high-level product summary.
-- Use [docs/README.md](docs/README.md) to choose the relevant deep-dive doc.
-- Use [extension/README.md](extension/README.md) when a task touches the browser extension.
-- Avoid reading the full app UI in [index.html](index.html) unless the change is directly in the dashboard or page logic.
+## Keep Agent Context Narrow (Progressive Disclosure)
 
-## Repo map
+> [!IMPORTANT]
+> `index.html` is very large (over 280 KB and nearly 5,000 lines). **Do NOT load the entirety of `index.html` into your context** unless your specific task directly requires modifying markup, CSS styles, or root HTML template containers.
 
-- [index.html](index.html): main app shell, page template, and UI structure.
-- [app-shell.js](app-shell.js): minimal browser bootstrap layer for navigation, modal/prompt wiring, and extension-message plumbing.
-- [app-data.js](app-data.js): extracted static configuration and app defaults.
-- [app-state.js](app-state.js): extracted state initialization and localStorage persistence.
-- [app-timer.js](app-timer.js): extracted focus timer and task-loading helpers.
-- [app-notifications.js](app-notifications.js): extracted notification and toast feedback system.
-- [app-dashboard.js](app-dashboard.js): extracted dashboard rendering and section management.
-- [app-calendar.js](app-calendar.js): extracted calendar navigation and task display.
-- [app-settings.js](app-settings.js): extracted settings UI and assignments display.
-- [app-helpers.js](app-helpers.js): extracted shared validation and formatting utilities used across the app.
-- [app-visuals.js](app-visuals.js): extracted canvas particle and skin-effect rendering logic.
-- [extension/background.js](extension/background.js): extension service worker that schedules syncs and handles requests from the web app.
-- [extension/source-scraper.js](extension/source-scraper.js): scripts that read Canvas, TeamSnap, and Membean pages.
-- [extension/website-bridge.js](extension/website-bridge.js): bridge between the web app and the extension.
-- [extension/manifest.json](extension/manifest.json): permissions and host access for allowed school services.
-- [extension/README.md](extension/README.md): extension setup and behavior notes.
+Follow the progressive disclosure model:
+1. Consult this guide ([AGENTS.md](AGENTS.md)) and the documentation index ([docs/README.md](docs/README.md)) first.
+2. Read only the specific documentation relevant to your task (e.g., [docs/architecture.md](docs/architecture.md), [docs/extension.md](docs/extension.md), or [docs/operations.md](docs/operations.md)).
+3. Read and modify only the specific extracted module that owns the target behavior (e.g., `app-dashboard.js`, `app-calendar.js`, `app-timer.js`).
+4. Delegate deep research or broad searches to the `research` subagent to prevent bloating your main conversation context.
 
-## Product conventions
+## Repository Map
 
-- This project is primarily a static browser app; it does not use a build system or package manager for the main app.
-- Changes should remain compatible with GitHub Pages hosting and browser-based local execution.
-- Respect the school-specific product scope: Canvas assignments, schedule-aware planning, focus timer, and student-facing time management workflows.
-- If a change touches both the website and the extension, update both the UI documentation and the extension docs together.
-- Prefer minimal, targeted edits over broad refactors. The app is highly state-driven and stores a lot of behavior in browser-local data.
+### Core Web Application
+- [index.html](index.html): Main HTML shell, styles, layout containers, SVG assets, and modal wrappers.
+- [app-shell.js](app-shell.js): Bootstrap orchestration, navigation router, modal/prompt plumbing, and extension message bridge.
+- [app-data.js](app-data.js): Static configuration, school schedule presets, subject colors, skin presets, and quotes (`window.EPSTUDY_APP_CONFIG`).
+- [app-state.js](app-state.js): State initialization, default state schema, `localStorage` persistence, and restore shields (`window.EPSTUDY_APP_STATE`).
+- [app-timer.js](app-timer.js): Focus timer engine, countdown intervals, audio cues, and active task loading (`window.EPSTUDY_APP_TIMER`).
+- [app-notifications.js](app-notifications.js): Notification queue, toast system, and alert badges (`window.EPSTUDY_APP_NOTIFICATIONS`).
+- [app-dashboard.js](app-dashboard.js): Dashboard summary cards, EPS schedule blocks, task lists, and Membean card rendering (`window.EPSTUDY_APP_DASHBOARD`).
+- [app-calendar.js](app-calendar.js): Calendar views (Month, Week, Day), task placement, time mapping, and date navigation (`window.EPSTUDY_APP_CALENDAR`).
+- [app-settings.js](app-settings.js): Settings panel controls, data import/export handlers, and assignment list view (`window.EPSTUDY_APP_SETTINGS`).
+- [app-helpers.js](app-helpers.js): Shared date/time formatters, sanitization, duration calculations, and validation helpers (`window.EPSTUDY_APP_HELPERS`).
+- [app-visuals.js](app-visuals.js): Canvas particle effects, theme skin visual systems, and confetti animations (`window.EPSTUDY_APP_VISUALS`).
 
-## Validation guidance
+### Companion Browser Extension
+- [extension/manifest.json](extension/manifest.json): Chrome Manifest V3 permissions, service worker, and host match patterns.
+- [extension/background.js](extension/background.js): Background service worker, 10-minute periodic sync alarm, and message routing.
+- [extension/source-scraper.js](extension/source-scraper.js): Scrapers for Canvas assignments/todos, TeamSnap calendar events, and Membean session counters.
+- [extension/website-bridge.js](extension/website-bridge.js): Content script bridging `window.postMessage` to `chrome.runtime.sendMessage`.
+- [extension/README.md](extension/README.md): Extension developer instructions, installation guide, and permissions justification.
 
-- There is no Node-based test suite in the main repo, so validation is usually browser-based.
-- For UI changes, open the static page in a browser and verify the relevant flow manually.
-- For extension changes, validate the manifest hosts and the sync flow against the allowed school domains.
-- If you add or change documentation, update [docs/README.md](docs/README.md) and the relevant section in this file so the agent still has a concise entry point.
+### Documentation & Customizations
+- [README.md](README.md): High-level product summary and repository overview.
+- [docs/README.md](docs/README.md): Documentation index and guide navigation.
+- [docs/architecture.md](docs/architecture.md): Deep-dive into modules, data flow, namespaces, and boundaries.
+- [docs/extension.md](docs/extension.md): Extension architecture, message protocols, and source scraper contracts.
+- [docs/operations.md](docs/operations.md): Local development, static serving, deployment checks, and verification recipes.
+- [.agents/skills/](.agents/skills/): Antigravity workspace skills (`audit-codebase`).
 
-## Quick rules for contributors
+## Module Namespaces & Export Contracts
 
-1. Keep school-product behavior intact and student-facing.
-2. Favor small, documented edits that match the existing project structure.
-3. Treat Canvas, TeamSnap, and Membean as first-class data sources when relevant.
-4. Make the extension and website docs reflect the same source-of-truth behavior.
-5. Never duplicate extracted UI logic in both [index.html](index.html) and a module file. If a function is moved to a module, [index.html](index.html) must only reference that module via a single alias or delegation.
-6. Before a refactor is considered complete, run a duplicate-code audit: search the repo for the same function names and remove any leftover copies.
+Each extracted module encapsulates its behavior in an IIFE and attaches a canonical object to `window`:
 
-## Source-of-truth rule
+| Module | Namespace Export | Primary Responsibilities |
+| :--- | :--- | :--- |
+| [app-data.js](app-data.js) | `window.EPSTUDY_APP_CONFIG` | Schedule tables, subject defaults, skin constants, motivational quotes |
+| [app-state.js](app-state.js) | `window.EPSTUDY_APP_STATE` | `defaultState()`, `loadState()`, validation, task/profile restoration shields |
+| [app-timer.js](app-timer.js) | `window.EPSTUDY_APP_TIMER` | `loadTaskInTimer()`, `toggleTimer()`, `resetFocusTimer()`, `updateTimerUi()` |
+| [app-notifications.js](app-notifications.js) | `window.EPSTUDY_APP_NOTIFICATIONS` | `addNotification()`, `showToast()`, `removeNotification()`, `renderNotifications()` |
+| [app-dashboard.js](app-dashboard.js) | `window.EPSTUDY_APP_DASHBOARD` | `renderDashboardSections()`, `renderScheduleCard()`, `renderTaskList()` |
+| [app-calendar.js](app-calendar.js) | `window.EPSTUDY_APP_CALENDAR` | `renderMonthCalendar()`, `renderWeekCalendar()`, `shiftCalendar()` |
+| [app-settings.js](app-settings.js) | `window.EPSTUDY_APP_SETTINGS` | `initPageSettings()`, `updateAllAssignmentsDisplay()` |
+| [app-helpers.js](app-helpers.js) | `window.EPSTUDY_APP_HELPERS` | `isValidTime()`, `safeIsoFromDateTime()`, `toMinutes()`, `escapeHtml()` |
+| [app-visuals.js](app-visuals.js) | `window.EPSTUDY_APP_VISUALS` | `resizeFxCanvas()`, `emitConfetti()`, `updateSkinEffect()`, `animateFx()` |
+| [app-shell.js](app-shell.js) | `window.EPSTUDY_APP_SHELL` | `saveState()`, `navigate()`, `showPrompt()`, `requestExtensionSync()` |
 
-- [index.html](index.html) is the app shell and markup layer.
-- [app-shell.js](app-shell.js) is the minimal browser bootstrap layer for navigation, modal/prompt plumbing, and extension-message wiring.
-- Extracted feature logic belongs in dedicated modules such as [app-dashboard.js](app-dashboard.js), [app-calendar.js](app-calendar.js), and [app-settings.js](app-settings.js).
-- Module code is the canonical implementation; [index.html](index.html) should not redeclare the same behavior unless it is a thin adapter for compatibility.
-- When you add a module, update the repo map and change boundaries in this file and [docs/architecture.md](docs/architecture.md) in the same change.
+## Architectural Boundaries & Change Ownership
 
-## Related docs
+- **Page markup, layouts, and modals**: [index.html](index.html)
+- **Bootstrap glue, modal inert management, router**: [app-shell.js](app-shell.js)
+- **Static defaults and schedule constants**: [app-data.js](app-data.js)
+- **State loading, migrations, and localStorage safety**: [app-state.js](app-state.js)
+- **Focus timer controls and task loading**: [app-timer.js](app-timer.js)
+- **Toast alerts and notification banners**: [app-notifications.js](app-notifications.js)
+- **Dashboard widgets, daily schedule card, smart suggestions**: [app-dashboard.js](app-dashboard.js)
+- **Calendar grid, day/week/month navigation, task placement**: [app-calendar.js](app-calendar.js)
+- **Settings panels and assignment view**: [app-settings.js](app-settings.js)
+- **Validation and string/time formatting utilities**: [app-helpers.js](app-helpers.js)
+- **Canvas background animations and particle themes**: [app-visuals.js](app-visuals.js)
+- **Extension background sync, alarms, and permissions**: [extension/background.js](extension/background.js)
+- **School page DOM scraping (Canvas/TeamSnap/Membean)**: [extension/source-scraper.js](extension/source-scraper.js)
+- **Website-to-extension communication relay**: [extension/website-bridge.js](extension/website-bridge.js)
 
-- [README.md](README.md)
-- [docs/README.md](docs/README.md)
-- [docs/architecture.md](docs/architecture.md)
-- [docs/extension.md](docs/extension.md)
-- [docs/operations.md](docs/operations.md)
+## Source-of-Truth & Duplicate-Code Prevention Rule
+
+1. **Extracted modules are the canonical implementation**: Once a function is extracted into a module, that module is the authoritative owner.
+2. **Never duplicate logic**: Do not declare duplicate copies of extracted functions in `index.html`. If backwards compatibility is needed, use a single delegation line (e.g. `const fn = () => window.EPSTUDY_APP_MODULE.fn()`).
+3. **Run a duplicate audit**: Before finishing any refactor or feature addition, run the audit script to ensure no unauthorized duplicates were introduced.
+
+## Data & State Integrity Safeguards
+
+- The application stores user state in `localStorage` under key `epstudy_secure_pro_v6`.
+- **Ultimate Shield**: `app-shell.js` and `app-state.js` contain protective guards to prevent empty state resets from overwriting a student's tasks, division selection, or tutorial status. **Never remove or bypass these guards**.
+- Always ensure date/time strings are validated safely via `isValidTime` before performing arithmetic.
+
+## Antigravity Verification Recipes
+
+Use these commands directly in Antigravity to verify changes:
+
+### 1. Run Workspace Audit (Syntax, Duplicates, Links)
+```powershell
+node .agents/skills/audit-codebase/scripts/audit.js
+```
+
+### 2. Check JavaScript Syntax Across All Files
+```powershell
+Get-ChildItem -Filter *.js | ForEach-Object { node -c $_.FullName }
+Get-ChildItem -Path extension -Filter *.js | ForEach-Object { node -c $_.FullName }
+```
+
+### 3. Launch Local Static Preview Server
+```powershell
+python -m http.server 8000
+```
+Then verify the app in your browser at `http://localhost:8000/`.
+
+## Workspace Skills in Antigravity
+
+This repository includes specialized Antigravity workspace skills in `.agents/skills/`:
+- **`audit-codebase`**: Runs syntax validation, duplicate-code checks, and markdown link verification.
+
+## Documentation Index
+
+- [README.md](README.md): High-level overview and product scope.
+- [docs/README.md](docs/README.md): Documentation index and navigation.
+- [docs/architecture.md](docs/architecture.md): Deep-dive into application architecture, data flow, and module boundaries.
+- [docs/extension.md](docs/extension.md): Extension architecture, messaging protocol, and scraper contracts.
+- [docs/operations.md](docs/operations.md): Local development, deployment checks, and verification workflows.
+- [extension/README.md](extension/README.md): Extension setup, permissions, and Chrome/Edge loading instructions.

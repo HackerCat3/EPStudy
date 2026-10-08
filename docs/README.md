@@ -1,40 +1,55 @@
 # Documentation Index
 
-Keep context small. The app is the main product; the extension is an optional companion that helps with syncing.
+Welcome to the EPStudy documentation index. EPStudy is the primary student study and time-management web app; the browser extension is an optional companion that assists with automated school-source syncing.
 
-## Start here
+## Start Here
 
-- [../README.md](../README.md): app overview and product scope
-- [architecture.md](architecture.md): repo structure and responsibilities, including the extracted main-app module map
-- [extension.md](extension.md): optional extension behavior and sync flow
-- [operations.md](operations.md): local usage and maintenance notes
+- [../README.md](../README.md): High-level app overview, features, and quick start
+- [../AGENTS.md](../AGENTS.md): Antigravity AI pair programming instructions, coding rules, and module boundaries
+- [architecture.md](architecture.md): Full architectural map, module responsibilities, and data flow
+- [extension.md](extension.md): Extension architecture, message contracts, and school scraper specifications
+- [operations.md](operations.md): Local previewing, static hosting, and automated validation recipes
+- [../extension/README.md](../extension/README.md): Step-by-step developer instructions for installing the extension
 
-## Main app modules
+## Repository Modules
 
-- [../index.html](../index.html): app shell and page template
-- [../app-shell.js](../app-shell.js): minimal bootstrap layer for navigation, modal/prompt wiring, and extension bridge setup
-- [../app-data.js](../app-data.js): static defaults and metadata
-- [../app-state.js](../app-state.js): local storage and state initialization
-- [../app-timer.js](../app-timer.js): timer behavior and task loading
-- [../app-dashboard.js](../app-dashboard.js): dashboard rendering
-- [../app-calendar.js](../app-calendar.js): calendar display and navigation
-- [../app-settings.js](../app-settings.js): settings and assignment views
-- [../app-helpers.js](../app-helpers.js): shared helper utilities
-- [../app-visuals.js](../app-visuals.js): canvas visuals and particle effects
+### Web Application Modules
+- [../index.html](../index.html): App shell, layout markup, styles, and modal templates
+- [../app-shell.js](../app-shell.js): Bootstrap layer for navigation, modal/prompt plumbing, and extension bridge setup
+- [../app-data.js](../app-data.js): Static schedule tables, course presets, skin effects, and metadata (`EPSTUDY_APP_CONFIG`)
+- [../app-state.js](../app-state.js): State initialization, migrations, and `localStorage` restoration shields (`EPSTUDY_APP_STATE`)
+- [../app-timer.js](../app-timer.js): Focus timer engine, countdown loops, and task loading (`EPSTUDY_APP_TIMER`)
+- [../app-notifications.js](../app-notifications.js): Toast notifications, alert queue, and badge updates (`EPSTUDY_APP_NOTIFICATIONS`)
+- [../app-dashboard.js](../app-dashboard.js): Dashboard widgets, EPS daily schedule card, and task lists (`EPSTUDY_APP_DASHBOARD`)
+- [../app-calendar.js](../app-calendar.js): Calendar views (Month, Week, Day) and task mapping (`EPSTUDY_APP_CALENDAR`)
+- [../app-settings.js](../app-settings.js): Settings panel controls and all-assignments viewer (`EPSTUDY_APP_SETTINGS`)
+- [../app-helpers.js](../app-helpers.js): Shared validation, time formatters, and utility functions (`EPSTUDY_APP_HELPERS`)
+- [../app-visuals.js](../app-visuals.js): Canvas visual effects, skin particle systems, and confetti (`EPSTUDY_APP_VISUALS`)
 
-## When to read each doc
+### Companion Extension Files
+- [../extension/manifest.json](../extension/manifest.json): Manifest V3 configuration, permissions, and host patterns
+- [../extension/background.js](../extension/background.js): Background service worker and 10-minute sync scheduler
+- [../extension/source-scraper.js](../extension/source-scraper.js): DOM scraping scripts for Canvas, TeamSnap, and Membean
+- [../extension/website-bridge.js](../extension/website-bridge.js): Web-to-extension communication relay
 
-- App overview or scope: [../README.md](../README.md)
-- Repo layout and logic boundaries: [architecture.md](architecture.md)
-- Sync or scraper work: [extension.md](extension.md)
-- Local usage or deployment checks: [operations.md](operations.md)
+### Agent Customizations
+- [../.agents/skills/](../.agents/skills/): Antigravity workspace skills (`audit-codebase`)
 
-## Agent loading rule
+## When to Read Each Doc
 
-Load only the docs needed for the task:
+- **Product overview or scope**: [../README.md](../README.md)
+- **Agent guidelines, rules, or boundaries**: [../AGENTS.md](../AGENTS.md)
+- **System architecture, namespaces, and data flow**: [architecture.md](architecture.md)
+- **Extension syncing, messaging, or scrapers**: [extension.md](extension.md)
+- **Local serving, verification, or deployment**: [operations.md](operations.md)
+- **Extension installation in browser**: [../extension/README.md](../extension/README.md)
 
-1. [../README.md](../README.md)
-2. The matching deep-dive doc
-3. The exact file being changed
+## Agent Loading Rule (Keep Context Narrow)
 
-This keeps work focused without losing the core product context.
+To conserve model context and maximize reasoning quality, adhere to progressive disclosure:
+
+1. Never load [../index.html](../index.html) into context unless modifying HTML markup or styles.
+2. Read [../AGENTS.md](../AGENTS.md) or [../README.md](../README.md) to locate the target module.
+3. Read only the matching deep-dive documentation file.
+4. Read and modify only the specific module file being changed.
+5. Use `.agents/skills/audit-codebase/scripts/audit.js` to verify integrity before concluding.

@@ -203,6 +203,11 @@
   #page-dashboard .panel { padding: 1.1rem; }
   #page-dashboard .panel h2 { margin-bottom: 0.75rem; }
   #page-dashboard .helper-text { line-height: 1.35; }
+  #page-dashboard.legacy-dashboard { display: none !important; }
+  .performance-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; padding: 0; overflow: hidden; }
+  .performance-strip > div { display: grid; gap: 0.25rem; padding: 1rem 1.15rem; background: var(--panel); }
+  .performance-strip strong { color: var(--navy-primary); font-size: 1.55rem; }
+  @media (max-width: 600px) { .performance-strip > div { padding: 0.8rem; } .performance-strip strong { font-size: 1.25rem; } }
   #page-dashboard .hero-stats { gap: 0.65rem; margin-top: 1rem; }
   #page-dashboard .stat-chip { padding: 0.7rem; }
   #page-dashboard .stat-chip strong { font-size: 1.25rem; }
@@ -874,7 +879,7 @@
       </div>
       <div>
         <p class="eyebrow">Eastside Preparatory School</p>
-        <h1>Dashboard</h1>
+        <h1>Tasks</h1>
       </div>
     </div>
     <div class="actions">
@@ -884,7 +889,6 @@
   </header>
   <!-- Multi-Page Navigation -->
   <div class="navbar">
-    <button class="nav-btn active" data-page="dashboard" onclick="navigate('dashboard')">Dashboard</button>
     <button class="nav-btn" data-page="tasks" onclick="navigate('tasks')">Tasks</button>
     <button class="nav-btn" data-page="timer" onclick="navigate('timer')">Focus Timer</button>
     <button class="nav-btn" data-page="schedule" onclick="navigate('schedule')">Schedule</button>
@@ -900,7 +904,7 @@
   </div>
 
     <!-- DASHBOARD PAGE (Main Content) -->
-    <div id="page-dashboard" class="page active">
+    <div id="page-dashboard" class="page legacy-dashboard" aria-hidden="true">
 
   <!-- Dashboard Workflow Area -->
   <h2 class="section-title">Daily Workflow 
@@ -916,15 +920,15 @@
       <div class="hero-stats">
         <div class="stat-chip">
           <span class="mini-text" style="color: rgba(255,255,255,0.7)">Sessions</span>
-          <strong id="heroSessions">0</strong>
+          <strong id="legacyHeroSessions">0</strong>
         </div>
         <div class="stat-chip">
           <span class="mini-text" style="color: rgba(255,255,255,0.7)">Focus Mins</span>
-          <strong id="heroMinutes">0</strong>
+          <strong id="legacyHeroMinutes">0</strong>
         </div>
         <div class="stat-chip">
           <span class="mini-text" style="color: rgba(255,255,255,0.7)">Streak</span>
-          <strong id="heroStreak">0 days</strong>
+          <strong id="legacyHeroStreak">0 days</strong>
         </div>
       </div>
     </article>
@@ -1301,7 +1305,11 @@
         <div class="settings-card col-4">
           <h3>Notifications</h3>
           <p>Keep only the reminders you actually want.</p>
-          <label style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; color: var(--text-dark);"><input type="checkbox" id="notifMembean" checked /> Membean reminders</label>
+          <label style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; color: var(--text-dark);"><input type="checkbox" id="notifMembean" /> Membean reminders</label>
+          <label class="field-label" for="membeanWeeklyDays">Membean days per week</label>
+          <select id="membeanWeeklyDays" class="field" style="margin-bottom: 12px;">
+            <option value="1">1 day</option><option value="2">2 days</option><option value="3">3 days</option><option value="4">4 days</option><option value="5">5 days</option><option value="6">6 days</option><option value="7">7 days</option>
+          </select>
           <label style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; color: var(--text-dark);"><input type="checkbox" id="notifQuizzes" checked /> Quiz reminders</label>
           <label style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; color: var(--text-dark);"><input type="checkbox" id="notifAssignments" checked /> New assignments</label>
           <label style="display: flex; gap: 8px; align-items: center; color: var(--text-dark);"><input type="checkbox" id="notifOverdue" checked /> Overdue warnings</label>
@@ -1363,6 +1371,12 @@
     <!-- TASKS PAGE -->
     <div id="page-tasks" class="page">
       <h2 class="section-title">Tasks</h2>
+
+      <section class="panel performance-strip" aria-label="Study progress">
+        <div><span class="mini-text">Sessions</span><strong id="heroSessions">0</strong></div>
+        <div><span class="mini-text">Focus minutes</span><strong id="heroMinutes">0</strong></div>
+        <div><span class="mini-text">Day streak</span><strong id="heroStreak">0</strong></div>
+      </section>
       
       <section class="grid">
         <article class="panel col-4">
@@ -1370,6 +1384,17 @@
           <p id="smartMessage" class="helper-text" style="font-size: 0.85rem;">Analyzing your queue...</p>
           <div id="smartTaskMeta" class="smart-list"></div>
           <button id="useSmartTaskBtn" class="button primary" type="button">Load Next Chunk</button>
+        </article>
+
+        <article class="panel col-4" id="membeanCard">
+          <div class="row" style="justify-content: space-between; align-items: center; gap: 0.75rem;">
+            <h2>Membean</h2>
+            <span id="membeanStatus" class="status-chip free">Off</span>
+          </div>
+          <p id="membeanPrimary" class="helper-text">Turn on Membean reminders in Settings.</p>
+          <div class="progress-track"><div id="membeanProgress" class="progress-fill"></div></div>
+          <p id="membeanDetail" class="mini-text" style="margin-top: 0.6rem;">Choose how many days per week you want to train.</p>
+          <button id="openMembeanSettingsBtn" class="button" type="button" onclick="navigate('settings')">Membean settings</button>
         </article>
 
         <details class="panel col-8 collapsible-panel">
@@ -1732,6 +1757,28 @@
   if (window.EPSTUDY_APP_SHELL && typeof window.EPSTUDY_APP_SHELL.initAppShell === "function") {
     window.EPSTUDY_APP_SHELL.initAppShell();
   }
+
+  // Export domain functions to window for module interop
+  window.getTaskRemainingMinutes = getTaskRemainingMinutes;
+  window.getStudyChunkMinutes = getStudyChunkMinutes;
+  window.getTodaysEpsSchedule = getTodaysEpsSchedule;
+  window.scheduleBlocksForDivision = scheduleBlocksForDivision;
+  window.scheduleMinuteValue = scheduleMinuteValue;
+  window.normalizeScheduleBlockTimes = normalizeScheduleBlockTimes;
+  window.updateCurrentPeriod = updateCurrentPeriod;
+  window.getAvailabilityStatus = getAvailabilityStatus;
+  window.getScheduleStatus = getScheduleStatus;
+  window.normalizeDueDate = normalizeDueDate;
+  window.localDateKey = localDateKey;
+  window.isOverdue = isOverdue;
+  window.getUniqueCalendarTasks = getUniqueCalendarTasks;
+  window.cleanupCalendarOverlaps = cleanupCalendarOverlaps;
+  window.getTaskType = getTaskType;
+  window.taskTypeLabel = taskTypeLabel;
+  window.isActionableTask = isActionableTask;
+  window.getSmartTaskChoices = getSmartTaskChoices;
+  window.renderAll = renderAll;
+
   const initialRemovedNoCourse = removeTasksWithoutRealCourse(false);
   const initialMergedDuplicates = mergeDuplicateTasks();
   if (initialRemovedNoCourse || initialMergedDuplicates) saveState();
@@ -1741,6 +1788,10 @@
   let timerRemainingSeconds = timerDurationSeconds;
   let timerInterval = null;
   let lastAutoFilledTaskId = null;
+  window.timerDurationSeconds = Math.max(1, Number(state.timerMinutes || 25)) * 60;
+  window.timerRemainingSeconds = window.timerDurationSeconds;
+  window.timerInterval = null;
+  window.lastAutoFilledTaskId = null;
   let currentSubmissionTask = null; // Used for Canvas Text Submission
   let musicCtx = null;
   let musicGain = null;
@@ -1871,7 +1922,7 @@
     } catch (e) {}
 
     try {
-      const fresh = defaultState();
+      const fresh = (window.EPSTUDY_APP_STATE || appState).defaultState();
       Object.keys(state).forEach(key => { delete state[key]; });
       Object.assign(state, fresh);
       saveState();
@@ -1881,6 +1932,8 @@
     try { sessionStorage.setItem("epstudy_after_reset", JSON.stringify({ page: "settings", openWelcome: true })); } catch (e) {}
     setTimeout(() => location.reload(), 700);
   }
+  window.resetEverything = resetEverything;
+  window.resetAllData = resetEverything;
 
   // global keyboard handler: Esc closes tutorial if open
   document.addEventListener('keydown', (e) => {
@@ -2501,7 +2554,7 @@
     {
       title: "Start Focus",
       target: '#startPauseBtn',
-      page: "dashboard",
+      page: "tasks",
       targetLabel: "Begin a short work session.",
       body: `
         <p><strong>Do this now:</strong> keep 25m selected, choose a task if you have one, then click Start Focus.</p>
@@ -3033,6 +3086,17 @@
       .filter(task => isActionableTask(task) && !task.completed)
       .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   }
+  /* Timer functions are owned by app-timer.js. */
+  const timerTaskOptionsBridge = () => (window.EPSTUDY_APP_TIMER ? window.EPSTUDY_APP_TIMER.timerTaskOptions() : []);
+  const syncTimerTaskSelectorsBridge = (selectedId) => (window.EPSTUDY_APP_TIMER && window.EPSTUDY_APP_TIMER.syncTimerTaskSelectors(selectedId));
+  const loadTaskInTimerBridge = (taskId) => (window.EPSTUDY_APP_TIMER && window.EPSTUDY_APP_TIMER.loadTaskInTimer(taskId));
+  const clearTimerTaskBridge = () => (window.EPSTUDY_APP_TIMER && window.EPSTUDY_APP_TIMER.clearTimerTask());
+  const updateTimerUiBridge = () => (window.EPSTUDY_APP_TIMER && window.EPSTUDY_APP_TIMER.updateTimerUi());
+  const setTimerFromMinutesBridge = (mins, silent) => (window.EPSTUDY_APP_TIMER && window.EPSTUDY_APP_TIMER.setTimerFromMinutes(mins, silent));
+  const resetFocusTimerBridge = () => (window.EPSTUDY_APP_TIMER && window.EPSTUDY_APP_TIMER.resetFocusTimer());
+  const toggleTimerBridge = () => (window.EPSTUDY_APP_TIMER && window.EPSTUDY_APP_TIMER.toggleTimer());
+  const notifyTimerFinishedBridge = (doneTask, finishedTask) => (window.EPSTUDY_APP_TIMER && window.EPSTUDY_APP_TIMER.notifyTimerFinished(doneTask, finishedTask));
+  const completeSessionBridge = (overrideMins) => (window.EPSTUDY_APP_TIMER && window.EPSTUDY_APP_TIMER.completeSession(overrideMins));
 
   function syncTimerTaskSelectors(selectedId = state.selectedTaskId || "") {
     const options = timerTaskOptions();
@@ -4023,9 +4087,29 @@
     state.membeanEnabled = Boolean(enabled);
     state.dashboardSections.membean = state.membeanEnabled;
     state.notificationSettings.membean = state.membeanEnabled;
-    if (!state.membeanEnabled) state.tasks = state.tasks.filter(task => task.source !== "membean");
-    if (!state.membeanEnabled) delete state.dashboardExpandedSections.membean;
-    if (!state.membeanEnabled) state.dashboardExpansionSections.membean = false;
+    if (state.membeanEnabled && ("Notification" in window) && Notification.permission === "default") Notification.requestPermission();
+  }
+
+  function checkMembeanReminder() {
+    if (!state.membeanEnabled || !state.notificationSettings.membean) return;
+    const info = getMembeanProgress();
+    if (info.completedSessions >= info.requiredSessions) return;
+    const today = new Date();
+    const dayNumber = today.getDay() === 0 ? 7 : today.getDay();
+    const expectedByToday = Math.ceil((info.requiredSessions * dayNumber) / 7);
+    if (info.completedSessions >= expectedByToday) return;
+    const monday = new Date(today);
+    monday.setHours(0, 0, 0, 0);
+    monday.setDate(today.getDate() - (dayNumber - 1));
+    const weekKey = monday.toISOString().slice(0, 10);
+    const reminderKey = `${weekKey}:${info.completedSessions}:${info.requiredSessions}`;
+    if (state.membeanReminderKey === reminderKey) return;
+    state.membeanReminderKey = reminderKey;
+    const remaining = info.requiredSessions - info.completedSessions;
+    const message = `Membean reminder: complete ${remaining} more training day${remaining === 1 ? "" : "s"} this week.`;
+    addNotification(message, "warning", 8000);
+    if ("Notification" in window && Notification.permission === "granted") new Notification("Membean reminder", { body: message });
+    saveState();
   }
 
   // TeamSnap enable/disable removed.
@@ -4066,6 +4150,8 @@
     const ce = document.getElementById("confettiEnabled"); if (ce) ce.checked = Boolean(state.confettiEnabled);
     const te = document.getElementById("trailEnabled"); if (te) te.checked = Boolean(state.trailEnabled);
     const sds = document.getElementById("schoolDivisionSelect"); if (sds) sds.value = state.schoolDivision;
+    const membeanToggle = document.getElementById("notifMembean"); if (membeanToggle) membeanToggle.checked = Boolean(state.membeanEnabled);
+    const membeanDays = document.getElementById("membeanWeeklyDays"); if (membeanDays) membeanDays.value = String(state.membeanWeeklyDays || 3);
     syncGuideSetupControls();
     syncWorkspaceTabControls();
     syncMusicSettings();
@@ -4105,7 +4191,7 @@
     const mq = document.getElementById("motivationalQuote"); if (mq) mq.textContent = `"${quoteObj.text}"`;
     const qa = document.getElementById("quoteAuthor"); if (qa) qa.textContent = `- ${quoteObj.author}`;
 
-    renderHeaderStats(); renderScheduleCard(); renderTaskList(); renderSmartCard(); renderCalendar(); updateTimerUi();
+    renderHeaderStats(); renderScheduleCard(); renderTaskList(); renderSmartCard(); renderMembeanCard(); checkMembeanReminder(); renderCalendar(); updateTimerUi();
     renderFullCalendar();
     renderEpsDayInfo();
     // TeamSnap event notifications removed
@@ -4511,11 +4597,18 @@
     ["notifMembean", "notifQuizzes", "notifAssignments", "notifOverdue", "notifTimerDone"].forEach(id => {
       document.getElementById(id)?.addEventListener("change", e => {
         state.notificationSettings[id.replace("notif", "").toLowerCase()] = e.target.checked;
+        if (id === "notifMembean") setMembeanEnabled(e.target.checked);
         if (id === "notifTimerDone" && e.target.checked && ("Notification" in window) && Notification.permission === "default") {
           Notification.requestPermission();
         }
-        saveState();
+        saveState(); renderAll();
       });
+    });
+
+    document.getElementById("membeanWeeklyDays")?.addEventListener("change", e => {
+      state.membeanWeeklyDays = Math.max(1, Math.min(7, Number(e.target.value) || 3));
+      state.membeanReminderKey = "";
+      saveState(); renderAll();
     });
 
     document.getElementById("confettiEnabled")?.addEventListener("change", e => {
@@ -4697,7 +4790,7 @@
       });
     });
     document.querySelectorAll("[data-open-tab-help]").forEach(button => {
-      button.addEventListener("click", () => navigate(button.dataset.openTabHelp || "dashboard"));
+      button.addEventListener("click", () => navigate(button.dataset.openTabHelp || "tasks"));
     });
     document.querySelectorAll("[data-guide-division]").forEach(input => {
       input.addEventListener("change", e => {
@@ -4711,18 +4804,18 @@
         if (!e.target.checked) return;
         state.otherTabEnabled = e.target.value === "show";
         saveState(); renderAll();
-        if (!state.otherTabEnabled && state.currentPage === "other") navigate("dashboard");
+        if (!state.otherTabEnabled && state.currentPage === "other") navigate("tasks");
       });
     });
     document.getElementById("otherTabEnabled")?.addEventListener("change", e => {
       state.otherTabEnabled = Boolean(e.target.checked);
       saveState(); renderAll();
-      if (!state.otherTabEnabled && state.currentPage === "other") navigate("dashboard");
+      if (!state.otherTabEnabled && state.currentPage === "other") navigate("tasks");
     });
     document.getElementById("otherTabEnabledSettings")?.addEventListener("change", e => {
       state.otherTabEnabled = Boolean(e.target.checked);
       saveState(); renderAll();
-      if (!state.otherTabEnabled && state.currentPage === "other") navigate("dashboard");
+      if (!state.otherTabEnabled && state.currentPage === "other") navigate("tasks");
     });
     document.getElementById("mainGuidePrevBtn")?.addEventListener("click", () => {
       activeGuideIndex = Math.max(0, activeGuideIndex - 1);

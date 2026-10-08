@@ -14,9 +14,14 @@ function saveState() {
   const state = getCurrentState();
   const previousData = JSON.parse(localStorage.getItem(getStorageKey()) || "{}");
   
-  // SUPER SHIELD: If the app tries to reset, restore EVERYTHING (tasks, settings, and school level)
-  if (state.tasks && state.tasks.length === 0 && previousData.tasks && previousData.tasks.length > 0) {
-    Object.assign(state, previousData); 
+  // 🛡️ ULTIMATE SHIELD: Guard against empty resets wiping tasks, courses, school choice, or tutorial status
+  if (!state.tutorialSeen && previousData.tutorialSeen) state.tutorialSeen = previousData.tutorialSeen;
+  if (!state.schoolDivision && previousData.schoolDivision) state.schoolDivision = previousData.schoolDivision;
+  if (previousData.tasks && previousData.tasks.length > 0 && (!state.tasks || state.tasks.length === 0)) {
+    state.tasks = previousData.tasks; 
+  }
+  if (previousData.courses && previousData.courses.length > 0 && (!state.courses || state.courses.length === 0)) {
+    state.courses = previousData.courses; 
   }
 
   if (typeof window.syncCourseColorInputsToState === "function") {
@@ -49,7 +54,7 @@ function saveState() {
   function navigate(page, updateHistory = true) {
     const state = getCurrentState();
     const normalizedPage = page === "cosmetics" ? "other" : page;
-    const destination = normalizedPage === "other" && state.otherTabEnabled === false ? "dashboard" : normalizedPage;
+    const destination = normalizedPage === "dashboard" ? "tasks" : (normalizedPage === "other" && state.otherTabEnabled === false ? "tasks" : normalizedPage);
 
     state.currentPage = destination;
     if (destination === "calendar" && typeof window.cleanupCalendarOverlaps === "function") {
@@ -127,7 +132,7 @@ function saveState() {
     });
 
     window.addEventListener("popstate", (event) => {
-      const page = event.state?.page || new URLSearchParams(window.location.search).get("page") || "dashboard";
+      const page = event.state?.page || new URLSearchParams(window.location.search).get("page") || "tasks";
       navigate(page, false);
     });
 
@@ -144,7 +149,7 @@ function saveState() {
     });
 
     document.addEventListener("DOMContentLoaded", () => {
-      const startPage = new URLSearchParams(window.location.search).get("page") || getCurrentState().currentPage || "dashboard";
+      const startPage = new URLSearchParams(window.location.search).get("page") || getCurrentState().currentPage || "tasks";
       navigate(startPage, false);
       try {
         if (typeof window.initModalInertManager === "function") window.initModalInertManager();

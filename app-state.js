@@ -1,4 +1,46 @@
 (() => {
+  const isValidTime = (timeStr) => {
+    if (!timeStr || typeof timeStr !== 'string' || timeStr.trim() === "") {
+      return false;
+    }
+    return timeStr.includes(':') || timeStr.includes('T');
+  };
+  if (typeof window !== "undefined" && !window.isValidTime) {
+    window.isValidTime = isValidTime;
+  }
+
+  const parseTimeToMinutes = (val) => {
+    if (!val || typeof val !== "string") return -1;
+    const parts = val.split(":");
+    if (parts.length !== 2) return -1;
+    const h = Number(parts[0]);
+    const m = Number(parts[1]);
+    if (Number.isNaN(h) || Number.isNaN(m)) return -1;
+    return h * 60 + m;
+  };
+  const toMinutes = (val) => {
+    if (typeof window.toMinutes === "function" && window.toMinutes !== toMinutes) {
+      return window.toMinutes(val);
+    }
+    return parseTimeToMinutes(val);
+  };
+  if (typeof window !== "undefined" && !window.toMinutes) {
+    window.toMinutes = toMinutes;
+  }
+
+  const cleanTitle = (raw) => {
+    const str = String(raw || "").trim();
+    return str.replace(/^Assignment\b:?\s*/i, "").trim() || "Untitled Task";
+  };
+  const normalizeAssignmentTitle = (raw) => {
+    if (typeof window.normalizeAssignmentTitle === "function" && window.normalizeAssignmentTitle !== normalizeAssignmentTitle) {
+      return window.normalizeAssignmentTitle(raw);
+    }
+    return cleanTitle(raw);
+  };
+  if (typeof window !== "undefined" && !window.normalizeAssignmentTitle) {
+    window.normalizeAssignmentTitle = normalizeAssignmentTitle;
+  }
   const appConfig = window.EPSTUDY_APP_CONFIG || {};
   const STORAGE_KEY = appConfig.STORAGE_KEY || "epstudy_secure_pro_v6";
   const DEFAULT_COURSES = appConfig.DEFAULT_COURSES || [{ id: "course-personal", name: "Personal", code: "PERS", color: "#8b5cf6" }];
@@ -15,6 +57,8 @@
       musicMode: "none", musicVolume: 35, importedMusicName: "", importedMusicDataUrl: "", musicSearchQuery: "",
       importedMusicPlaylist: [], importedMusicIndex: null,
       membeanEnabled: false,
+      membeanWeeklyDays: 3,
+      membeanReminderKey: "",
       devControlsVisible: false,
       layoutEditMode: false,
       otherTabEnabled: true,
@@ -25,7 +69,7 @@
       canvasEvents: [],
       notifications: [],
       notificationSettings: { membean: false, quizzes: true, assignments: true, overdue: true, timerdone: true },
-      currentPage: "dashboard",
+      currentPage: "tasks",
       skinChangeRestrictedToFreePeriods: true,
       scheduleOverrideActive: false,
       ambientFocusMode: false,
@@ -62,7 +106,9 @@
       merged.canvasEvents = Array.isArray(merged.canvasEvents) ? merged.canvasEvents : [];
       merged.availabilityByDay = typeof merged.availabilityByDay === "object" && merged.availabilityByDay ? merged.availabilityByDay : base.availabilityByDay;
       merged.notificationSettings = { ...base.notificationSettings, ...(merged.notificationSettings || {}) };
-      merged.membeanEnabled = false;
+      merged.membeanEnabled = Boolean(merged.membeanEnabled);
+      merged.membeanWeeklyDays = Math.max(1, Math.min(7, Number(merged.membeanWeeklyDays) || 3));
+      merged.membeanReminderKey = typeof merged.membeanReminderKey === "string" ? merged.membeanReminderKey : "";
       merged.calendarView = ["month", "week"].includes(merged.calendarView) ? merged.calendarView : "month";
       merged.selectedSkin = SKIN_IDS.includes(merged.selectedSkin) ? merged.selectedSkin : "default";
       merged.skinsVisible = true;
@@ -99,9 +145,7 @@
         merged.dashboardExpansionSections[key] = Boolean(merged.dashboardExpansionSections[key]);
         if (!merged.dashboardExpansionSections[key]) delete merged.dashboardExpandedSections[key];
       });
-      merged.dashboardSections.membean = false;
-      merged.tasks = merged.tasks.filter(task => String(task?.source || "").toLowerCase() !== "membean");
-      merged.membeanSessionsCompleted = Math.max(0, Math.min(3, Number(merged.membeanSessionsCompleted) || 0));
+      merged.membeanSessionsCompleted = Math.max(0, Math.min(7, Number(merged.membeanSessionsCompleted) || 0));
       merged.membeanSessionsLastUpdated = typeof merged.membeanSessionsLastUpdated === "string" ? merged.membeanSessionsLastUpdated : null;
 
       merged.courses = merged.courses.map((c, i) => ({
@@ -134,7 +178,7 @@
         const dk = String(day);
         const rawWindows = Array.isArray(merged.availabilityByDay[dk]) ? merged.availabilityByDay[dk] : [];
         merged.availabilityByDay[dk] = rawWindows
-          .filter(w => w && typeof w === "object" && isValidTime(w.start) && isValidTime(w.end) && toMinutes(w.end) > toMinutes(w.start))
+          .filter(w => w && typeof w === "object" && isValidTime(w.start) && (w.end && typeof w.end === 'string') && toMinutes(w.end) > toMinutes(w.start))
           .map(w => ({ start: w.start, end: w.end }))
           .sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
       }
@@ -142,8 +186,17 @@
       merged.tasks.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
       merged.smartDismissedTaskIds = merged.smartDismissedTaskIds.filter(id => merged.tasks.some(t => t.id === id && !t.completed));
       merged.selectedTaskId = null;
+      // FORCE RESTORE PROFILE AND TASKS
+      const absoluteSave = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      if (absoluteSave.tutorialSeen) merged.tutorialSeen = absoluteSave.tutorialSeen;
+      if (absoluteSave.schoolDivision) merged.schoolDivision = absoluteSave.schoolDivision;
+      if (absoluteSave.tasks && absoluteSave.tasks.length > 0) merged.tasks = absoluteSave.tasks;
+      if (!merged.tutorialSeen && absoluteSave.tutorialSeen) merged.tutorialSeen = absoluteSave.tutorialSeen;
+      if (!merged.schoolDivision && absoluteSave.schoolDivision) merged.schoolDivision = absoluteSave.schoolDivision;
+      if (absoluteSave.tasks && absoluteSave.tasks.length > 0 && (!merged.tasks || merged.tasks.length === 0)) merged.tasks = absoluteSave.tasks;
+      if (absoluteSave.courses && absoluteSave.courses.length > 0 && (!merged.courses || merged.courses.length === 0)) merged.courses = absoluteSave.courses;
       return merged;
-    } catch { return base; }
+    } catch (e) { console.error("SILENT CRASH:", e); return base; }
   }
 
   window.EPSTUDY_APP_STATE = { defaultState, loadState };
