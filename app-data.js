@@ -89,19 +89,19 @@
   );
 
   const SKIN_EFFECTS = {
-    stars: { count: 180 },
+    stars: { count: 300 },
     aurora: { count: 160 },
-    rain: { count: 140 },
-    autumn: { count: 120 },
+    rain: { count: 220 },
+    autumn: { count: 180 },
     "mega-nova": { count: 420 },
     "dominion-royal": { count: 900 },
     "dominion-abyss": { count: 1100 },
     "dominion-empyrean": { count: 1400 },
-    galaxy: { count: 240 },
+    galaxy: { count: 340 },
     aether: { count: 180 },
     void: { count: 160 },
     plasma: { count: 220 },
-    nebula: { count: 200 }
+    nebula: { count: 260 }
   };
 
   const MUSIC_PROFILES = {
@@ -135,6 +135,9 @@
     MOTIVATIONAL_QUOTES,
     MUSIC_PROFILES
   };
+
+  // The visual module loads before the inline app bootstrap and reads this directly.
+  window.SKIN_EFFECTS = SKIN_EFFECTS;
 
   window.EPSTUDY_QUOTES = MOTIVATIONAL_QUOTES;
 })();

@@ -377,6 +377,48 @@ async function runBrowserTest() {
     if (membeanReminderCheck.cardHidden) throw new Error("Membean progress card remained hidden while enabled.");
     console.log("✓ Membean weekly reminders are actionable and deduplicated.");
 
+    console.log("\n--- Test Step 10: Test Trail Toggle Removal ---");
+    const trailCheck = await evaluate(`(() => {
+      state.selectedSkin = "galaxy";
+      state.proAccessUnlocked = true;
+      state.trailEnabled = true;
+      renderAll();
+      const trailToggle = document.getElementById("trailEnabled");
+      if (trailToggle) {
+        trailToggle.checked = true;
+        trailToggle.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      document.dispatchEvent(new PointerEvent("pointermove", { clientX: 120, clientY: 120 }));
+      const beforeDisable = document.querySelectorAll(".cursor-dot").length;
+      state.trailEnabled = false;
+      if (trailToggle) {
+        trailToggle.checked = false;
+        trailToggle.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      const afterDisable = document.querySelectorAll(".cursor-dot").length;
+      document.dispatchEvent(new PointerEvent("pointermove", { clientX: 180, clientY: 180 }));
+      return { beforeDisable, afterDisable, afterPointer: document.querySelectorAll(".cursor-dot").length };
+    })()`);
+    console.log("Trail toggle check:", trailCheck);
+    if (trailCheck.beforeDisable < 1) throw new Error("Trail effect did not create a cursor trail.");
+    if (trailCheck.afterPointer > trailCheck.afterDisable) throw new Error("Cursor trails continued after Trail was deselected.");
+    console.log("✓ Trail deselection removes the active cursor trail listener.");
+
+    console.log("\n--- Test Step 11: Test Nature Skin Effects ---");
+    const natureEffects = await evaluate(`(() => {
+      const results = {};
+      ["autumn", "rain"].forEach(skin => {
+        state.selectedSkin = skin;
+        renderAll();
+        results[skin] = { activeEffect: window.activeSkinEffect, particleCount: window.skinParticles.length };
+      });
+      return results;
+    })()`);
+    console.log("Nature skin effects:", natureEffects);
+    if (natureEffects.autumn.activeEffect !== "autumn" || natureEffects.autumn.particleCount < 1) throw new Error("Autumn leaves effect did not activate.");
+    if (natureEffects.rain.activeEffect !== "rain" || natureEffects.rain.particleCount < 1) throw new Error("Rain effect did not activate.");
+    console.log("✓ Autumn and Rain background effects activate with populated particle fields.");
+
     console.log("\n==================================================");
     console.log("Page Errors / Exceptions encountered during entire test run:");
     if (pageErrors.length === 0) {
